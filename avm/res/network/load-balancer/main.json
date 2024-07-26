@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.28.1.47646",
-      "templateHash": "7351695071160963851"
+      "version": "0.29.47.4906",
+      "templateHash": "13765288649783340652"
     },
     "name": "Load Balancers",
     "description": "This module deploys a Load Balancer.",
@@ -336,7 +336,7 @@
             "subnet": "[if(and(contains(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')], 'subnetId'), not(empty(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')].subnetId))), createObject('id', parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')].subnetId), null())]",
             "publicIPAddress": "[if(and(contains(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')], 'publicIPAddressId'), not(empty(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')].publicIPAddressId))), createObject('id', parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')].publicIPAddressId), null())]",
             "privateIPAddress": "[if(and(contains(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')], 'privateIPAddress'), not(empty(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')].privateIPAddress))), parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')].privateIPAddress, null())]",
-            "privateIPAddressVersion": "[if(contains(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')], 'privateIPAddressVersion'), parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')].privateIPAddressVersion, 'IPv4')]",
+            "privateIPAddressVersion": "[coalesce(tryGet(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')], 'privateIPAddressVersion'), 'IPv4')]",
             "privateIPAllocationMethod": "[if(and(contains(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')], 'subnetId'), not(empty(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')].subnetId))), if(contains(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')], 'privateIPAddress'), 'Static', 'Dynamic'), null())]",
             "gatewayLoadBalancer": "[if(and(contains(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')], 'gatewayLoadBalancer'), not(empty(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')].gatewayLoadBalancer))), createObject('id', parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')].gatewayLoadBalancer), null())]",
             "publicIPPrefix": "[if(and(contains(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')], 'publicIPPrefix'), not(empty(parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')].publicIPPrefix))), createObject('id', parameters('frontendIPConfigurations')[copyIndex('frontendIPConfigurationsVar')].publicIPPrefix), null())]"
@@ -354,19 +354,19 @@
               "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('name'), coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')].backendAddressPoolName)]"
             },
             "backendPort": "[coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')].backendPort]",
-            "disableOutboundSnat": "[if(contains(coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')], 'disableOutboundSnat'), coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')].disableOutboundSnat, true())]",
-            "enableFloatingIP": "[if(contains(coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')], 'enableFloatingIP'), coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')].enableFloatingIP, false())]",
-            "enableTcpReset": "[if(contains(coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')], 'enableTcpReset'), coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')].enableTcpReset, false())]",
+            "disableOutboundSnat": "[coalesce(tryGet(coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')], 'disableOutboundSnat'), true())]",
+            "enableFloatingIP": "[coalesce(tryGet(coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')], 'enableFloatingIP'), false())]",
+            "enableTcpReset": "[coalesce(tryGet(coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')], 'enableTcpReset'), false())]",
             "frontendIPConfiguration": {
               "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', parameters('name'), coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')].frontendIPConfigurationName)]"
             },
             "frontendPort": "[coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')].frontendPort]",
-            "idleTimeoutInMinutes": "[if(contains(coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')], 'idleTimeoutInMinutes'), coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')].idleTimeoutInMinutes, 4)]",
-            "loadDistribution": "[if(contains(coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')], 'loadDistribution'), coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')].loadDistribution, 'Default')]",
+            "idleTimeoutInMinutes": "[coalesce(tryGet(coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')], 'idleTimeoutInMinutes'), 4)]",
+            "loadDistribution": "[coalesce(tryGet(coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')], 'loadDistribution'), 'Default')]",
             "probe": {
               "id": "[format('{0}/probes/{1}', resourceId('Microsoft.Network/loadBalancers', parameters('name')), coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')].probeName)]"
             },
-            "protocol": "[if(contains(coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')], 'protocol'), coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')].protocol, 'Tcp')]"
+            "protocol": "[coalesce(tryGet(coalesce(parameters('loadBalancingRules'), createArray())[copyIndex('loadBalancingRulesVar')], 'protocol'), 'Tcp')]"
           }
         }
       },
@@ -384,10 +384,10 @@
             "backendAddressPool": {
               "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('name'), parameters('outboundRules')[copyIndex('outboundRulesVar')].backendAddressPoolName)]"
             },
-            "protocol": "[if(contains(parameters('outboundRules')[copyIndex('outboundRulesVar')], 'protocol'), parameters('outboundRules')[copyIndex('outboundRulesVar')].protocol, 'All')]",
-            "allocatedOutboundPorts": "[if(contains(parameters('outboundRules')[copyIndex('outboundRulesVar')], 'allocatedOutboundPorts'), parameters('outboundRules')[copyIndex('outboundRulesVar')].allocatedOutboundPorts, 63984)]",
-            "enableTcpReset": "[if(contains(parameters('outboundRules')[copyIndex('outboundRulesVar')], 'enableTcpReset'), parameters('outboundRules')[copyIndex('outboundRulesVar')].enableTcpReset, true())]",
-            "idleTimeoutInMinutes": "[if(contains(parameters('outboundRules')[copyIndex('outboundRulesVar')], 'idleTimeoutInMinutes'), parameters('outboundRules')[copyIndex('outboundRulesVar')].idleTimeoutInMinutes, 4)]"
+            "protocol": "[coalesce(tryGet(parameters('outboundRules')[copyIndex('outboundRulesVar')], 'protocol'), 'All')]",
+            "allocatedOutboundPorts": "[coalesce(tryGet(parameters('outboundRules')[copyIndex('outboundRulesVar')], 'allocatedOutboundPorts'), 63984)]",
+            "enableTcpReset": "[coalesce(tryGet(parameters('outboundRules')[copyIndex('outboundRulesVar')], 'enableTcpReset'), true())]",
+            "idleTimeoutInMinutes": "[coalesce(tryGet(parameters('outboundRules')[copyIndex('outboundRulesVar')], 'idleTimeoutInMinutes'), 4)]"
           }
         }
       },
@@ -397,11 +397,11 @@
         "input": {
           "name": "[coalesce(parameters('probes'), createArray())[copyIndex('probesVar')].name]",
           "properties": {
-            "protocol": "[if(contains(coalesce(parameters('probes'), createArray())[copyIndex('probesVar')], 'protocol'), coalesce(parameters('probes'), createArray())[copyIndex('probesVar')].protocol, 'Tcp')]",
+            "protocol": "[coalesce(tryGet(coalesce(parameters('probes'), createArray())[copyIndex('probesVar')], 'protocol'), 'Tcp')]",
             "requestPath": "[if(not(equals(toLower(coalesce(parameters('probes'), createArray())[copyIndex('probesVar')].protocol), 'tcp')), coalesce(parameters('probes'), createArray())[copyIndex('probesVar')].requestPath, null())]",
-            "port": "[if(contains(coalesce(parameters('probes'), createArray())[copyIndex('probesVar')], 'port'), coalesce(parameters('probes'), createArray())[copyIndex('probesVar')].port, 80)]",
-            "intervalInSeconds": "[if(contains(coalesce(parameters('probes'), createArray())[copyIndex('probesVar')], 'intervalInSeconds'), coalesce(parameters('probes'), createArray())[copyIndex('probesVar')].intervalInSeconds, 5)]",
-            "numberOfProbes": "[if(contains(coalesce(parameters('probes'), createArray())[copyIndex('probesVar')], 'numberOfProbes'), coalesce(parameters('probes'), createArray())[copyIndex('probesVar')].numberOfProbes, 2)]"
+            "port": "[coalesce(tryGet(coalesce(parameters('probes'), createArray())[copyIndex('probesVar')], 'port'), 80)]",
+            "intervalInSeconds": "[coalesce(tryGet(coalesce(parameters('probes'), createArray())[copyIndex('probesVar')], 'intervalInSeconds'), 5)]",
+            "numberOfProbes": "[coalesce(tryGet(coalesce(parameters('probes'), createArray())[copyIndex('probesVar')], 'numberOfProbes'), 2)]"
           }
         }
       },
@@ -559,7 +559,9 @@
           },
           "tunnelInterfaces": "[if(and(contains(coalesce(parameters('backendAddressPools'), createArray())[copyIndex()], 'tunnelInterfaces'), not(empty(coalesce(parameters('backendAddressPools'), createArray())[copyIndex()].tunnelInterfaces))), createObject('value', coalesce(parameters('backendAddressPools'), createArray())[copyIndex()].tunnelInterfaces), createObject('value', createArray()))]",
           "loadBalancerBackendAddresses": "[if(and(contains(coalesce(parameters('backendAddressPools'), createArray())[copyIndex()], 'loadBalancerBackendAddresses'), not(empty(coalesce(parameters('backendAddressPools'), createArray())[copyIndex()].loadBalancerBackendAddresses))), createObject('value', coalesce(parameters('backendAddressPools'), createArray())[copyIndex()].loadBalancerBackendAddresses), createObject('value', createArray()))]",
-          "drainPeriodInSeconds": "[if(contains(coalesce(parameters('backendAddressPools'), createArray())[copyIndex()], 'drainPeriodInSeconds'), createObject('value', coalesce(parameters('backendAddressPools'), createArray())[copyIndex()].drainPeriodInSeconds), createObject('value', 0))]"
+          "drainPeriodInSeconds": {
+            "value": "[coalesce(tryGet(coalesce(parameters('backendAddressPools'), createArray())[copyIndex()], 'drainPeriodInSeconds'), 0)]"
+          }
         },
         "template": {
           "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
@@ -567,8 +569,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "1736731506120599540"
+              "version": "0.29.47.4906",
+              "templateHash": "3982666655179652966"
             },
             "name": "Load Balancer Backend Address Pools",
             "description": "This module deploys a Load Balancer Backend Address Pools.",
@@ -721,8 +723,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.28.1.47646",
-              "templateHash": "11398827458130316747"
+              "version": "0.29.47.4906",
+              "templateHash": "6803574874056484597"
             },
             "name": "Load Balancer Inbound NAT Rules",
             "description": "This module deploys a Load Balancer Inbound NAT Rules.",

@@ -74,9 +74,7 @@ var frontendIPConfigurationsVar = [
       privateIPAddress: contains(frontendIPConfiguration, 'privateIPAddress') && !empty(frontendIPConfiguration.privateIPAddress)
         ? frontendIPConfiguration.privateIPAddress
         : null
-      privateIPAddressVersion: contains(frontendIPConfiguration, 'privateIPAddressVersion')
-        ? frontendIPConfiguration.privateIPAddressVersion
-        : 'IPv4'
+      privateIPAddressVersion: frontendIPConfiguration.?privateIPAddressVersion ?? 'IPv4'
       privateIPAllocationMethod: contains(frontendIPConfiguration, 'subnetId') && !empty(frontendIPConfiguration.subnetId)
         ? (contains(frontendIPConfiguration, 'privateIPAddress') ? 'Static' : 'Dynamic')
         : null
@@ -115,11 +113,9 @@ var loadBalancingRulesVar = [
         )
       }
       backendPort: loadBalancingRule.backendPort
-      disableOutboundSnat: contains(loadBalancingRule, 'disableOutboundSnat')
-        ? loadBalancingRule.disableOutboundSnat
-        : true
-      enableFloatingIP: contains(loadBalancingRule, 'enableFloatingIP') ? loadBalancingRule.enableFloatingIP : false
-      enableTcpReset: contains(loadBalancingRule, 'enableTcpReset') ? loadBalancingRule.enableTcpReset : false
+      disableOutboundSnat: loadBalancingRule.?disableOutboundSnat ?? true
+      enableFloatingIP: loadBalancingRule.?enableFloatingIP ?? false
+      enableTcpReset: loadBalancingRule.?enableTcpReset ?? false
       frontendIPConfiguration: {
         id: az.resourceId(
           'Microsoft.Network/loadBalancers/frontendIPConfigurations',
@@ -128,14 +124,12 @@ var loadBalancingRulesVar = [
         )
       }
       frontendPort: loadBalancingRule.frontendPort
-      idleTimeoutInMinutes: contains(loadBalancingRule, 'idleTimeoutInMinutes')
-        ? loadBalancingRule.idleTimeoutInMinutes
-        : 4
-      loadDistribution: contains(loadBalancingRule, 'loadDistribution') ? loadBalancingRule.loadDistribution : 'Default'
+      idleTimeoutInMinutes: loadBalancingRule.?idleTimeoutInMinutes ?? 4
+      loadDistribution: loadBalancingRule.?loadDistribution ?? 'Default'
       probe: {
         id: '${az.resourceId('Microsoft.Network/loadBalancers', name)}/probes/${loadBalancingRule.probeName}'
       }
-      protocol: contains(loadBalancingRule, 'protocol') ? loadBalancingRule.protocol : 'Tcp'
+      protocol: loadBalancingRule.?protocol ?? 'Tcp'
     }
   }
 ]
@@ -160,12 +154,10 @@ var outboundRulesVar = [
           outboundRule.backendAddressPoolName
         )
       }
-      protocol: contains(outboundRule, 'protocol') ? outboundRule.protocol : 'All'
-      allocatedOutboundPorts: contains(outboundRule, 'allocatedOutboundPorts')
-        ? outboundRule.allocatedOutboundPorts
-        : 63984
-      enableTcpReset: contains(outboundRule, 'enableTcpReset') ? outboundRule.enableTcpReset : true
-      idleTimeoutInMinutes: contains(outboundRule, 'idleTimeoutInMinutes') ? outboundRule.idleTimeoutInMinutes : 4
+      protocol: outboundRule.?protocol ?? 'All'
+      allocatedOutboundPorts: outboundRule.?allocatedOutboundPorts ?? 63984
+      enableTcpReset: outboundRule.?enableTcpReset ?? true
+      idleTimeoutInMinutes: outboundRule.?idleTimeoutInMinutes ?? 4
     }
   }
 ]
@@ -174,11 +166,11 @@ var probesVar = [
   for probe in (probes ?? []): {
     name: probe.name
     properties: {
-      protocol: contains(probe, 'protocol') ? probe.protocol : 'Tcp'
+      protocol: probe.?protocol ?? 'Tcp'
       requestPath: toLower(probe.protocol) != 'tcp' ? probe.requestPath : null
-      port: contains(probe, 'port') ? probe.port : 80
-      intervalInSeconds: contains(probe, 'intervalInSeconds') ? probe.intervalInSeconds : 5
-      numberOfProbes: contains(probe, 'numberOfProbes') ? probe.numberOfProbes : 2
+      port: probe.?port ?? 80
+      intervalInSeconds: probe.?intervalInSeconds ?? 5
+      numberOfProbes: probe.?numberOfProbes ?? 2
     }
   }
 ]
@@ -258,9 +250,7 @@ module loadBalancer_backendAddressPools 'backend-address-pool/main.bicep' = [
       loadBalancerBackendAddresses: contains(backendAddressPool, 'loadBalancerBackendAddresses') && !empty(backendAddressPool.loadBalancerBackendAddresses)
         ? backendAddressPool.loadBalancerBackendAddresses
         : []
-      drainPeriodInSeconds: contains(backendAddressPool, 'drainPeriodInSeconds')
-        ? backendAddressPool.drainPeriodInSeconds
-        : 0
+      drainPeriodInSeconds: backendAddressPool.?drainPeriodInSeconds ?? 0
     }
   }
 ]
