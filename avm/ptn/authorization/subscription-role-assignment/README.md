@@ -25,12 +25,15 @@ The following section provides usage examples for the module, which were used to
 
 >**Note**: To reference the module, please use the following syntax `br/public:avm/ptn/authorization/subscription-role-assignment:<version>`.
 
-- [Rg.Default](#example-1-rgdefault)
-- [Rg.Max](#example-2-rgmax)
-- [Sub.Default](#example-3-subdefault)
-- [Sub.Max](#example-4-submax)
+- [Role Assignments (Resource Group scope)](#example-1-role-assignments-resource-group-scope)
+- [Role Assignments (Resource Group)](#example-2-role-assignments-resource-group)
+- [Role Assignments (Subscription scope)](#example-3-role-assignments-subscription-scope)
+- [Role Assignments (Subscription scope)](#example-4-role-assignments-subscription-scope)
 
-### Example 1: _Rg.Default_
+### Example 1: _Role Assignments (Resource Group scope)_
+
+This module deploys a Role Assignment at a Resource Group scope using minimal parameters.
+
 
 <details>
 
@@ -91,7 +94,10 @@ module subscriptionRoleAssignment 'br/public:avm/ptn/authorization/subscription-
 </details>
 <p>
 
-### Example 2: _Rg.Max_
+### Example 2: _Role Assignments (Resource Group)_
+
+This module deploys a Role Assignment at a Resource Group scope using common parameters.
+
 
 <details>
 
@@ -156,7 +162,10 @@ module subscriptionRoleAssignment 'br/public:avm/ptn/authorization/subscription-
 </details>
 <p>
 
-### Example 3: _Sub.Default_
+### Example 3: _Role Assignments (Subscription scope)_
+
+This module deploys a Role Assignment at a Subscription scope using minimal parameters.
+
 
 <details>
 
@@ -213,7 +222,10 @@ module subscriptionRoleAssignment 'br/public:avm/ptn/authorization/subscription-
 </details>
 <p>
 
-### Example 4: _Sub.Max_
+### Example 4: _Role Assignments (Subscription scope)_
+
+This module deploys a Role Assignment at a Subscription scope using common parameters.
+
 
 <details>
 

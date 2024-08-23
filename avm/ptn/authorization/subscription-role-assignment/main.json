@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.29.47.4906",
-      "templateHash": "4008205168685089015"
+      "templateHash": "5099430036737951274"
     },
     "name": "Role Assignments (All scopes)",
     "description": "This module deploys a Role Assignment at the Subscription or Resource Group scope.",
@@ -158,7 +158,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "6402135112399591607"
+              "templateHash": "7731859846475382541"
             },
             "name": "Role Assignments (Subscription scope)",
             "description": "This module deploys a Role Assignment at a Subscription scope.",
@@ -239,7 +239,7 @@
               "Role Based Access Control Administrator (Preview)": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
               "User Access Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '18d7d88d-d35e-4fb5-a5c3-7773c20a72d9')]"
             },
-            "roleDefinitionIdVar": "[if(contains(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), variables('builtInRoleNames')[parameters('roleDefinitionIdOrName')], parameters('roleDefinitionIdOrName'))]"
+            "roleDefinitionIdVar": "[coalesce(tryGet(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), parameters('roleDefinitionIdOrName'))]"
           },
           "resources": [
             {
@@ -330,7 +330,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.29.47.4906",
-              "templateHash": "8632123358833248130"
+              "templateHash": "9616906729506420602"
             },
             "name": "Role Assignments (Resource Group scope)",
             "description": "This module deploys a Role Assignment at a Resource Group scope.",
@@ -417,7 +417,7 @@
               "Role Based Access Control Administrator (Preview)": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'f58310d9-a9f6-439a-9e8d-f62e7b41a168')]",
               "User Access Administrator": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '18d7d88d-d35e-4fb5-a5c3-7773c20a72d9')]"
             },
-            "roleDefinitionIdVar": "[if(contains(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), variables('builtInRoleNames')[parameters('roleDefinitionIdOrName')], parameters('roleDefinitionIdOrName'))]"
+            "roleDefinitionIdVar": "[coalesce(tryGet(variables('builtInRoleNames'), parameters('roleDefinitionIdOrName')), parameters('roleDefinitionIdOrName'))]"
           },
           "resources": [
             {
