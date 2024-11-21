@@ -101,6 +101,29 @@ var frontendIPConfigurationsVar = [
   }
 ]
 
+var backendLoadBalancerPoolsVar = [
+  for (backendAddressPool, index) in backendAddressPools ?? []: {
+    name: backendAddressPool.name
+    properties: {
+      tunnelInterfaces: contains(backendAddressPool, 'tunnelInterfaces') && !empty(backendAddressPool.tunnelInterfaces)
+        ? backendAddressPool.tunnelInterfaces
+        : null
+      loadBalancerBackendAddresses: contains(backendAddressPool, 'loadBalancerBackendAddresses') && !empty(backendAddressPool.loadBalancerBackendAddresses)
+        ? backendAddressPool.loadBalancerBackendAddresses
+        : null
+      drainPeriodInSeconds: contains(backendAddressPool, 'drainPeriodInSeconds') && !empty(backendAddressPool.drainPeriodInSeconds)
+        ? backendAddressPool.drainPeriodInSeconds
+        : null
+      syncMode: contains(backendAddressPool, 'syncMode') && !empty(backendAddressPool.syncMode)
+        ? backendAddressPool.syncMode
+        : null
+      virtualNetwork: contains(backendAddressPool, 'virtualNetwork') && !empty(backendAddressPool.virtualNetwork)
+        ? backendAddressPool.virtualNetwork
+        : null
+    }
+  }
+]
+
 var loadBalancingRulesVar = [
   for loadBalancingRule in (loadBalancingRules ?? []): {
     name: loadBalancingRule.name
@@ -175,12 +198,6 @@ var probesVar = [
   }
 ]
 
-var backendAddressPoolNames = [
-  for backendAddressPool in (backendAddressPools ?? []): {
-    name: backendAddressPool.name
-  }
-]
-
 var builtInRoleNames = {
   Contributor: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
   'Network Contributor': subscriptionResourceId(
@@ -233,7 +250,7 @@ resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableT
   }
 }
 
-resource loadBalancer 'Microsoft.Network/loadBalancers@2023-11-01' = {
+resource loadBalancer 'Microsoft.Network/loadBalancers@2024-03-01' = {
   name: name
   location: location
   tags: tags
@@ -243,28 +260,11 @@ resource loadBalancer 'Microsoft.Network/loadBalancers@2023-11-01' = {
   properties: {
     frontendIPConfigurations: frontendIPConfigurationsVar
     loadBalancingRules: loadBalancingRulesVar
-    backendAddressPools: backendAddressPoolNames
+    backendAddressPools: backendLoadBalancerPoolsVar
     outboundRules: outboundRulesVar
     probes: probesVar
   }
 }
-
-module loadBalancer_backendAddressPools 'backend-address-pool/main.bicep' = [
-  for (backendAddressPool, index) in backendAddressPools ?? []: {
-    name: '${uniqueString(deployment().name, location)}-loadBalancer-backendAddressPools-${index}'
-    params: {
-      loadBalancerName: loadBalancer.name
-      name: backendAddressPool.name
-      tunnelInterfaces: contains(backendAddressPool, 'tunnelInterfaces') && !empty(backendAddressPool.tunnelInterfaces)
-        ? backendAddressPool.tunnelInterfaces
-        : []
-      loadBalancerBackendAddresses: contains(backendAddressPool, 'loadBalancerBackendAddresses') && !empty(backendAddressPool.loadBalancerBackendAddresses)
-        ? backendAddressPool.loadBalancerBackendAddresses
-        : []
-      drainPeriodInSeconds: backendAddressPool.?drainPeriodInSeconds ?? 0
-    }
-  }
-]
 
 module loadBalancer_inboundNATRules 'inbound-nat-rule/main.bicep' = [
   for (inboundNATRule, index) in inboundNatRules: {
@@ -283,9 +283,6 @@ module loadBalancer_inboundNATRules 'inbound-nat-rule/main.bicep' = [
       idleTimeoutInMinutes: inboundNATRule.?idleTimeoutInMinutes
       protocol: inboundNATRule.?protocol
     }
-    dependsOn: [
-      loadBalancer_backendAddressPools
-    ]
   }
 ]
 

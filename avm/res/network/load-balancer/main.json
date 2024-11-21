@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.29.47.4906",
-      "templateHash": "3722345365989936168"
+      "version": "0.31.92.45157",
+      "templateHash": "15583424774934595691"
     },
     "name": "Load Balancers",
     "description": "This module deploys a Load Balancer.",
@@ -352,6 +352,20 @@
         }
       },
       {
+        "name": "backendLoadBalancerPoolsVar",
+        "count": "[length(coalesce(parameters('backendAddressPools'), createArray()))]",
+        "input": {
+          "name": "[coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')].name]",
+          "properties": {
+            "tunnelInterfaces": "[if(and(contains(coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')], 'tunnelInterfaces'), not(empty(coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')].tunnelInterfaces))), coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')].tunnelInterfaces, null())]",
+            "loadBalancerBackendAddresses": "[if(and(contains(coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')], 'loadBalancerBackendAddresses'), not(empty(coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')].loadBalancerBackendAddresses))), coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')].loadBalancerBackendAddresses, null())]",
+            "drainPeriodInSeconds": "[if(and(contains(coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')], 'drainPeriodInSeconds'), not(empty(coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')].drainPeriodInSeconds))), coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')].drainPeriodInSeconds, null())]",
+            "syncMode": "[if(and(contains(coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')], 'syncMode'), not(empty(coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')].syncMode))), coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')].syncMode, null())]",
+            "virtualNetwork": "[if(and(contains(coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')], 'virtualNetwork'), not(empty(coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')].virtualNetwork))), coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendLoadBalancerPoolsVar')].virtualNetwork, null())]"
+          }
+        }
+      },
+      {
         "name": "loadBalancingRulesVar",
         "count": "[length(coalesce(parameters('loadBalancingRules'), createArray()))]",
         "input": {
@@ -413,13 +427,6 @@
         }
       },
       {
-        "name": "backendAddressPoolNames",
-        "count": "[length(coalesce(parameters('backendAddressPools'), createArray()))]",
-        "input": {
-          "name": "[coalesce(parameters('backendAddressPools'), createArray())[copyIndex('backendAddressPoolNames')].name]"
-        }
-      },
-      {
         "name": "formattedRoleAssignments",
         "count": "[length(coalesce(parameters('roleAssignments'), createArray()))]",
         "input": "[union(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')], createObject('roleDefinitionId', coalesce(tryGet(variables('builtInRoleNames'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName), if(contains(coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, '/providers/Microsoft.Authorization/roleDefinitions/'), coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName, subscriptionResourceId('Microsoft.Authorization/roleDefinitions', coalesce(parameters('roleAssignments'), createArray())[copyIndex('formattedRoleAssignments')].roleDefinitionIdOrName)))))]"
@@ -457,7 +464,7 @@
     },
     "loadBalancer": {
       "type": "Microsoft.Network/loadBalancers",
-      "apiVersion": "2023-11-01",
+      "apiVersion": "2024-03-01",
       "name": "[parameters('name')]",
       "location": "[parameters('location')]",
       "tags": "[parameters('tags')]",
@@ -467,7 +474,7 @@
       "properties": {
         "frontendIPConfigurations": "[variables('frontendIPConfigurationsVar')]",
         "loadBalancingRules": "[variables('loadBalancingRulesVar')]",
-        "backendAddressPools": "[variables('backendAddressPoolNames')]",
+        "backendAddressPools": "[variables('backendLoadBalancerPoolsVar')]",
         "outboundRules": "[variables('outboundRulesVar')]",
         "probes": "[variables('probesVar')]"
       }
@@ -549,134 +556,6 @@
         "loadBalancer"
       ]
     },
-    "loadBalancer_backendAddressPools": {
-      "copy": {
-        "name": "loadBalancer_backendAddressPools",
-        "count": "[length(coalesce(parameters('backendAddressPools'), createArray()))]"
-      },
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2022-09-01",
-      "name": "[format('{0}-loadBalancer-backendAddressPools-{1}', uniqueString(deployment().name, parameters('location')), copyIndex())]",
-      "properties": {
-        "expressionEvaluationOptions": {
-          "scope": "inner"
-        },
-        "mode": "Incremental",
-        "parameters": {
-          "loadBalancerName": {
-            "value": "[parameters('name')]"
-          },
-          "name": {
-            "value": "[coalesce(parameters('backendAddressPools'), createArray())[copyIndex()].name]"
-          },
-          "tunnelInterfaces": "[if(and(contains(coalesce(parameters('backendAddressPools'), createArray())[copyIndex()], 'tunnelInterfaces'), not(empty(coalesce(parameters('backendAddressPools'), createArray())[copyIndex()].tunnelInterfaces))), createObject('value', coalesce(parameters('backendAddressPools'), createArray())[copyIndex()].tunnelInterfaces), createObject('value', createArray()))]",
-          "loadBalancerBackendAddresses": "[if(and(contains(coalesce(parameters('backendAddressPools'), createArray())[copyIndex()], 'loadBalancerBackendAddresses'), not(empty(coalesce(parameters('backendAddressPools'), createArray())[copyIndex()].loadBalancerBackendAddresses))), createObject('value', coalesce(parameters('backendAddressPools'), createArray())[copyIndex()].loadBalancerBackendAddresses), createObject('value', createArray()))]",
-          "drainPeriodInSeconds": {
-            "value": "[coalesce(tryGet(coalesce(parameters('backendAddressPools'), createArray())[copyIndex()], 'drainPeriodInSeconds'), 0)]"
-          }
-        },
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "metadata": {
-            "_generator": {
-              "name": "bicep",
-              "version": "0.29.47.4906",
-              "templateHash": "3982666655179652966"
-            },
-            "name": "Load Balancer Backend Address Pools",
-            "description": "This module deploys a Load Balancer Backend Address Pools.",
-            "owner": "Azure/module-maintainers"
-          },
-          "parameters": {
-            "loadBalancerName": {
-              "type": "string",
-              "metadata": {
-                "description": "Conditional. The name of the parent load balancer. Required if the template is used in a standalone deployment."
-              }
-            },
-            "name": {
-              "type": "string",
-              "metadata": {
-                "description": "Required. The name of the backend address pool."
-              }
-            },
-            "loadBalancerBackendAddresses": {
-              "type": "array",
-              "defaultValue": [],
-              "metadata": {
-                "description": "Optional. An array of backend addresses."
-              }
-            },
-            "tunnelInterfaces": {
-              "type": "array",
-              "defaultValue": [],
-              "metadata": {
-                "description": "Optional. An array of gateway load balancer tunnel interfaces."
-              }
-            },
-            "drainPeriodInSeconds": {
-              "type": "int",
-              "defaultValue": 0,
-              "metadata": {
-                "description": "Optional. Amount of seconds Load Balancer waits for before sending RESET to client and backend address. if value is 0 then this property will be set to null. Subscription must register the feature Microsoft.Network/SLBAllowConnectionDraining before using this property."
-              }
-            },
-            "syncMode": {
-              "type": "string",
-              "defaultValue": "",
-              "allowedValues": [
-                "",
-                "Automatic",
-                "Manual"
-              ],
-              "metadata": {
-                "description": "Optional. Backend address synchronous mode for the backend pool."
-              }
-            }
-          },
-          "resources": [
-            {
-              "type": "Microsoft.Network/loadBalancers/backendAddressPools",
-              "apiVersion": "2023-11-01",
-              "name": "[format('{0}/{1}', parameters('loadBalancerName'), parameters('name'))]",
-              "properties": {
-                "loadBalancerBackendAddresses": "[parameters('loadBalancerBackendAddresses')]",
-                "tunnelInterfaces": "[parameters('tunnelInterfaces')]",
-                "drainPeriodInSeconds": "[if(not(equals(parameters('drainPeriodInSeconds'), 0)), parameters('drainPeriodInSeconds'), null())]",
-                "syncMode": "[if(not(empty(parameters('syncMode'))), parameters('syncMode'), null())]"
-              }
-            }
-          ],
-          "outputs": {
-            "name": {
-              "type": "string",
-              "metadata": {
-                "description": "The name of the backend address pool."
-              },
-              "value": "[parameters('name')]"
-            },
-            "resourceId": {
-              "type": "string",
-              "metadata": {
-                "description": "The resource ID of the backend address pool."
-              },
-              "value": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('loadBalancerName'), parameters('name'))]"
-            },
-            "resourceGroupName": {
-              "type": "string",
-              "metadata": {
-                "description": "The resource group the backend address pool was deployed into."
-              },
-              "value": "[resourceGroup().name]"
-            }
-          }
-        }
-      },
-      "dependsOn": [
-        "loadBalancer"
-      ]
-    },
     "loadBalancer_inboundNATRules": {
       "copy": {
         "name": "loadBalancer_inboundNATRules",
@@ -735,8 +614,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.29.47.4906",
-              "templateHash": "6803574874056484597"
+              "version": "0.31.92.45157",
+              "templateHash": "9335569412202824463"
             },
             "name": "Load Balancer Inbound NAT Rules",
             "description": "This module deploys a Load Balancer Inbound NAT Rules.",
@@ -841,12 +720,12 @@
             "loadBalancer": {
               "existing": true,
               "type": "Microsoft.Network/loadBalancers",
-              "apiVersion": "2023-11-01",
+              "apiVersion": "2024-03-01",
               "name": "[parameters('loadBalancerName')]"
             },
             "inboundNatRule": {
               "type": "Microsoft.Network/loadBalancers/inboundNatRules",
-              "apiVersion": "2023-11-01",
+              "apiVersion": "2024-03-01",
               "name": "[format('{0}/{1}', parameters('loadBalancerName'), parameters('name'))]",
               "properties": {
                 "frontendPort": "[parameters('frontendPort')]",
@@ -893,8 +772,7 @@
         }
       },
       "dependsOn": [
-        "loadBalancer",
-        "loadBalancer_backendAddressPools"
+        "loadBalancer"
       ]
     }
   },
@@ -932,7 +810,7 @@
       "metadata": {
         "description": "The location the resource was deployed into."
       },
-      "value": "[reference('loadBalancer', '2023-11-01', 'full').location]"
+      "value": "[reference('loadBalancer', '2024-03-01', 'full').location]"
     }
   }
 }
