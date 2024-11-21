@@ -8,7 +8,6 @@ This module deploys a Virtual Machine Scale Set.
 - [Usage examples](#Usage-examples)
 - [Parameters](#Parameters)
 - [Outputs](#Outputs)
-- [Cross-referenced modules](#Cross-referenced-modules)
 - [Data Collection](#Data-Collection)
 
 ## Resource Types
@@ -50,6 +49,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
   name: 'virtualMachineScaleSetDeployment'
   params: {
     // Required parameters
+    adminPassword: '<adminPassword>'
     adminUsername: 'scaleSetAdmin'
     imageReference: {
       offer: '0001-com-ubuntu-server-jammy'
@@ -103,7 +103,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -111,6 +111,9 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
   "contentVersion": "1.0.0.0",
   "parameters": {
     // Required parameters
+    "adminPassword": {
+      "value": "<adminPassword>"
+    },
     "adminUsername": {
       "value": "scaleSetAdmin"
     },
@@ -182,6 +185,64 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/compute/virtual-machine-scale-set:<version>'
+
+// Required parameters
+param adminPassword = '<adminPassword>'
+param adminUsername = 'scaleSetAdmin'
+param imageReference = {
+  offer: '0001-com-ubuntu-server-jammy'
+  publisher: 'Canonical'
+  sku: '22_04-lts-gen2'
+  version: 'latest'
+}
+param name = 'cvmsslinmin001'
+param nicConfigurations = [
+  {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          publicIPAddressConfiguration: {
+            name: 'pip-cvmsslinmin'
+          }
+          subnet: {
+            id: '<id>'
+          }
+        }
+      }
+    ]
+    nicSuffix: '-nic01'
+  }
+]
+param osDisk = {
+  createOption: 'fromImage'
+  diskSizeGB: '128'
+  managedDisk: {
+    storageAccountType: 'Premium_LRS'
+  }
+}
+param osType = 'Linux'
+param skuName = 'Standard_B12ms'
+// Non-required parameters
+param disablePasswordAuthentication = true
+param location = '<location>'
+param publicKeys = [
+  {
+    keyData: '<keyData>'
+    path: '/home/scaleSetAdmin/.ssh/authorized_keys'
+  }
+]
+```
+
+</details>
+<p>
+
 ### Example 2: _Using large parameter set for Linux_
 
 This instance deploys the module with most of its features enabled.
@@ -196,6 +257,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
   name: 'virtualMachineScaleSetDeployment'
   params: {
     // Required parameters
+    adminPassword: '<adminPassword>'
     adminUsername: 'scaleSetAdmin'
     imageReference: {
       offer: '0001-com-ubuntu-server-jammy'
@@ -235,6 +297,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
     availabilityZones: [
       '2'
     ]
+    bootDiagnosticEnabled: true
     bootDiagnosticStorageAccountName: '<bootDiagnosticStorageAccountName>'
     dataDisks: [
       {
@@ -359,7 +422,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -367,6 +430,9 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
   "contentVersion": "1.0.0.0",
   "parameters": {
     // Required parameters
+    "adminPassword": {
+      "value": "<adminPassword>"
+    },
     "adminUsername": {
       "value": "scaleSetAdmin"
     },
@@ -421,6 +487,9 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
       "value": [
         "2"
       ]
+    },
+    "bootDiagnosticEnabled": {
+      "value": true
     },
     "bootDiagnosticStorageAccountName": {
       "value": "<bootDiagnosticStorageAccountName>"
@@ -586,6 +655,175 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/compute/virtual-machine-scale-set:<version>'
+
+// Required parameters
+param adminPassword = '<adminPassword>'
+param adminUsername = 'scaleSetAdmin'
+param imageReference = {
+  offer: '0001-com-ubuntu-server-jammy'
+  publisher: 'Canonical'
+  sku: '22_04-lts-gen2'
+  version: 'latest'
+}
+param name = 'cvmsslinmax001'
+param nicConfigurations = [
+  {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          publicIPAddressConfiguration: {
+            name: 'pip-cvmsslinmax'
+          }
+          subnet: {
+            id: '<id>'
+          }
+        }
+      }
+    ]
+    nicSuffix: '-nic01'
+  }
+]
+param osDisk = {
+  createOption: 'fromImage'
+  diskSizeGB: '128'
+  managedDisk: {
+    storageAccountType: 'Premium_LRS'
+  }
+}
+param osType = 'Linux'
+param skuName = 'Standard_B12ms'
+// Non-required parameters
+param availabilityZones = [
+  '2'
+]
+param bootDiagnosticEnabled = true
+param bootDiagnosticStorageAccountName = '<bootDiagnosticStorageAccountName>'
+param dataDisks = [
+  {
+    caching: 'ReadOnly'
+    createOption: 'Empty'
+    diskSizeGB: '256'
+    managedDisk: {
+      storageAccountType: 'Premium_LRS'
+    }
+  }
+  {
+    caching: 'ReadOnly'
+    createOption: 'Empty'
+    diskSizeGB: '128'
+    managedDisk: {
+      storageAccountType: 'Premium_LRS'
+    }
+  }
+]
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    metricCategories: [
+      {
+        category: 'AllMetrics'
+      }
+    ]
+    name: 'customSetting'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param disablePasswordAuthentication = true
+param encryptionAtHost = false
+param extensionAzureDiskEncryptionConfig = {
+  enabled: true
+  settings: {
+    EncryptionOperation: 'EnableEncryption'
+    KekVaultResourceId: '<KekVaultResourceId>'
+    KeyEncryptionAlgorithm: 'RSA-OAEP'
+    KeyEncryptionKeyURL: '<KeyEncryptionKeyURL>'
+    KeyVaultResourceId: '<KeyVaultResourceId>'
+    KeyVaultURL: '<KeyVaultURL>'
+    ResizeOSDisk: 'false'
+    VolumeType: 'All'
+  }
+}
+param extensionCustomScriptConfig = {
+  enabled: true
+  fileData: [
+    {
+      storageAccountId: '<storageAccountId>'
+      uri: '<uri>'
+    }
+  ]
+  protectedSettings: {
+    commandToExecute: 'sudo apt-get update'
+  }
+}
+param extensionDependencyAgentConfig = {
+  enabled: true
+}
+param extensionMonitoringAgentConfig = {
+  enabled: true
+}
+param extensionNetworkWatcherAgentConfig = {
+  enabled: true
+}
+param location = '<location>'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
+param managedIdentities = {
+  systemAssigned: false
+  userAssignedResourceIds: [
+    '<managedIdentityResourceId>'
+  ]
+}
+param publicKeys = [
+  {
+    keyData: '<keyData>'
+    path: '/home/scaleSetAdmin/.ssh/authorized_keys'
+  }
+]
+param roleAssignments = [
+  {
+    name: '8abf72f9-e918-4adc-b20b-c783b8799065'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param scaleSetFaultDomain = 1
+param skuCapacity = 1
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+param upgradePolicyMode = 'Manual'
+param vmNamePrefix = 'vmsslinvm'
+param vmPriority = 'Regular'
+```
+
+</details>
+<p>
+
 ### Example 3: _Using disk encryption set for the VM._
 
 This instance deploys the module with disk enryption set.
@@ -600,6 +838,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
   name: 'virtualMachineScaleSetDeployment'
   params: {
     // Required parameters
+    adminPassword: '<adminPassword>'
     adminUsername: 'scaleSetAdmin'
     imageReference: {
       offer: '0001-com-ubuntu-server-jammy'
@@ -672,7 +911,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -680,6 +919,9 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
   "contentVersion": "1.0.0.0",
   "parameters": {
     // Required parameters
+    "adminPassword": {
+      "value": "<adminPassword>"
+    },
     "adminUsername": {
       "value": "scaleSetAdmin"
     },
@@ -774,6 +1016,83 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/compute/virtual-machine-scale-set:<version>'
+
+// Required parameters
+param adminPassword = '<adminPassword>'
+param adminUsername = 'scaleSetAdmin'
+param imageReference = {
+  offer: '0001-com-ubuntu-server-jammy'
+  publisher: 'Canonical'
+  sku: '22_04-lts-gen2'
+  version: 'latest'
+}
+param name = 'cvmsslcmk001'
+param nicConfigurations = [
+  {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          publicIPAddressConfiguration: {
+            name: 'pip-cvmsslcmk'
+          }
+          subnet: {
+            id: '<id>'
+          }
+        }
+      }
+    ]
+    nicSuffix: '-nic01'
+  }
+]
+param osDisk = {
+  createOption: 'fromImage'
+  diskSizeGB: '128'
+  managedDisk: {
+    diskEncryptionSet: {
+      id: '<id>'
+    }
+    storageAccountType: 'Premium_LRS'
+  }
+}
+param osType = 'Linux'
+param skuName = 'Standard_B12ms'
+// Non-required parameters
+param dataDisks = [
+  {
+    caching: 'ReadOnly'
+    createOption: 'Empty'
+    diskSizeGB: '128'
+    managedDisk: {
+      diskEncryptionSet: {
+        id: '<id>'
+      }
+      storageAccountType: 'Premium_LRS'
+    }
+  }
+]
+param disablePasswordAuthentication = true
+param extensionMonitoringAgentConfig = {
+  enabled: true
+}
+param location = '<location>'
+param publicKeys = [
+  {
+    keyData: '<keyData>'
+    path: '/home/scaleSetAdmin/.ssh/authorized_keys'
+  }
+]
+```
+
+</details>
+<p>
+
 ### Example 4: _Using only defaults for Windows_
 
 This instance deploys the module with the minimum set of required parameters.
@@ -788,6 +1107,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
   name: 'virtualMachineScaleSetDeployment'
   params: {
     // Required parameters
+    adminPassword: '<adminPassword>'
     adminUsername: 'localAdminUser'
     imageReference: {
       offer: 'WindowsServer'
@@ -824,7 +1144,6 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
     osType: 'Windows'
     skuName: 'Standard_B12ms'
     // Non-required parameters
-    adminPassword: '<adminPassword>'
     location: '<location>'
   }
 }
@@ -835,7 +1154,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -843,6 +1162,9 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
   "contentVersion": "1.0.0.0",
   "parameters": {
     // Required parameters
+    "adminPassword": {
+      "value": "<adminPassword>"
+    },
     "adminUsername": {
       "value": "localAdminUser"
     },
@@ -893,14 +1215,62 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
       "value": "Standard_B12ms"
     },
     // Non-required parameters
-    "adminPassword": {
-      "value": "<adminPassword>"
-    },
     "location": {
       "value": "<location>"
     }
   }
 }
+```
+
+</details>
+<p>
+
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/compute/virtual-machine-scale-set:<version>'
+
+// Required parameters
+param adminPassword = '<adminPassword>'
+param adminUsername = 'localAdminUser'
+param imageReference = {
+  offer: 'WindowsServer'
+  publisher: 'MicrosoftWindowsServer'
+  sku: '2022-datacenter-azure-edition'
+  version: 'latest'
+}
+param name = 'cvmsswinmin001'
+param nicConfigurations = [
+  {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          publicIPAddressConfiguration: {
+            name: 'pip-cvmsswinmin'
+          }
+          subnet: {
+            id: '<id>'
+          }
+        }
+      }
+    ]
+    nicSuffix: '-nic01'
+  }
+]
+param osDisk = {
+  createOption: 'fromImage'
+  diskSizeGB: '128'
+  managedDisk: {
+    storageAccountType: 'Premium_LRS'
+  }
+}
+param osType = 'Windows'
+param skuName = 'Standard_B12ms'
+// Non-required parameters
+param location = '<location>'
 ```
 
 </details>
@@ -920,6 +1290,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
   name: 'virtualMachineScaleSetDeployment'
   params: {
     // Required parameters
+    adminPassword: '<adminPassword>'
     adminUsername: 'localAdminUser'
     imageReference: {
       offer: 'WindowsServer'
@@ -956,7 +1327,6 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
     osType: 'Windows'
     skuName: 'Standard_B12ms'
     // Non-required parameters
-    adminPassword: '<adminPassword>'
     diagnosticSettings: [
       {
         eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
@@ -1083,7 +1453,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -1091,6 +1461,9 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
   "contentVersion": "1.0.0.0",
   "parameters": {
     // Required parameters
+    "adminPassword": {
+      "value": "<adminPassword>"
+    },
     "adminUsername": {
       "value": "localAdminUser"
     },
@@ -1141,9 +1514,6 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
       "value": "Standard_B12ms"
     },
     // Non-required parameters
-    "adminPassword": {
-      "value": "<adminPassword>"
-    },
     "diagnosticSettings": {
       "value": [
         {
@@ -1306,6 +1676,173 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/compute/virtual-machine-scale-set:<version>'
+
+// Required parameters
+param adminPassword = '<adminPassword>'
+param adminUsername = 'localAdminUser'
+param imageReference = {
+  offer: 'WindowsServer'
+  publisher: 'MicrosoftWindowsServer'
+  sku: '2022-datacenter-azure-edition'
+  version: 'latest'
+}
+param name = 'cvmsswinmax001'
+param nicConfigurations = [
+  {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          publicIPAddressConfiguration: {
+            name: 'pip-cvmsswinmax'
+          }
+          subnet: {
+            id: '<id>'
+          }
+        }
+      }
+    ]
+    nicSuffix: '-nic01'
+  }
+]
+param osDisk = {
+  createOption: 'fromImage'
+  diskSizeGB: '128'
+  managedDisk: {
+    storageAccountType: 'Premium_LRS'
+  }
+}
+param osType = 'Windows'
+param skuName = 'Standard_B12ms'
+// Non-required parameters
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    metricCategories: [
+      {
+        category: 'AllMetrics'
+      }
+    ]
+    name: 'customSetting'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param encryptionAtHost = false
+param extensionAntiMalwareConfig = {
+  enabled: true
+  settings: {
+    AntimalwareEnabled: true
+    Exclusions: {
+      Extensions: '.log;.ldf'
+      Paths: 'D:\\IISlogs;D:\\DatabaseLogs'
+      Processes: 'mssence.svc'
+    }
+    RealtimeProtectionEnabled: true
+    ScheduledScanSettings: {
+      day: '7'
+      isEnabled: 'true'
+      scanType: 'Quick'
+      time: '120'
+    }
+  }
+}
+param extensionAzureDiskEncryptionConfig = {
+  enabled: true
+  settings: {
+    EncryptionOperation: 'EnableEncryption'
+    KekVaultResourceId: '<KekVaultResourceId>'
+    KeyEncryptionAlgorithm: 'RSA-OAEP'
+    KeyEncryptionKeyURL: '<KeyEncryptionKeyURL>'
+    KeyVaultResourceId: '<KeyVaultResourceId>'
+    KeyVaultURL: '<KeyVaultURL>'
+    ResizeOSDisk: 'false'
+    VolumeType: 'All'
+  }
+}
+param extensionCustomScriptConfig = {
+  enabled: true
+  fileData: [
+    {
+      storageAccountId: '<storageAccountId>'
+      uri: '<uri>'
+    }
+  ]
+  protectedSettings: {
+    commandToExecute: '<commandToExecute>'
+  }
+}
+param extensionDependencyAgentConfig = {
+  enabled: true
+}
+param extensionDSCConfig = {
+  enabled: true
+}
+param extensionHealthConfig = {
+  enabled: true
+  settings: {
+    port: 80
+    protocol: 'http'
+    requestPath: '/'
+  }
+}
+param extensionMonitoringAgentConfig = {
+  enabled: true
+}
+param extensionNetworkWatcherAgentConfig = {
+  enabled: true
+}
+param location = '<location>'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
+param managedIdentities = {
+  systemAssigned: false
+  userAssignedResourceIds: [
+    '<managedIdentityResourceId>'
+  ]
+}
+param roleAssignments = [
+  {
+    name: '1910de8c-4dab-4189-96bb-2feb68350fb8'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'Owner'
+  }
+  {
+    name: '<name>'
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+  }
+  {
+    principalId: '<principalId>'
+    principalType: 'ServicePrincipal'
+    roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
+  }
+]
+param skuCapacity = 1
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+param upgradePolicyMode = 'Manual'
+param vmNamePrefix = 'vmsswinvm'
+param vmPriority = 'Regular'
+```
+
+</details>
+<p>
+
 ### Example 6: _WAF-aligned_
 
 This instance deploys the module in alignment with the best-practices of the Well-Architected Framework for Windows.
@@ -1320,6 +1857,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
   name: 'virtualMachineScaleSetDeployment'
   params: {
     // Required parameters
+    adminPassword: '<adminPassword>'
     adminUsername: 'localAdminUser'
     imageReference: {
       offer: 'WindowsServer'
@@ -1356,7 +1894,6 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
     osType: 'Windows'
     skuName: 'Standard_B12ms'
     // Non-required parameters
-    adminPassword: '<adminPassword>'
     diagnosticSettings: [
       {
         eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
@@ -1371,7 +1908,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
         workspaceResourceId: '<workspaceResourceId>'
       }
     ]
-    encryptionAtHost: '<encryptionAtHost>'
+    encryptionAtHost: false
     extensionAntiMalwareConfig: {
       enabled: true
       settings: {
@@ -1422,6 +1959,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
       enabled: true
     }
     extensionMonitoringAgentConfig: {
+      autoUpgradeMinorVersion: true
       enabled: true
     }
     extensionNetworkWatcherAgentConfig: {
@@ -1452,7 +1990,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
 
 <details>
 
-<summary>via JSON Parameter file</summary>
+<summary>via JSON parameters file</summary>
 
 ```json
 {
@@ -1460,6 +1998,9 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
   "contentVersion": "1.0.0.0",
   "parameters": {
     // Required parameters
+    "adminPassword": {
+      "value": "<adminPassword>"
+    },
     "adminUsername": {
       "value": "localAdminUser"
     },
@@ -1510,9 +2051,6 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
       "value": "Standard_B12ms"
     },
     // Non-required parameters
-    "adminPassword": {
-      "value": "<adminPassword>"
-    },
     "diagnosticSettings": {
       "value": [
         {
@@ -1530,7 +2068,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
       ]
     },
     "encryptionAtHost": {
-      "value": "<encryptionAtHost>"
+      "value": false
     },
     "extensionAntiMalwareConfig": {
       "value": {
@@ -1593,6 +2131,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
     },
     "extensionMonitoringAgentConfig": {
       "value": {
+        "autoUpgradeMinorVersion": true,
         "enabled": true
       }
     },
@@ -1638,6 +2177,142 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
 </details>
 <p>
 
+<details>
+
+<summary>via Bicep parameters file</summary>
+
+```bicep-params
+using 'br/public:avm/res/compute/virtual-machine-scale-set:<version>'
+
+// Required parameters
+param adminPassword = '<adminPassword>'
+param adminUsername = 'localAdminUser'
+param imageReference = {
+  offer: 'WindowsServer'
+  publisher: 'MicrosoftWindowsServer'
+  sku: '2022-datacenter-azure-edition'
+  version: 'latest'
+}
+param name = 'cvmsswinwaf001'
+param nicConfigurations = [
+  {
+    ipConfigurations: [
+      {
+        name: 'ipconfig1'
+        properties: {
+          publicIPAddressConfiguration: {
+            name: 'pip-cvmsswinwaf'
+          }
+          subnet: {
+            id: '<id>'
+          }
+        }
+      }
+    ]
+    nicSuffix: '-nic01'
+  }
+]
+param osDisk = {
+  createOption: 'fromImage'
+  diskSizeGB: '128'
+  managedDisk: {
+    storageAccountType: 'Premium_LRS'
+  }
+}
+param osType = 'Windows'
+param skuName = 'Standard_B12ms'
+// Non-required parameters
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    metricCategories: [
+      {
+        category: 'AllMetrics'
+      }
+    ]
+    name: 'customSetting'
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
+param encryptionAtHost = false
+param extensionAntiMalwareConfig = {
+  enabled: true
+  settings: {
+    AntimalwareEnabled: true
+    Exclusions: {
+      Extensions: '.log;.ldf'
+      Paths: 'D:\\IISlogs;D:\\DatabaseLogs'
+      Processes: 'mssence.svc'
+    }
+    RealtimeProtectionEnabled: true
+    ScheduledScanSettings: {
+      day: '7'
+      isEnabled: 'true'
+      scanType: 'Quick'
+      time: '120'
+    }
+  }
+}
+param extensionAzureDiskEncryptionConfig = {
+  enabled: true
+  settings: {
+    EncryptionOperation: 'EnableEncryption'
+    KekVaultResourceId: '<KekVaultResourceId>'
+    KeyEncryptionAlgorithm: 'RSA-OAEP'
+    KeyEncryptionKeyURL: '<KeyEncryptionKeyURL>'
+    KeyVaultResourceId: '<KeyVaultResourceId>'
+    KeyVaultURL: '<KeyVaultURL>'
+    ResizeOSDisk: 'false'
+    VolumeType: 'All'
+  }
+}
+param extensionCustomScriptConfig = {
+  enabled: true
+  fileData: [
+    {
+      storageAccountId: '<storageAccountId>'
+      uri: '<uri>'
+    }
+  ]
+  protectedSettings: {
+    commandToExecute: '<commandToExecute>'
+  }
+}
+param extensionDependencyAgentConfig = {
+  enabled: true
+}
+param extensionDSCConfig = {
+  enabled: true
+}
+param extensionMonitoringAgentConfig = {
+  autoUpgradeMinorVersion: true
+  enabled: true
+}
+param extensionNetworkWatcherAgentConfig = {
+  enabled: true
+}
+param location = '<location>'
+param managedIdentities = {
+  systemAssigned: false
+  userAssignedResourceIds: [
+    '<managedIdentityResourceId>'
+  ]
+}
+param skuCapacity = 1
+param tags = {
+  Environment: 'Non-Prod'
+  'hidden-title': 'This is visible in the resource name'
+  Role: 'DeploymentValidation'
+}
+param upgradePolicyMode = 'Manual'
+param vmNamePrefix = 'vmsswinvm'
+param vmPriority = 'Regular'
+```
+
+</details>
+<p>
 
 ## Parameters
 
@@ -1645,6 +2320,7 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
+| [`adminPassword`](#parameter-adminpassword) | securestring | When specifying a Windows Virtual Machine, this value should be passed. |
 | [`adminUsername`](#parameter-adminusername) | securestring | Administrator username. |
 | [`imageReference`](#parameter-imagereference) | object | OS image reference. In case of marketplace images, it's the combination of the publisher, offer, sku, version attributes. In case of custom images it's the resource ID of the custom image. |
 | [`name`](#parameter-name) | string | Name of the VMSS. |
@@ -1658,10 +2334,10 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
 | [`additionalUnattendContent`](#parameter-additionalunattendcontent) | array | Specifies additional base-64 encoded XML formatted information that can be included in the Unattend.xml file, which is used by Windows Setup. - AdditionalUnattendContent object. |
-| [`adminPassword`](#parameter-adminpassword) | securestring | When specifying a Windows Virtual Machine, this value should be passed. |
 | [`automaticRepairsPolicyEnabled`](#parameter-automaticrepairspolicyenabled) | bool | Specifies whether automatic repairs should be enabled on the virtual machine scale set. |
 | [`availabilityZones`](#parameter-availabilityzones) | array | The virtual machine scale set zones. NOTE: Availability zones can only be set when you create the scale set. |
-| [`bootDiagnosticStorageAccountName`](#parameter-bootdiagnosticstorageaccountname) | string | Storage account used to store boot diagnostic information. Boot diagnostics will be disabled if no value is provided. |
+| [`bootDiagnosticEnabled`](#parameter-bootdiagnosticenabled) | bool | Enable boot diagnostics to use default managed or secure storage. Defaults set to false. |
+| [`bootDiagnosticStorageAccountName`](#parameter-bootdiagnosticstorageaccountname) | string | The name of the boot diagnostic storage account. Provide this if you want to use your own storage account for security reasons instead of the recommended Microsoft Managed Storage Account. |
 | [`bootDiagnosticStorageAccountUri`](#parameter-bootdiagnosticstorageaccounturi) | string | Storage account boot diagnostic base URI. |
 | [`bypassPlatformSafetyChecksOnUserSchedule`](#parameter-bypassplatformsafetychecksonuserschedule) | bool | Enables customer to schedule patching without accidental upgrades. |
 | [`customData`](#parameter-customdata) | string | Custom data associated to the VM, this value will be automatically converted into base64 to account for the expected VM format. |
@@ -1735,6 +2411,13 @@ module virtualMachineScaleSet 'br/public:avm/res/compute/virtual-machine-scale-s
 | :-- | :-- | :-- |
 | [`baseTime`](#parameter-basetime) | string | Do not provide a value! This date value is used to generate a registration token. |
 
+### Parameter: `adminPassword`
+
+When specifying a Windows Virtual Machine, this value should be passed.
+
+- Required: Yes
+- Type: securestring
+
 ### Parameter: `adminUsername`
 
 Administrator username.
@@ -1799,14 +2482,6 @@ Specifies additional base-64 encoded XML formatted information that can be inclu
 - Type: array
 - Default: `[]`
 
-### Parameter: `adminPassword`
-
-When specifying a Windows Virtual Machine, this value should be passed.
-
-- Required: No
-- Type: securestring
-- Default: `''`
-
 ### Parameter: `automaticRepairsPolicyEnabled`
 
 Specifies whether automatic repairs should be enabled on the virtual machine scale set.
@@ -1830,9 +2505,17 @@ The virtual machine scale set zones. NOTE: Availability zones can only be set wh
   ]
   ```
 
+### Parameter: `bootDiagnosticEnabled`
+
+Enable boot diagnostics to use default managed or secure storage. Defaults set to false.
+
+- Required: No
+- Type: bool
+- Default: `False`
+
 ### Parameter: `bootDiagnosticStorageAccountName`
 
-Storage account used to store boot diagnostic information. Boot diagnostics will be disabled if no value is provided.
+The name of the boot diagnostic storage account. Provide this if you want to use your own storage account for security reasons instead of the recommended Microsoft Managed Storage Account.
 
 - Required: No
 - Type: string
@@ -2165,6 +2848,7 @@ The configuration for the [Monitoring Agent] extension. Must at least contain th
 - Default:
   ```Bicep
   {
+      autoUpgradeMinorVersion: true
       enabled: false
   }
   ```
@@ -2452,6 +3136,25 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
+- Roles configurable by name:
+  - `'Contributor'`
+  - `'Data Operator for Managed Disks'`
+  - `'Desktop Virtualization Power On Contributor'`
+  - `'Desktop Virtualization Power On Off Contributor'`
+  - `'Desktop Virtualization Virtual Machine Contributor'`
+  - `'DevTest Labs User'`
+  - `'Disk Backup Reader'`
+  - `'Disk Pool Operator'`
+  - `'Disk Restore Operator'`
+  - `'Disk Snapshot Contributor'`
+  - `'Owner'`
+  - `'Reader'`
+  - `'Role Based Access Control Administrator'`
+  - `'User Access Administrator'`
+  - `'Virtual Machine Administrator Login'`
+  - `'Virtual Machine Contributor'`
+  - `'Virtual Machine User Login'`
+  - `'VM Scanner Operator'`
 
 **Required parameters**
 
@@ -2725,7 +3428,6 @@ Do not provide a value! This date value is used to generate a registration token
 - Type: string
 - Default: `[utcNow('u')]`
 
-
 ## Outputs
 
 | Output | Type | Description |
@@ -2735,10 +3437,6 @@ Do not provide a value! This date value is used to generate a registration token
 | `resourceGroupName` | string | The resource group of the virtual machine scale set. |
 | `resourceId` | string | The resource ID of the virtual machine scale set. |
 | `systemAssignedMIPrincipalId` | string | The principal ID of the system assigned identity. |
-
-## Cross-referenced modules
-
-_None_
 
 ## Data Collection
 
