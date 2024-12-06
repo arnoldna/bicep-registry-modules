@@ -23,6 +23,25 @@ param skuName string = 'Standard'
 @minLength(1)
 param frontendIPConfigurations array
 
+@metadata({
+  example: '''
+  - [
+      {
+        name: 'BackendPool1'
+      }
+    ]
+  - [
+      {
+        name: 'BackendPool2'
+        properties: {
+          virtualNetwork: {
+            id: virtualNetwork_backend.id
+          }
+        }
+      }
+    ]
+  '''
+})
 @description('Optional. Collection of backend address pools used by a load balancer.')
 param backendAddressPools array?
 

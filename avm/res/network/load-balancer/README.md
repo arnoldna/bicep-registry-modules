@@ -1717,6 +1717,22 @@ Collection of backend address pools used by a load balancer.
 
 - Required: No
 - Type: array
+- Example:
+  ```Bicep
+  - [
+      {
+        name: 'BackendPool1'
+      }
+      {
+        name: 'BackendPool2'
+        properties: {
+          virtualNetwork: {
+            id: virtualNetwork_backend.id
+          }
+        }
+      }
+    ]
+  ```
 
 ### Parameter: `diagnosticSettings`
 
