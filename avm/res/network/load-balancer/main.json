@@ -5,8 +5,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.31.92.45157",
-      "templateHash": "15646087732441331353"
+      "version": "0.32.4.45862",
+      "templateHash": "24821527458438323"
     },
     "name": "Load Balancers",
     "description": "This module deploys a Load Balancer.",
@@ -615,8 +615,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.31.92.45157",
-              "templateHash": "9335569412202824463"
+              "version": "0.32.4.45862",
+              "templateHash": "8897265777547743288"
             },
             "name": "Load Balancer Inbound NAT Rules",
             "description": "This module deploys a Load Balancer Inbound NAT Rules.",
@@ -741,10 +741,7 @@
                 "frontendPortRangeEnd": "[parameters('frontendPortRangeEnd')]",
                 "idleTimeoutInMinutes": "[parameters('idleTimeoutInMinutes')]",
                 "protocol": "[parameters('protocol')]"
-              },
-              "dependsOn": [
-                "loadBalancer"
-              ]
+              }
             }
           },
           "outputs": {
