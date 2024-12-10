@@ -62,6 +62,19 @@ module testDeployment '../../../main.bicep' = [
       backendAddressPools: [
         {
           name: 'servers'
+          properties: {
+            loadBalancerBackendAddresses: [
+              {
+                name: 'staticAddress1'
+                properties: {
+                  ipAddress: nestedDependencies.outputs.dedicatedNICResourceId
+                  virtualNetwork: {
+                    id: nestedDependencies.outputs.dedicatedNICResourceId
+                  }
+                }
+              }
+            ]
+          }
         }
       ]
       inboundNatRules: [
@@ -133,6 +146,36 @@ module testDeployment '../../../main.bicep' = [
         Environment: 'Non-Prod'
         Role: 'DeploymentValidation'
       }
+    }
+  }
+]
+
+module networkInterface 'br/public:avm/res/network/network-interface:0.4.0' = [
+  for i in range(0, 2): {
+    name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${i}'
+    scope: resourceGroup
+    params: {
+      name: '${namePrefix}${serviceShort}-nic-00${i}'
+      ipConfigurations: [
+        {
+          name: 'ipconfig1'
+          properties: {
+            privateIPAllocationMethod: 'Dynamic'
+            subnet: {
+              id: nestedDependencies.outputs.subnetResourceId
+            }
+            loadBalancerBackendAddressPools: [
+              {
+                id: resourceId(
+                  'Microsoft.Network/loadBalancers/backendAddressPools',
+                  '${namePrefix}${serviceShort}001',
+                  'BackendPool1'
+                )
+              }
+            ]
+          }
+        }
+      ]
     }
   }
 ]

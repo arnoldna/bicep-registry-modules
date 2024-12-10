@@ -591,6 +591,19 @@ module loadBalancer 'br/public:avm/res/network/load-balancer:<version>' = {
     backendAddressPools: [
       {
         name: 'servers'
+        properties: {
+          loadBalancerBackendAddresses: [
+            {
+              name: 'staticAddress1'
+              properties: {
+                ipAddress: '<ipAddress>'
+                virtualNetwork: {
+                  id: '<id>'
+                }
+              }
+            }
+          ]
+        }
       }
     ]
     inboundNatRules: [
@@ -692,7 +705,20 @@ module loadBalancer 'br/public:avm/res/network/load-balancer:<version>' = {
     "backendAddressPools": {
       "value": [
         {
-          "name": "servers"
+          "name": "servers",
+          "properties": {
+            "loadBalancerBackendAddresses": [
+              {
+                "name": "staticAddress1",
+                "properties": {
+                  "ipAddress": "<ipAddress>",
+                  "virtualNetwork": {
+                    "id": "<id>"
+                  }
+                }
+              }
+            ]
+          }
         }
       ]
     },
@@ -803,6 +829,19 @@ param name = 'nlbint001'
 param backendAddressPools = [
   {
     name: 'servers'
+    properties: {
+      loadBalancerBackendAddresses: [
+        {
+          name: 'staticAddress1'
+          properties: {
+            ipAddress: '<ipAddress>'
+            virtualNetwork: {
+              id: '<id>'
+            }
+          }
+        }
+      ]
+    }
   }
 ]
 param inboundNatRules = [
@@ -1723,6 +1762,8 @@ Collection of backend address pools used by a load balancer.
       {
         name: 'BackendPool1'
       }
+    ]
+  - [
       {
         name: 'BackendPool2'
         properties: {

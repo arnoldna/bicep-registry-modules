@@ -29,13 +29,37 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-04-01' = {
   }
 }
 
+resource dedicatedNIC 'Microsoft.Network/networkInterfaces@2023-09-01' = {
+  name: 'static-lb-backend'
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'static-lb-backend'
+        properties: {
+          privateIPAllocationMethod: 'Dynamic'
+          subnet: {
+            id: virtualNetwork.properties.subnets[0].id
+          }
+        }
+      }
+    ]
+  }
+}
+
 resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
   name: managedIdentityName
   location: location
 }
 
 @description('The resource ID of the created Virtual Network Subnet.')
+output dedicatedNICResourceId string = dedicatedNIC.properties.ipConfigurations[0].properties.privateIPAddress
+
+@description('The resource ID of the created Virtual Network Subnet.')
 output subnetResourceId string = virtualNetwork.properties.subnets[0].id
+
+@description('The resource ID of the created Virtual Network.')
+output virtualNetworkResourceId string = virtualNetwork.properties.subnets[0].id
 
 @description('The principal ID of the created Managed Identity.')
 output managedIdentityPrincipalId string = managedIdentity.properties.principalId

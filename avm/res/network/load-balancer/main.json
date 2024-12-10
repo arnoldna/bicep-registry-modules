@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.31.92.45157",
-      "templateHash": "12403428768524482184"
+      "templateHash": "15646087732441331353"
     },
     "name": "Load Balancers",
     "description": "This module deploys a Load Balancer.",
@@ -268,7 +268,7 @@
       "type": "array",
       "nullable": true,
       "metadata": {
-        "example": "  - [\n      {\n        name: 'BackendPool1'\n      }\n      {\n        name: 'BackendPool2'\n        properties: {\n          virtualNetwork: {\n            id: virtualNetwork_backend.id\n          }\n        }\n      }\n    ]\n  ",
+        "example": "  - [\n      {\n        name: 'BackendPool1'\n      }\n    ]\n  - [\n      {\n        name: 'BackendPool2'\n        properties: {\n          virtualNetwork: {\n            id: virtualNetwork_backend.id\n          }\n        }\n      }\n    ]\n  ",
         "description": "Optional. Collection of backend address pools used by a load balancer."
       }
     },
