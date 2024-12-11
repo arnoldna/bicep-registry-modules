@@ -18,7 +18,7 @@ param resourceLocation string = deployment().location
 param serviceShort string = 'nlbint'
 
 @description('Optional. A token to inject into the name of each resource.')
-param namePrefix string = '#_namePrefix_#'
+param namePrefix string = 'nga'
 
 // ============ //
 // Dependencies //
@@ -150,32 +150,19 @@ module testDeployment '../../../main.bicep' = [
   }
 ]
 
-module networkInterface 'br/public:avm/res/network/network-interface:0.4.0' = [
+module networkInterface 'network-interface.bicep' = [
   for i in range(0, 2): {
-    name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${i}'
     scope: resourceGroup
+    name: '${uniqueString(deployment().name, resourceLocation)}-networkInterface-${i}'
     params: {
-      name: '${namePrefix}${serviceShort}-nic-00${i}'
-      ipConfigurations: [
-        {
-          name: 'ipconfig1'
-          properties: {
-            privateIPAllocationMethod: 'Dynamic'
-            subnet: {
-              id: nestedDependencies.outputs.subnetResourceId
-            }
-            loadBalancerBackendAddressPools: [
-              {
-                id: resourceId(
-                  'Microsoft.Network/loadBalancers/backendAddressPools',
-                  '${namePrefix}${serviceShort}001',
-                  'BackendPool1'
-                )
-              }
-            ]
-          }
-        }
-      ]
+      subnetResourceID: nestedDependencies.outputs.subnetResourceId
+      loadBalancerName: '${namePrefix}${serviceShort}001'
+      loadBalancerBackendAddressPoolName: 'servers'
+      location: resourceLocation
+      networkInterfaceName: '${uniqueString(deployment().name, resourceLocation)}-networkInterface-${i}'
     }
+    dependsOn: [
+      testDeployment
+    ]
   }
 ]
