@@ -150,7 +150,7 @@ module testDeployment '../../../main.bicep' = [
   }
 ]
 
-module networkInterface 'network-interface.bicep' = [
+module backendAddressPoolNetworkInterfaces 'network-interface.bicep' = [
   for i in range(0, 2): {
     scope: resourceGroup
     name: '${uniqueString(deployment().name, resourceLocation)}-networkInterface-${i}'

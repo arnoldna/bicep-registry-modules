@@ -43,7 +43,7 @@ param frontendIPConfigurations array
   '''
 })
 @description('Optional. Collection of backend address pools used by a load balancer.')
-param backendAddressPools array?
+param backendAddressPools backendAddressPoolsType[]?
 
 @description('Optional. Array of objects containing all load balancing rules.')
 param loadBalancingRules array?
@@ -383,6 +383,39 @@ output location string = loadBalancer.location
 // ================ //
 // Definitions      //
 // ================ //
+
+type backendAddressPoolsType = {
+  @description('Optional. The name of the backend address pool.')
+  name: string
+  properties: {
+    @description('Optional. Amount of seconds Load Balancer waits for before sending RESET to client and backend address.')
+    drainPeriodInSeconds: int?
+
+    @description('An array of backend addresses.	LoadBalancerBackendAddress.')
+    loadBalancerBackendAddresses: {
+      @description('Optional. The name of the backend address pool.')
+      name: string?
+      properties: {
+        ipAddress: string
+        virtualNetwork: {
+          id: string
+        }
+      }?
+    }[]?
+
+    @description('The location of the backend address pool.')
+    location: string?
+
+    @description('''Backend address synchronous mode for the backend pool	'Automatic', 'Manual'.''')
+    syncMode: string?
+
+    @description('An array of gateway load balancer tunnel interfaces. GatewayLoadBalancerTunnelInterface[]')
+    tunnelInterfaces: array?
+
+    @description('A reference to a virtual network.	SubResource')
+    virtualNetwork: object?
+  }?
+}
 
 type diagnosticSettingType = {
   @description('Optional. The name of diagnostic setting.')
