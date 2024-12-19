@@ -389,41 +389,41 @@ output location string = loadBalancer.location
 
 type backendAddressPoolsType = {
   @description('Optional. The name of the backend address pool.')
-  name: string
+  name: string?
 
   @description('Optional. Properties of load balancer backend address pool.')
   properties: {
     @description('Optional. Amount of seconds Load Balancer waits for before sending RESET to client and backend address.')
     drainPeriodInSeconds: int?
 
-    @description('Optional. An array of backend addresses. LoadBalancerBackendAddress.')
-    LoadBalancerBackendAddress: {
+    @description('Optional. An array of backend addresses.')
+    loadBalancerBackendAddress: {
       @description('Optional. The name of the backend address pool.')
       name: string?
       @description('Optional. Properties of load balancer backend address pool.')
       properties: {
         @description('''Optional. A list of administrative states which once set can override health probe so that Load Balancer will always forward new connections to backend, or deny new connections and reset existing connections.	'Down', 'None' 'Up'.''')
-        adminState: string
+        adminState: string?
 
         @description('Optional. IP Address belonging to the referenced virtual network.')
-        ipAddress: string
+        ipAddress: string?
 
         @description('Optional. Reference to the frontend ip address configuration defined in regional load balancer.')
         loadBalancerFrontendIPConfiguration: {
           @description('Optional. Reference to the frontend ip address configuration defined in regional load balancer.')
-          id: string
+          id: string?
         }
 
         @description('Optional. Reference to an existing virtual network.')
         virtualNetwork: {
           @description('Optional. Reference to an existing virtual network.')
-          id: string
+          id: string?
         }
 
         @description('Optional. Reference to an existing subnet.')
         subnet: {
           @description('Optional. Reference to an existing subnet.')
-          id: string
+          id: string?
         }
       }?
     }[]?

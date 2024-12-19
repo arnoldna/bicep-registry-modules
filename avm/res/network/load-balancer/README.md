@@ -1790,9 +1790,9 @@ Collection of backend address pools used by a load balancer.
 
 The name of the backend address pool.
 
-- Required: Yes
+- Required: No
 - Type: string
-- Nullable: No
+- Nullable: Yes
 
 ### Parameter: `backendAddressPools.properties`
 
@@ -1807,7 +1807,7 @@ Properties of load balancer backend address pool.
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
 | [`drainPeriodInSeconds`](#parameter-backendaddresspoolspropertiesdrainperiodinseconds) | int | Amount of seconds Load Balancer waits for before sending RESET to client and backend address. |
-| [`LoadBalancerBackendAddress`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddress) | array | An array of backend addresses. LoadBalancerBackendAddress. |
+| [`loadBalancerBackendAddress`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddress) | array | An array of backend addresses. |
 | [`location`](#parameter-backendaddresspoolspropertieslocation) | string | The location of the backend address pool. |
 | [`syncMode`](#parameter-backendaddresspoolspropertiessyncmode) | string | Backend address synchronous mode for the backend pool	'Automatic', 'Manual'. |
 | [`tunnelInterfaces`](#parameter-backendaddresspoolspropertiestunnelinterfaces) | array | An array of gateway load balancer tunnel interfaces. |
@@ -1821,9 +1821,9 @@ Amount of seconds Load Balancer waits for before sending RESET to client and bac
 - Type: int
 - Nullable: Yes
 
-### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress`
+### Parameter: `backendAddressPools.properties.loadBalancerBackendAddress`
 
-An array of backend addresses. LoadBalancerBackendAddress.
+An array of backend addresses.
 
 - Required: No
 - Type: array
@@ -1836,7 +1836,7 @@ An array of backend addresses. LoadBalancerBackendAddress.
 | [`name`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddressname) | string | The name of the backend address pool. |
 | [`properties`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddressproperties) | object | Properties of load balancer backend address pool. |
 
-### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.name`
+### Parameter: `backendAddressPools.properties.loadBalancerBackendAddress.name`
 
 The name of the backend address pool.
 
@@ -1844,7 +1844,7 @@ The name of the backend address pool.
 - Type: string
 - Nullable: Yes
 
-### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties`
+### Parameter: `backendAddressPools.properties.loadBalancerBackendAddress.properties`
 
 Properties of load balancer backend address pool.
 
@@ -1862,23 +1862,23 @@ Properties of load balancer backend address pool.
 | [`subnet`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddresspropertiessubnet) | object | Reference to an existing subnet. |
 | [`virtualNetwork`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddresspropertiesvirtualnetwork) | object | Reference to an existing virtual network. |
 
-### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.adminState`
+### Parameter: `backendAddressPools.properties.loadBalancerBackendAddress.properties.adminState`
 
 A list of administrative states which once set can override health probe so that Load Balancer will always forward new connections to backend, or deny new connections and reset existing connections.	'Down', 'None' 'Up'.
 
-- Required: Yes
+- Required: No
 - Type: string
-- Nullable: No
+- Nullable: Yes
 
-### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.ipAddress`
+### Parameter: `backendAddressPools.properties.loadBalancerBackendAddress.properties.ipAddress`
 
 IP Address belonging to the referenced virtual network.
 
-- Required: Yes
+- Required: No
 - Type: string
-- Nullable: No
+- Nullable: Yes
 
-### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.loadBalancerFrontendIPConfiguration`
+### Parameter: `backendAddressPools.properties.loadBalancerBackendAddress.properties.loadBalancerFrontendIPConfiguration`
 
 Reference to the frontend ip address configuration defined in regional load balancer.
 
@@ -1892,15 +1892,15 @@ Reference to the frontend ip address configuration defined in regional load bala
 | :-- | :-- | :-- |
 | [`id`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddresspropertiesloadbalancerfrontendipconfigurationid) | string | Reference to the frontend ip address configuration defined in regional load balancer. |
 
-### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.loadBalancerFrontendIPConfiguration.id`
+### Parameter: `backendAddressPools.properties.loadBalancerBackendAddress.properties.loadBalancerFrontendIPConfiguration.id`
 
 Reference to the frontend ip address configuration defined in regional load balancer.
 
-- Required: Yes
+- Required: No
 - Type: string
-- Nullable: No
+- Nullable: Yes
 
-### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.subnet`
+### Parameter: `backendAddressPools.properties.loadBalancerBackendAddress.properties.subnet`
 
 Reference to an existing subnet.
 
@@ -1914,15 +1914,15 @@ Reference to an existing subnet.
 | :-- | :-- | :-- |
 | [`id`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddresspropertiessubnetid) | string | Reference to an existing subnet. |
 
-### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.subnet.id`
+### Parameter: `backendAddressPools.properties.loadBalancerBackendAddress.properties.subnet.id`
 
 Reference to an existing subnet.
 
-- Required: Yes
+- Required: No
 - Type: string
-- Nullable: No
+- Nullable: Yes
 
-### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.virtualNetwork`
+### Parameter: `backendAddressPools.properties.loadBalancerBackendAddress.properties.virtualNetwork`
 
 Reference to an existing virtual network.
 
@@ -1936,13 +1936,13 @@ Reference to an existing virtual network.
 | :-- | :-- | :-- |
 | [`id`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddresspropertiesvirtualnetworkid) | string | Reference to an existing virtual network. |
 
-### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.virtualNetwork.id`
+### Parameter: `backendAddressPools.properties.loadBalancerBackendAddress.properties.virtualNetwork.id`
 
 Reference to an existing virtual network.
 
-- Required: Yes
+- Required: No
 - Type: string
-- Nullable: No
+- Nullable: Yes
 
 ### Parameter: `backendAddressPools.properties.location`
 
