@@ -8,6 +8,7 @@ This module deploys a Load Balancer.
 - [Usage examples](#Usage-examples)
 - [Parameters](#Parameters)
 - [Outputs](#Outputs)
+- [Cross-referenced modules](#Cross-referenced-modules)
 - [Notes](#Notes)
 - [Data Collection](#Data-Collection)
 
@@ -1775,6 +1776,185 @@ Collection of backend address pools used by a load balancer.
     ]
   ```
 
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-backendaddresspoolsname) | string | The name of the backend address pool. |
+| [`properties`](#parameter-backendaddresspoolsproperties) | object | Properties of load balancer backend address pool. |
+
+### Parameter: `backendAddressPools.name`
+
+The name of the backend address pool.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `backendAddressPools.properties`
+
+Properties of load balancer backend address pool.
+
+- Required: No
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`drainPeriodInSeconds`](#parameter-backendaddresspoolspropertiesdrainperiodinseconds) | int | Amount of seconds Load Balancer waits for before sending RESET to client and backend address. |
+| [`LoadBalancerBackendAddress`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddress) | array | An array of backend addresses. LoadBalancerBackendAddress. |
+| [`location`](#parameter-backendaddresspoolspropertieslocation) | string | The location of the backend address pool. |
+| [`syncMode`](#parameter-backendaddresspoolspropertiessyncmode) | string | Backend address synchronous mode for the backend pool	'Automatic', 'Manual'. |
+| [`tunnelInterfaces`](#parameter-backendaddresspoolspropertiestunnelinterfaces) | array | An array of gateway load balancer tunnel interfaces. |
+| [`virtualNetwork`](#parameter-backendaddresspoolspropertiesvirtualnetwork) | object | A reference to a virtual network. |
+
+### Parameter: `backendAddressPools.properties.drainPeriodInSeconds`
+
+Amount of seconds Load Balancer waits for before sending RESET to client and backend address.
+
+- Required: No
+- Type: int
+
+### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress`
+
+An array of backend addresses. LoadBalancerBackendAddress.
+
+- Required: No
+- Type: array
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddressname) | string | The name of the backend address pool. |
+| [`properties`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddressproperties) | object | Properties of load balancer backend address pool. |
+
+### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.name`
+
+The name of the backend address pool.
+
+- Required: No
+- Type: string
+
+### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties`
+
+Properties of load balancer backend address pool.
+
+- Required: No
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`adminState`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddresspropertiesadminstate) | string | A list of administrative states which once set can override health probe so that Load Balancer will always forward new connections to backend, or deny new connections and reset existing connections.	'Down', 'None' 'Up'. |
+| [`ipAddress`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddresspropertiesipaddress) | string | IP Address belonging to the referenced virtual network. |
+| [`loadBalancerFrontendIPConfiguration`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddresspropertiesloadbalancerfrontendipconfiguration) | object | Reference to the frontend ip address configuration defined in regional load balancer. |
+| [`subnet`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddresspropertiessubnet) | object | Reference to an existing subnet. |
+| [`virtualNetwork`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddresspropertiesvirtualnetwork) | object | Reference to an existing virtual network. |
+
+### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.adminState`
+
+A list of administrative states which once set can override health probe so that Load Balancer will always forward new connections to backend, or deny new connections and reset existing connections.	'Down', 'None' 'Up'.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.ipAddress`
+
+IP Address belonging to the referenced virtual network.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.loadBalancerFrontendIPConfiguration`
+
+Reference to the frontend ip address configuration defined in regional load balancer.
+
+- Required: Yes
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`id`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddresspropertiesloadbalancerfrontendipconfigurationid) | string | Reference to the frontend ip address configuration defined in regional load balancer. |
+
+### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.loadBalancerFrontendIPConfiguration.id`
+
+Reference to the frontend ip address configuration defined in regional load balancer.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.subnet`
+
+Reference to an existing subnet.
+
+- Required: Yes
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`id`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddresspropertiessubnetid) | string | Reference to an existing subnet. |
+
+### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.subnet.id`
+
+Reference to an existing subnet.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.virtualNetwork`
+
+Reference to an existing virtual network.
+
+- Required: Yes
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`id`](#parameter-backendaddresspoolspropertiesloadbalancerbackendaddresspropertiesvirtualnetworkid) | string | Reference to an existing virtual network. |
+
+### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.virtualNetwork.id`
+
+Reference to an existing virtual network.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `backendAddressPools.properties.location`
+
+The location of the backend address pool.
+
+- Required: No
+- Type: string
+
+### Parameter: `backendAddressPools.properties.syncMode`
+
+Backend address synchronous mode for the backend pool	'Automatic', 'Manual'.
+
+- Required: No
+- Type: string
+
+### Parameter: `backendAddressPools.properties.tunnelInterfaces`
+
+An array of gateway load balancer tunnel interfaces.
+
+- Required: No
+- Type: array
+
+### Parameter: `backendAddressPools.properties.virtualNetwork`
+
+A reference to a virtual network.
+
+- Required: No
+- Type: object
+
 ### Parameter: `diagnosticSettings`
 
 The diagnostic settings of the service.
@@ -1792,7 +1972,7 @@ The diagnostic settings of the service.
 | [`logCategoriesAndGroups`](#parameter-diagnosticsettingslogcategoriesandgroups) | array | The name of logs that will be streamed. "allLogs" includes all possible logs for the resource. Set to `[]` to disable log collection. |
 | [`marketplacePartnerResourceId`](#parameter-diagnosticsettingsmarketplacepartnerresourceid) | string | The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs. |
 | [`metricCategories`](#parameter-diagnosticsettingsmetriccategories) | array | The name of metrics that will be streamed. "allMetrics" includes all possible metrics for the resource. Set to `[]` to disable metric collection. |
-| [`name`](#parameter-diagnosticsettingsname) | string | The name of diagnostic setting. |
+| [`name`](#parameter-diagnosticsettingsname) | string | The name of the diagnostic setting. |
 | [`storageAccountResourceId`](#parameter-diagnosticsettingsstorageaccountresourceid) | string | Resource ID of the diagnostic storage account. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
 | [`workspaceResourceId`](#parameter-diagnosticsettingsworkspaceresourceid) | string | Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
 
@@ -1902,7 +2082,7 @@ Enable or disable the category explicitly. Default is `true`.
 
 ### Parameter: `diagnosticSettings.name`
 
-The name of diagnostic setting.
+The name of the diagnostic setting.
 
 - Required: No
 - Type: string
@@ -2138,6 +2318,14 @@ Tags of the resource.
 | `name` | string | The name of the load balancer. |
 | `resourceGroupName` | string | The resource group the load balancer was deployed into. |
 | `resourceId` | string | The resource ID of the load balancer. |
+
+## Cross-referenced modules
+
+This section gives you an overview of all local-referenced module files (i.e., other modules that are referenced in this module) and all remote-referenced files (i.e., Bicep modules that are referenced from a Bicep Registry or Template Specs).
+
+| Reference | Type |
+| :-- | :-- |
+| `br/public:avm/utl/types/avm-common-types:0.2.1` | Remote reference |
 
 ## Notes
 
