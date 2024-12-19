@@ -1792,6 +1792,7 @@ The name of the backend address pool.
 
 - Required: Yes
 - Type: string
+- Nullable: No
 
 ### Parameter: `backendAddressPools.properties`
 
@@ -1799,6 +1800,7 @@ Properties of load balancer backend address pool.
 
 - Required: No
 - Type: object
+- Nullable: Yes
 
 **Optional parameters**
 
@@ -1817,6 +1819,7 @@ Amount of seconds Load Balancer waits for before sending RESET to client and bac
 
 - Required: No
 - Type: int
+- Nullable: Yes
 
 ### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress`
 
@@ -1824,6 +1827,7 @@ An array of backend addresses. LoadBalancerBackendAddress.
 
 - Required: No
 - Type: array
+- Nullable: Yes
 
 **Optional parameters**
 
@@ -1838,6 +1842,7 @@ The name of the backend address pool.
 
 - Required: No
 - Type: string
+- Nullable: Yes
 
 ### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties`
 
@@ -1845,6 +1850,7 @@ Properties of load balancer backend address pool.
 
 - Required: No
 - Type: object
+- Nullable: Yes
 
 **Optional parameters**
 
@@ -1862,6 +1868,7 @@ A list of administrative states which once set can override health probe so that
 
 - Required: Yes
 - Type: string
+- Nullable: No
 
 ### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.ipAddress`
 
@@ -1869,6 +1876,7 @@ IP Address belonging to the referenced virtual network.
 
 - Required: Yes
 - Type: string
+- Nullable: No
 
 ### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.loadBalancerFrontendIPConfiguration`
 
@@ -1876,6 +1884,7 @@ Reference to the frontend ip address configuration defined in regional load bala
 
 - Required: Yes
 - Type: object
+- Nullable: No
 
 **Optional parameters**
 
@@ -1889,6 +1898,7 @@ Reference to the frontend ip address configuration defined in regional load bala
 
 - Required: Yes
 - Type: string
+- Nullable: No
 
 ### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.subnet`
 
@@ -1896,6 +1906,7 @@ Reference to an existing subnet.
 
 - Required: Yes
 - Type: object
+- Nullable: No
 
 **Optional parameters**
 
@@ -1909,6 +1920,7 @@ Reference to an existing subnet.
 
 - Required: Yes
 - Type: string
+- Nullable: No
 
 ### Parameter: `backendAddressPools.properties.LoadBalancerBackendAddress.properties.virtualNetwork`
 
@@ -1916,6 +1928,7 @@ Reference to an existing virtual network.
 
 - Required: Yes
 - Type: object
+- Nullable: No
 
 **Optional parameters**
 
@@ -1929,6 +1942,7 @@ Reference to an existing virtual network.
 
 - Required: Yes
 - Type: string
+- Nullable: No
 
 ### Parameter: `backendAddressPools.properties.location`
 
@@ -1936,6 +1950,7 @@ The location of the backend address pool.
 
 - Required: No
 - Type: string
+- Nullable: Yes
 
 ### Parameter: `backendAddressPools.properties.syncMode`
 
@@ -1943,6 +1958,7 @@ Backend address synchronous mode for the backend pool	'Automatic', 'Manual'.
 
 - Required: No
 - Type: string
+- Nullable: Yes
 
 ### Parameter: `backendAddressPools.properties.tunnelInterfaces`
 
@@ -1950,6 +1966,7 @@ An array of gateway load balancer tunnel interfaces.
 
 - Required: No
 - Type: array
+- Nullable: Yes
 
 ### Parameter: `backendAddressPools.properties.virtualNetwork`
 
@@ -1957,6 +1974,7 @@ A reference to a virtual network.
 
 - Required: No
 - Type: object
+- Nullable: Yes
 
 ### Parameter: `diagnosticSettings`
 
@@ -1964,7 +1982,7 @@ The diagnostic settings of the service.
 
 - Required: No
 - Type: array
-- Nullable: No
+- Nullable: Yes
 
 **Optional parameters**
 
@@ -2160,7 +2178,7 @@ The lock settings of the service.
 
 - Required: No
 - Type: object
-- Nullable: No
+- Nullable: Yes
 
 **Optional parameters**
 
@@ -2216,7 +2234,7 @@ Array of role assignments to create.
 
 - Required: No
 - Type: array
-- Nullable: No
+- Nullable: Yes
 - Roles configurable by name:
   - `'Contributor'`
   - `'Network Contributor'`
