@@ -6,7 +6,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.32.4.45862",
-      "templateHash": "14389423593663598842"
+      "templateHash": "732245998265814934"
     },
     "name": "Load Balancers",
     "description": "This module deploys a Load Balancer.",
@@ -73,6 +73,7 @@
                             }
                           }
                         },
+                        "nullable": true,
                         "metadata": {
                           "description": "Optional. Reference to the frontend ip address configuration defined in regional load balancer."
                         }
@@ -88,6 +89,7 @@
                             }
                           }
                         },
+                        "nullable": true,
                         "metadata": {
                           "description": "Optional. Reference to an existing virtual network."
                         }
@@ -103,6 +105,7 @@
                             }
                           }
                         },
+                        "nullable": true,
                         "metadata": {
                           "description": "Optional. Reference to an existing subnet."
                         }

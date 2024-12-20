@@ -412,19 +412,19 @@ type backendAddressPoolsType = {
         loadBalancerFrontendIPConfiguration: {
           @description('Optional. Reference to the frontend ip address configuration defined in regional load balancer.')
           id: string?
-        }
+        }?
 
         @description('Optional. Reference to an existing virtual network.')
         virtualNetwork: {
           @description('Optional. Reference to an existing virtual network.')
           id: string?
-        }
+        }?
 
         @description('Optional. Reference to an existing subnet.')
         subnet: {
           @description('Optional. Reference to an existing subnet.')
           id: string?
-        }
+        }?
       }?
     }[]?
 

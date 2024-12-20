@@ -1882,9 +1882,9 @@ IP Address belonging to the referenced virtual network.
 
 Reference to the frontend ip address configuration defined in regional load balancer.
 
-- Required: Yes
+- Required: No
 - Type: object
-- Nullable: No
+- Nullable: Yes
 
 **Optional parameters**
 
@@ -1904,9 +1904,9 @@ Reference to the frontend ip address configuration defined in regional load bala
 
 Reference to an existing subnet.
 
-- Required: Yes
+- Required: No
 - Type: object
-- Nullable: No
+- Nullable: Yes
 
 **Optional parameters**
 
@@ -1926,9 +1926,9 @@ Reference to an existing subnet.
 
 Reference to an existing virtual network.
 
-- Required: Yes
+- Required: No
 - Type: object
-- Nullable: No
+- Nullable: Yes
 
 **Optional parameters**
 
