@@ -18,7 +18,8 @@ param resourceLocation string = deployment().location
 param serviceShort string = 'nlbint'
 
 @description('Optional. A token to inject into the name of each resource.')
-param namePrefix string = '#_namePrefix_#'
+param namePrefix string = 'nga'
+// param namePrefix string = '#_namePrefix_#'
 
 // ============ //
 // Dependencies //
@@ -61,20 +62,26 @@ module testDeployment '../../../main.bicep' = [
       ]
       backendAddressPools: [
         {
-          name: 'servers'
+          name: 'static'
           properties: {
             loadBalancerBackendAddresses: [
               {
                 name: 'staticAddress1'
                 properties: {
                   ipAddress: nestedDependencies.outputs.dedicatedNICResourceId
-                  virtualNetwork: {
-                    id: nestedDependencies.outputs.dedicatedNICResourceId
-                  }
+                  // virtualNetworkResourceId: nestedDependencies.outputs.dedicatedNICResourceId
+                  // subnetId: nestedDependencies.outputs.subnetResourceId
                 }
               }
             ]
+            // syncMode: 'Manual'
+            location: resourceLocation
+            // drainPeriodInSeconds: 600
+            // virtualNetworkResourceId: nestedDependencies.outputs.dedicatedNICResourceId
           }
+        }
+        {
+          name: 'servers'
         }
       ]
       inboundNatRules: [
@@ -88,12 +95,12 @@ module testDeployment '../../../main.bicep' = [
           name: 'inboundNatRule1'
           protocol: 'Tcp'
         }
-        {
-          backendPort: 3389
-          frontendIPConfigurationName: 'privateIPConfig1'
-          frontendPort: 3389
-          name: 'inboundNatRule2'
-        }
+        // {
+        //   backendPort: 3389
+        //   frontendIPConfigurationName: 'privateIPConfig1'
+        //   frontendPort: 3389
+        //   name: 'inboundNatRule2'
+        // }
       ]
       skuName: 'Standard'
       loadBalancingRules: [
@@ -150,19 +157,25 @@ module testDeployment '../../../main.bicep' = [
   }
 ]
 
-module backendAddressPoolNetworkInterfaces 'network-interface.bicep' = [
-  for i in range(0, 2): {
-    scope: resourceGroup
-    name: '${uniqueString(deployment().name, resourceLocation)}-networkInterface-${i}'
-    params: {
-      subnetResourceID: nestedDependencies.outputs.subnetResourceId
-      loadBalancerName: '${namePrefix}${serviceShort}001'
-      loadBalancerBackendAddressPoolName: 'servers'
-      location: resourceLocation
-      networkInterfaceName: '${uniqueString(deployment().name, resourceLocation)}-networkInterface-${i}'
-    }
-    dependsOn: [
-      testDeployment
-    ]
-  }
-]
+// module backendAddressPoolNetworkInterfaces 'network-interface.bicep' = [
+//   for i in range(0, 2): {
+//     scope: resourceGroup
+//     name: '${uniqueString(deployment().name, resourceLocation)}-networkInterface-${i}'
+//     params: {
+//       subnetResourceID: nestedDependencies.outputs.subnetResourceId
+//       loadBalancerName: '${namePrefix}${serviceShort}001'
+//       loadBalancerBackendAddressPoolName: 'servers'
+//       location: resourceLocation
+//       networkInterfaceName: '${uniqueString(deployment().name, resourceLocation)}-networkInterface-${i}'
+//     }
+//     dependsOn: [
+//       testDeployment
+//     ]
+//   }
+// ]
+
+// output backendLoadBalancerPoolsVar array = testDeployment[0].outputs.backendLoadBalancerPoolsVar
+output virtualNetworkResourceId string = nestedDependencies.outputs.virtualNetworkResourceId
+output backendpools array = testDeployment[0].outputs.backendAddressPools
+// output backendLoad array = testDeployment[0].outputs.backendpools
+// output backend array = testDeployment[0].outputs.backend

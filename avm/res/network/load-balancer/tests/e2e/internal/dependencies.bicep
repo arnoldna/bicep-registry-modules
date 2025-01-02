@@ -37,7 +37,8 @@ resource dedicatedNIC 'Microsoft.Network/networkInterfaces@2023-09-01' = {
       {
         name: 'static-lb-backend'
         properties: {
-          privateIPAllocationMethod: 'Dynamic'
+          privateIPAllocationMethod: 'Static'
+          privateIPAddress: '10.0.0.5'
           subnet: {
             id: virtualNetwork.properties.subnets[0].id
           }
@@ -59,7 +60,7 @@ output dedicatedNICResourceId string = dedicatedNIC.properties.ipConfigurations[
 output subnetResourceId string = virtualNetwork.properties.subnets[0].id
 
 @description('The resource ID of the created Virtual Network.')
-output virtualNetworkResourceId string = virtualNetwork.properties.subnets[0].id
+output virtualNetworkResourceId string = virtualNetwork.id
 
 @description('The principal ID of the created Managed Identity.')
 output managedIdentityPrincipalId string = managedIdentity.properties.principalId

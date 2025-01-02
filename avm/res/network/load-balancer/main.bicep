@@ -43,7 +43,8 @@ param frontendIPConfigurations array
   '''
 })
 @description('Optional. Collection of backend address pools used by a load balancer.')
-param backendAddressPools backendAddressPoolsType[]?
+param backendAddressPools array?
+// param backendAddressPools backendAddressPoolsType[]?
 
 @description('Optional. Array of objects containing all load balancing rules.')
 param loadBalancingRules array?
@@ -123,28 +124,49 @@ var frontendIPConfigurationsVar = [
   }
 ]
 
-var backendLoadBalancerPoolsVar = [
-  for (backendAddressPool, index) in backendAddressPools ?? []: {
-    name: backendAddressPool.name
-    properties: {
-      tunnelInterfaces: contains(backendAddressPool, 'tunnelInterfaces') && !empty(backendAddressPool.tunnelInterfaces)
-        ? backendAddressPool.tunnelInterfaces
-        : null
-      loadBalancerBackendAddresses: contains(backendAddressPool, 'loadBalancerBackendAddresses') && !empty(backendAddressPool.loadBalancerBackendAddresses)
-        ? backendAddressPool.loadBalancerBackendAddresses
-        : null
-      drainPeriodInSeconds: contains(backendAddressPool, 'drainPeriodInSeconds') && !empty(backendAddressPool.drainPeriodInSeconds)
-        ? backendAddressPool.drainPeriodInSeconds
-        : null
-      syncMode: contains(backendAddressPool, 'syncMode') && !empty(backendAddressPool.syncMode)
-        ? backendAddressPool.syncMode
-        : null
-      virtualNetwork: contains(backendAddressPool, 'virtualNetwork') && !empty(backendAddressPool.virtualNetwork)
-        ? backendAddressPool.virtualNetwork
-        : null
-    }
-  }
-]
+// var backendLoadBalancerPoolsVar = [
+//   for (backendAddressPool, index) in backendAddressPools ?? []: {
+//     name: backendAddressPool.name
+//     properties: {
+//       // tunnelInterfaces: contains(backendAddressPool.properties, 'tunnelInterfaces') && !empty(backendAddressPool.properties.tunnelInterfaces)
+//       //   ? backendAddressPool.properties.tunnelInterfaces
+//       //   : null
+//       // loadBalancerBackendAddresses: contains(backendAddressPool.properties, 'loadBalancerBackendAddresses') && !empty(backendAddressPool.properties.loadBalancerBackendAddresses)
+//       //   ? backendAddressPool.properties.loadBalancerBackendAddresses
+//       //   : null
+//       drainPeriodInSeconds: backendAddressPool.properties.drainPeriodInSeconds
+
+//       // syncMode: contains(backendAddressPool.properties, 'syncMode') && !empty(backendAddressPool.properties.syncMode)
+//       //   ? backendAddressPool.properties.syncMode
+//       //   : null
+//       // virtualNetwork: contains(backendAddressPool.properties, 'virtualNetwork') && !empty(backendAddressPool.properties.virtualNetwork)
+//       //   ? backendAddressPool.properties.virtualNetwork
+//       //   : null
+//     }
+//   }
+// ]
+// var backendLoadBalancerPoolsVar = [
+//   for (backendAddressPool, index) in backendAddressPools ?? []: {
+//     name: backendAddressPool.name
+//     properties: {
+//       tunnelInterfaces: contains(backendAddressPool, 'tunnelInterfaces') && !empty(backendAddressPool.tunnelInterfaces)
+//         ? backendAddressPool.tunnelInterfaces
+//         : null
+//       loadBalancerBackendAddresses: contains(backendAddressPool, 'loadBalancerBackendAddresses') && !empty(backendAddressPool.loadBalancerBackendAddresses)
+//         ? backendAddressPool.loadBalancerBackendAddresses
+//         : null
+//       drainPeriodInSeconds: contains(backendAddressPool, 'drainPeriodInSeconds') && !empty(backendAddressPool.drainPeriodInSeconds)
+//         ? backendAddressPool.properties.drainPeriodInSeconds
+//         : null
+//       syncMode: contains(backendAddressPool, 'syncMode') && !empty(backendAddressPool.syncMode)
+//         ? backendAddressPool.syncMode
+//         : null
+//       virtualNetwork: contains(backendAddressPool, 'virtualNetwork') && !empty(backendAddressPool.virtualNetwork)
+//         ? backendAddressPool.virtualNetwork
+//         : null
+//     }
+//   }
+// ]
 
 var loadBalancingRulesVar = [
   for loadBalancingRule in (loadBalancingRules ?? []): {
@@ -282,7 +304,7 @@ resource loadBalancer 'Microsoft.Network/loadBalancers@2024-03-01' = {
   properties: {
     frontendIPConfigurations: frontendIPConfigurationsVar
     loadBalancingRules: loadBalancingRulesVar
-    backendAddressPools: backendLoadBalancerPoolsVar
+    backendAddressPools: backendAddressPools
     outboundRules: outboundRulesVar
     probes: probesVar
   }
@@ -383,6 +405,13 @@ output backendpools array = loadBalancer.properties.backendAddressPools
 @description('The location the resource was deployed into.')
 output location string = loadBalancer.location
 
+// output backendLoadBalancerPoolsVar array = backendLoadBalancerPoolsVar
+output backendAddressPools array = [
+  for item in backendAddressPools!: {
+    name: item
+  }
+]
+
 // ================ //
 // Definitions      //
 // ================ //
@@ -397,47 +426,43 @@ type backendAddressPoolsType = {
     drainPeriodInSeconds: int?
 
     @description('Optional. An array of backend addresses.')
-    loadBalancerBackendAddress: {
-      @description('Optional. The name of the backend address pool.')
-      name: string?
-      @description('Optional. Properties of load balancer backend address pool.')
-      properties: {
-        @description('''Optional. A list of administrative states which once set can override health probe so that Load Balancer will always forward new connections to backend, or deny new connections and reset existing connections.	'Down', 'None' 'Up'.''')
-        adminState: string?
-
-        @description('Optional. IP Address belonging to the referenced virtual network.')
-        ipAddress: string?
-
-        @description('Optional. Reference to the frontend ip address configuration defined in regional load balancer.')
-        loadBalancerFrontendIPConfiguration: {
-          @description('Optional. Reference to the frontend ip address configuration defined in regional load balancer.')
-          id: string?
-        }?
-
-        @description('Optional. Reference to an existing virtual network.')
-        virtualNetwork: {
-          @description('Optional. Reference to an existing virtual network.')
-          id: string?
-        }?
-
-        @description('Optional. Reference to an existing subnet.')
-        subnet: {
-          @description('Optional. Reference to an existing subnet.')
-          id: string?
-        }?
-      }?
-    }[]?
+    loadBalancerBackendAddresses: array?
 
     @description('Optional. The location of the backend address pool.')
     location: string?
 
-    @description('''Optional. Backend address synchronous mode for the backend pool	'Automatic', 'Manual'.''')
+    @description('''Optional. Backend address synchronous mode for the backend pool	when balancing across Azure Subscriptions. 'Automatic', 'Manual'.''')
     syncMode: string?
 
     @description('Optional. An array of gateway load balancer tunnel interfaces.')
     tunnelInterfaces: array?
 
     @description('Optional. A reference to a virtual network.')
-    virtualNetwork: object?
+    virtualNetworkResourceId: string?
+  }?
+}
+
+type loadBalancerBackendAddressesType = {
+  @description('Optional. The name of the backend address pool.')
+  name: string?
+
+  @description('Optional. Properties of load balancer backend address pool.')
+  properties: {
+    @description('''Optional. A list of administrative states which once set can override health probe so that Load Balancer will always forward new connections to backend, or deny new connections and reset existing connections.	'Down', 'None' 'Up'.''')
+    adminState: string?
+
+    @description('Optional. IP Address belonging to the referenced virtual network.')
+    ipAddress: string?
+
+    @description('Optional. Reference to the frontend ip address configuration defined in regional load balancer.')
+    loadBalancerFrontendIPConfigurationId: string?
+
+    @description('Optional. Reference to an existing virtual network.')
+    virtualNetworkResourceId: string?
+
+    @description('Optional. Reference to an existing subnet.')
+    subnet: {
+      id: string
+    }?
   }?
 }

@@ -18,7 +18,8 @@ param resourceLocation string = deployment().location
 param serviceShort string = 'nlbmax'
 
 @description('Optional. A token to inject into the name of each resource.')
-param namePrefix string = '#_namePrefix_#'
+param namePrefix string = 'nag'
+// param namePrefix string = '#_namePrefix_#'
 
 // ============ //
 // Dependencies //
