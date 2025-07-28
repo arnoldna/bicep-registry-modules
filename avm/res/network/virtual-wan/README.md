@@ -8,6 +8,7 @@ This module deploys a Virtual WAN.
 - [Usage examples](#Usage-examples)
 - [Parameters](#Parameters)
 - [Outputs](#Outputs)
+- [Cross-referenced modules](#Cross-referenced-modules)
 - [Data Collection](#Data-Collection)
 
 ## Resource Types
@@ -16,7 +17,7 @@ This module deploys a Virtual WAN.
 | :-- | :-- |
 | `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
 | `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.Network/virtualWans` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/virtualWans) |
+| `Microsoft.Network/virtualWans` | [2024-07-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-07-01/virtualWans) |
 
 ## Usage examples
 
@@ -43,10 +44,7 @@ This instance deploys the module with the minimum set of required parameters.
 module virtualWan 'br/public:avm/res/network/virtual-wan:<version>' = {
   name: 'virtualWanDeployment'
   params: {
-    // Required parameters
     name: 'nvwmin001'
-    // Non-required parameters
-    location: '<location>'
   }
 }
 ```
@@ -63,13 +61,8 @@ module virtualWan 'br/public:avm/res/network/virtual-wan:<version>' = {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    // Required parameters
     "name": {
       "value": "nvwmin001"
-    },
-    // Non-required parameters
-    "location": {
-      "value": "<location>"
     }
   }
 }
@@ -85,10 +78,7 @@ module virtualWan 'br/public:avm/res/network/virtual-wan:<version>' = {
 ```bicep-params
 using 'br/public:avm/res/network/virtual-wan:<version>'
 
-// Required parameters
 param name = 'nvwmin001'
-// Non-required parameters
-param location = '<location>'
 ```
 
 </details>
@@ -111,8 +101,6 @@ module virtualWan 'br/public:avm/res/network/virtual-wan:<version>' = {
     name: 'nvwmax001'
     // Non-required parameters
     allowBranchToBranchTraffic: true
-    allowVnetToVnetTraffic: true
-    disableVpnEncryption: true
     location: '<location>'
     lock: {
       kind: 'CanNotDelete'
@@ -165,12 +153,6 @@ module virtualWan 'br/public:avm/res/network/virtual-wan:<version>' = {
     },
     // Non-required parameters
     "allowBranchToBranchTraffic": {
-      "value": true
-    },
-    "allowVnetToVnetTraffic": {
-      "value": true
-    },
-    "disableVpnEncryption": {
       "value": true
     },
     "location": {
@@ -231,8 +213,6 @@ using 'br/public:avm/res/network/virtual-wan:<version>'
 param name = 'nvwmax001'
 // Non-required parameters
 param allowBranchToBranchTraffic = true
-param allowVnetToVnetTraffic = true
-param disableVpnEncryption = true
 param location = '<location>'
 param lock = {
   kind: 'CanNotDelete'
@@ -285,9 +265,6 @@ module virtualWan 'br/public:avm/res/network/virtual-wan:<version>' = {
     name: 'nvwwaf001'
     // Non-required parameters
     allowBranchToBranchTraffic: true
-    allowVnetToVnetTraffic: true
-    disableVpnEncryption: true
-    location: '<location>'
     tags: {
       Environment: 'Non-Prod'
       'hidden-title': 'This is visible in the resource name'
@@ -318,15 +295,6 @@ module virtualWan 'br/public:avm/res/network/virtual-wan:<version>' = {
     "allowBranchToBranchTraffic": {
       "value": true
     },
-    "allowVnetToVnetTraffic": {
-      "value": true
-    },
-    "disableVpnEncryption": {
-      "value": true
-    },
-    "location": {
-      "value": "<location>"
-    },
     "tags": {
       "value": {
         "Environment": "Non-Prod",
@@ -355,9 +323,6 @@ using 'br/public:avm/res/network/virtual-wan:<version>'
 param name = 'nvwwaf001'
 // Non-required parameters
 param allowBranchToBranchTraffic = true
-param allowVnetToVnetTraffic = true
-param disableVpnEncryption = true
-param location = '<location>'
 param tags = {
   Environment: 'Non-Prod'
   'hidden-title': 'This is visible in the resource name'
@@ -382,8 +347,6 @@ param type = 'Basic'
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
 | [`allowBranchToBranchTraffic`](#parameter-allowbranchtobranchtraffic) | bool | True if branch to branch traffic is allowed. |
-| [`allowVnetToVnetTraffic`](#parameter-allowvnettovnettraffic) | bool | True if VNET to VNET traffic is allowed. |
-| [`disableVpnEncryption`](#parameter-disablevpnencryption) | bool | VPN encryption to be disabled or not. |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
 | [`location`](#parameter-location) | string | Location where all resources will be created. |
 | [`lock`](#parameter-lock) | object | The lock settings of the service. |
@@ -404,23 +367,7 @@ True if branch to branch traffic is allowed.
 
 - Required: No
 - Type: bool
-- Default: `False`
-
-### Parameter: `allowVnetToVnetTraffic`
-
-True if VNET to VNET traffic is allowed.
-
-- Required: No
-- Type: bool
-- Default: `False`
-
-### Parameter: `disableVpnEncryption`
-
-VPN encryption to be disabled or not.
-
-- Required: No
-- Type: bool
-- Default: `False`
+- Default: `True`
 
 ### Parameter: `enableTelemetry`
 
@@ -608,6 +555,14 @@ The type of the Virtual WAN.
 | `name` | string | The name of the virtual WAN. |
 | `resourceGroupName` | string | The resource group the virtual WAN was deployed into. |
 | `resourceId` | string | The resource ID of the virtual WAN. |
+
+## Cross-referenced modules
+
+This section gives you an overview of all local-referenced module files (i.e., other modules that are referenced in this module) and all remote-referenced files (i.e., Bicep modules that are referenced from a Bicep Registry or Template Specs).
+
+| Reference | Type |
+| :-- | :-- |
+| `br/public:avm/utl/types/avm-common-types:0.5.1` | Remote reference |
 
 ## Data Collection
 

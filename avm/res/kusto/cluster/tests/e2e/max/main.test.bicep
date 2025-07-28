@@ -62,7 +62,7 @@ module testDeployment '../../../main.bicep' = [
       autoScaleMin: 3
       autoScaleMax: 6
       enableAutoScale: true
-      principalAssignments: [
+      clusterPrincipalAssignments: [
         {
           principalId: nestedDependencies.outputs.managedIdentityClientId
           principalType: 'App'
@@ -115,6 +115,23 @@ module testDeployment '../../../main.bicep' = [
           )
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
+        }
+      ]
+      databases: [
+        {
+          name: 'myReadWriteDatabase'
+          kind: 'ReadWrite'
+          readWriteProperties: {
+            softDeletePeriod: 'P7D'
+            hotCachePeriod: 'P1D'
+          }
+          databasePrincipalAssignments: [
+            {
+              principalId: nestedDependencies.outputs.managedIdentityClientId
+              principalType: 'App'
+              role: 'Viewer'
+            }
+          ]
         }
       ]
     }

@@ -1,6 +1,5 @@
 metadata name = 'Service Bus Namespaces'
 metadata description = 'This module deploys a Service Bus Namespace.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Required. Name of the Service Bus Namespace.')
 @maxLength(260)
@@ -45,37 +44,36 @@ param authorizationRules authorizationRuleType[] = [
 ]
 
 @description('Optional. The migration configuration.')
-param migrationConfiguration migrationConfigurationsType?
+param migrationConfiguration migrationConfigurationType?
 
 @description('Optional. The disaster recovery configuration.')
 param disasterRecoveryConfig disasterRecoveryConfigType?
 
-import { diagnosticSettingFullType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+import { diagnosticSettingFullType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. The diagnostic settings of the service.')
 param diagnosticSettings diagnosticSettingFullType[]?
 
-import { lockType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+import { lockType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. The lock settings of the service.')
 param lock lockType?
 
-import { managedIdentityAllType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+import { managedIdentityAllType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. The managed identity definition for this resource.')
 param managedIdentities managedIdentityAllType?
 
-import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. Array of role assignments to create.')
 param roleAssignments roleAssignmentType[]?
 
 @description('Optional. Whether or not public network access is allowed for this resource. For security reasons it should be disabled. If not specified, it will be disabled by default if private endpoints are set.')
 @allowed([
-  ''
   'Disabled'
   'Enabled'
   'SecuredByPerimeter'
 ])
-param publicNetworkAccess string = ''
+param publicNetworkAccess string?
 
-import { privateEndpointSingleServiceType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+import { privateEndpointSingleServiceType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. Configuration details for private endpoints. For security reasons, it is recommended to use private endpoints whenever possible.')
 param privateEndpoints privateEndpointSingleServiceType[]?
 
@@ -86,7 +84,7 @@ param networkRuleSets networkRuleSetType?
 param disableLocalAuth bool = true
 
 @description('Optional. Tags of the resource.')
-param tags object?
+param tags resourceInput<'Microsoft.ServiceBus/namespaces@2024-01-01'>.tags?
 
 @description('Optional. Enable/Disable usage telemetry for module.')
 param enableTelemetry bool = true
@@ -97,12 +95,14 @@ param queues queueType[]?
 @description('Optional. The topics to create in the service bus namespace.')
 param topics topicType[]?
 
-import { customerManagedKeyType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+import { customerManagedKeyWithAutoRotateType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. The customer managed key definition.')
-param customerManagedKey customerManagedKeyType?
+param customerManagedKey customerManagedKeyWithAutoRotateType?
 
 @description('Optional. Enable infrastructure encryption (double encryption). Note, this setting requires the configuration of Customer-Managed-Keys (CMK) via the corresponding module parameters.')
 param requireInfrastructureEncryption bool = true
+
+var enableReferencedModulesTelemetry = false
 
 var formattedUserAssignedIdentities = reduce(
   map((managedIdentities.?userAssignedResourceIds ?? []), (id) => { '${id}': {} }),
@@ -176,26 +176,26 @@ resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableT
 }
 
 resource cMKKeyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = if (!empty(customerManagedKey.?keyVaultResourceId)) {
-  name: last(split((customerManagedKey.?keyVaultResourceId ?? 'dummyVault'), '/'))
+  name: last(split((customerManagedKey.?keyVaultResourceId!), '/'))
   scope: resourceGroup(
-    split((customerManagedKey.?keyVaultResourceId ?? '//'), '/')[2],
-    split((customerManagedKey.?keyVaultResourceId ?? '////'), '/')[4]
+    split(customerManagedKey.?keyVaultResourceId!, '/')[2],
+    split(customerManagedKey.?keyVaultResourceId!, '/')[4]
   )
 
   resource cMKKey 'keys@2023-02-01' existing = if (!empty(customerManagedKey.?keyVaultResourceId) && !empty(customerManagedKey.?keyName)) {
-    name: customerManagedKey.?keyName ?? 'dummyKey'
+    name: customerManagedKey.?keyName!
   }
 }
 
 resource cMKUserAssignedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = if (!empty(customerManagedKey.?userAssignedIdentityResourceId)) {
-  name: last(split(customerManagedKey.?userAssignedIdentityResourceId ?? 'dummyMsi', '/'))
+  name: last(split(customerManagedKey.?userAssignedIdentityResourceId!, '/'))
   scope: resourceGroup(
-    split((customerManagedKey.?userAssignedIdentityResourceId ?? '//'), '/')[2],
-    split((customerManagedKey.?userAssignedIdentityResourceId ?? '////'), '/')[4]
+    split(customerManagedKey.?userAssignedIdentityResourceId!, '/')[2],
+    split(customerManagedKey.?userAssignedIdentityResourceId!, '/')[4]
   )
 }
 
-resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview' = {
+resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2024-01-01' = {
   name: name
   location: location
   tags: tags
@@ -225,9 +225,11 @@ resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2022-10-01-preview
                 : null
               keyName: customerManagedKey!.keyName
               keyVaultUri: cMKKeyVault.properties.vaultUri
-              keyVersion: !empty(customerManagedKey.?keyVersion ?? '')
-                ? customerManagedKey!.keyVersion
-                : last(split(cMKKeyVault::cMKKey.properties.keyUriWithVersion, '/'))
+              keyVersion: !empty(customerManagedKey.?keyVersion)
+                ? customerManagedKey!.keyVersion!
+                : (customerManagedKey.?autoRotationEnabled ?? true)
+                    ? null
+                    : last(split(cMKKeyVault::cMKKey.properties.keyUriWithVersion, '/'))
             }
           ]
           requireInfrastructureEncryption: requireInfrastructureEncryption
@@ -257,7 +259,7 @@ module serviceBusNamespace_disasterRecoveryConfig 'disaster-recovery-config/main
   }
 }
 
-module serviceBusNamespace_migrationConfigurations 'migration-configuration/main.bicep' = if (!empty(migrationConfiguration ?? {})) {
+module serviceBusNamespace_migrationConfiguration 'migration-configuration/main.bicep' = if (!empty(migrationConfiguration ?? {})) {
   name: '${uniqueString(deployment().name, location)}-MigrationConfigurations'
   params: {
     namespaceName: serviceBusNamespace.name
@@ -374,10 +376,13 @@ resource serviceBusNamespace_diagnosticSettings 'Microsoft.Insights/diagnosticSe
   }
 ]
 
-module serviceBusNamespace_privateEndpoints 'br/public:avm/res/network/private-endpoint:0.7.1' = [
+module serviceBusNamespace_privateEndpoints 'br/public:avm/res/network/private-endpoint:0.10.1' = [
   for (privateEndpoint, index) in (privateEndpoints ?? []): {
-    name: '${uniqueString(deployment().name, location)}-serviceBusNamespace-PrivateEndpoint-${index}'
-    scope: resourceGroup(privateEndpoint.?resourceGroupName ?? '')
+    name: '${uniqueString(deployment().name, location)}-serviceBusNamespace-PEP-${index}'
+    scope: resourceGroup(
+      split(privateEndpoint.?resourceGroupResourceId ?? resourceGroup().id, '/')[2],
+      split(privateEndpoint.?resourceGroupResourceId ?? resourceGroup().id, '/')[4]
+    )
     params: {
       name: privateEndpoint.?name ?? 'pep-${last(split(serviceBusNamespace.id, '/'))}-${privateEndpoint.?service ?? 'namespace'}-${index}'
       privateLinkServiceConnections: privateEndpoint.?isManualConnection != true
@@ -408,7 +413,7 @@ module serviceBusNamespace_privateEndpoints 'br/public:avm/res/network/private-e
           ]
         : null
       subnetResourceId: privateEndpoint.subnetResourceId
-      enableTelemetry: privateEndpoint.?enableTelemetry ?? enableTelemetry
+      enableTelemetry: enableReferencedModulesTelemetry
       location: privateEndpoint.?location ?? reference(
         split(privateEndpoint.subnetResourceId, '/subnets/')[0],
         '2020-06-01',
@@ -456,27 +461,83 @@ output resourceGroupName string = resourceGroup().name
 output name string = serviceBusNamespace.name
 
 @description('The principal ID of the system assigned identity.')
-output systemAssignedMIPrincipalId string = serviceBusNamespace.?identity.?principalId ?? ''
+output systemAssignedMIPrincipalId string? = serviceBusNamespace.?identity.?principalId
 
 @description('The location the resource was deployed into.')
 output location string = serviceBusNamespace.location
 
 @description('The private endpoints of the service bus namespace.')
-output privateEndpoints array = [
-  for (pe, i) in (!empty(privateEndpoints) ? array(privateEndpoints) : []): {
-    name: serviceBusNamespace_privateEndpoints[i].outputs.name
-    resourceId: serviceBusNamespace_privateEndpoints[i].outputs.resourceId
-    groupId: serviceBusNamespace_privateEndpoints[i].outputs.groupId
-    customDnsConfig: serviceBusNamespace_privateEndpoints[i].outputs.customDnsConfig
-    networkInterfaceIds: serviceBusNamespace_privateEndpoints[i].outputs.networkInterfaceIds
+output privateEndpoints privateEndpointOutputType[] = [
+  for (pe, index) in (privateEndpoints ?? []): {
+    name: serviceBusNamespace_privateEndpoints[index].outputs.name
+    resourceId: serviceBusNamespace_privateEndpoints[index].outputs.resourceId
+    groupId: serviceBusNamespace_privateEndpoints[index].outputs.?groupId!
+    customDnsConfigs: serviceBusNamespace_privateEndpoints[index].outputs.customDnsConfigs
+    networkInterfaceResourceIds: serviceBusNamespace_privateEndpoints[index].outputs.networkInterfaceResourceIds
   }
 ]
+
+@description('The endpoint of the deployed service bus namespace.')
+output serviceBusEndpoint string = serviceBusNamespace.properties.serviceBusEndpoint
+
+@secure()
+@description('The primary connection string of the service bus namespace.')
+output primaryConnectionString string = listkeys(
+  '${serviceBusNamespace.id}/AuthorizationRules/RootManageSharedAccessKey',
+  '2024-01-01'
+).primaryConnectionString
+
+@secure()
+@description('The secondary connection string of the service bus namespace.')
+output secondaryConnectionString string = listkeys(
+  '${serviceBusNamespace.id}/AuthorizationRules/RootManageSharedAccessKey',
+  '2024-01-01'
+).secondaryConnectionString
+
+@secure()
+@description('The primary key of the service bus namespace.')
+output primaryKey string = listkeys(
+  '${serviceBusNamespace.id}/AuthorizationRules/RootManageSharedAccessKey',
+  '2024-01-01'
+).primaryKey
+
+@secure()
+@description('The secondary key of the service bus namespace.')
+output secondaryKey string = listkeys(
+  '${serviceBusNamespace.id}/AuthorizationRules/RootManageSharedAccessKey',
+  '2024-01-01'
+).secondaryKey
 
 // =============== //
 //   Definitions   //
 // =============== //
 
 @export()
+type privateEndpointOutputType = {
+  @description('The name of the private endpoint.')
+  name: string
+
+  @description('The resource ID of the private endpoint.')
+  resourceId: string
+
+  @description('The group Id for the private endpoint Group.')
+  groupId: string?
+
+  @description('The custom DNS configurations of the private endpoint.')
+  customDnsConfigs: {
+    @description('FQDN that resolves to private endpoint IP address.')
+    fqdn: string?
+
+    @description('A list of private IP addresses of the private endpoint.')
+    ipAddresses: string[]
+  }[]
+
+  @description('The IDs of the network interfaces associated with the private endpoint.')
+  networkInterfaceResourceIds: string[]
+}
+
+@export()
+@description('The type for a SKU.')
 type skuType = {
   @description('Required. Name of this SKU. - Basic, Standard, Premium.')
   name: ('Basic' | 'Standard' | 'Premium')
@@ -486,6 +547,7 @@ type skuType = {
 }
 
 @export()
+@description('The type for an authorization rule.')
 type authorizationRuleType = {
   @description('Required. The name of the authorization rule.')
   name: string
@@ -495,6 +557,7 @@ type authorizationRuleType = {
 }
 
 @export()
+@description('The type for a disaster recovery configuration.')
 type disasterRecoveryConfigType = {
   @description('Optional. The name of the disaster recovery config.')
   name: string?
@@ -507,7 +570,8 @@ type disasterRecoveryConfigType = {
 }
 
 @export()
-type migrationConfigurationsType = {
+@description('The type for a migration configuration')
+type migrationConfigurationType = {
   @description('Required. Name to access Standard Namespace after migration.')
   postMigrationName: string
 
@@ -516,6 +580,7 @@ type migrationConfigurationsType = {
 }
 
 @export()
+@description('The type for a network rule set.')
 type networkRuleSetType = {
   @description('Optional. This determines if traffic is allowed over public network. Default is "Enabled". If set to "Disabled", traffic to this namespace will be restricted over Private Endpoints only and network rules will not be applied.')
   publicNetworkAccess: ('Disabled' | 'Enabled')?
@@ -546,6 +611,7 @@ type networkRuleSetType = {
 }
 
 @export()
+@description('The type for a queue.')
 type queueType = {
   @description('Required. The name of the queue.')
   name: string
@@ -619,6 +685,7 @@ type queueType = {
 
 import { subscriptionType } from 'topic/main.bicep'
 @export()
+@description('The type for a topic.')
 type topicType = {
   @description('Required. The name of the topic.')
   name: string

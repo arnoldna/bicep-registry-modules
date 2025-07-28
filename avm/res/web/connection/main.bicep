@@ -1,6 +1,5 @@
 metadata name = 'API Connections'
 metadata description = 'This module deploys an Azure API Connection.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Required. Connection name for connection. It can change depending on the resource.')
 param name string
@@ -96,7 +95,7 @@ param lock lockType?
   '''
 })
 @description('Optional. Tags of the resource.')
-param tags object?
+param tags resourceInput<'Microsoft.Web/connections@2016-06-01'>.tags?
 
 @description('Optional. Links to test the API connection.')
 param testLinks object[]?

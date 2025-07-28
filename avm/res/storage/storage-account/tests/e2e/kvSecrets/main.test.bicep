@@ -45,14 +45,13 @@ module testDeployment '../../../main.bicep' = {
   scope: resourceGroup
   name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}'
   params: {
-    location: resourceLocation
     name: '${namePrefix}kvref'
     secretsExportConfiguration: {
       keyVaultResourceId: nestedDependencies.outputs.keyVaultResourceId
-      accessKey1: 'custom-key1-name'
-      accessKey2: 'custom-key2-name'
-      connectionString1: 'custom-connectionString1-name'
-      connectionString2: 'custom-connectionString2-name'
+      accessKey1Name: 'custom-key1-name'
+      accessKey2Name: 'custom-key2-name'
+      connectionString1Name: 'custom-connectionString1-name'
+      connectionString2Name: 'custom-connectionString2-name'
     }
   }
 }

@@ -18,12 +18,12 @@ This module deploys a Key Vault.
 | `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
 | `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
 | `Microsoft.Insights/diagnosticSettings` | [2021-05-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings) |
-| `Microsoft.KeyVault/vaults` | [2022-07-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2022-07-01/vaults) |
-| `Microsoft.KeyVault/vaults/accessPolicies` | [2022-07-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2022-07-01/vaults/accessPolicies) |
-| `Microsoft.KeyVault/vaults/keys` | [2022-07-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2022-07-01/vaults/keys) |
-| `Microsoft.KeyVault/vaults/secrets` | [2022-07-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2022-07-01/vaults/secrets) |
-| `Microsoft.Network/privateEndpoints` | [2023-11-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-11-01/privateEndpoints) |
-| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | [2023-11-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-11-01/privateEndpoints/privateDnsZoneGroups) |
+| `Microsoft.KeyVault/vaults` | [2024-11-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2024-11-01/vaults) |
+| `Microsoft.KeyVault/vaults/accessPolicies` | [2023-07-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2023-07-01/vaults/accessPolicies) |
+| `Microsoft.KeyVault/vaults/keys` | [2024-11-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2024-11-01/vaults/keys) |
+| `Microsoft.KeyVault/vaults/secrets` | [2024-11-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2024-11-01/vaults/secrets) |
+| `Microsoft.Network/privateEndpoints` | [2024-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-05-01/privateEndpoints) |
+| `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | [2024-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-05-01/privateEndpoints/privateDnsZoneGroups) |
 
 ## Usage examples
 
@@ -34,9 +34,9 @@ The following section provides usage examples for the module, which were used to
 >**Note**: To reference the module, please use the following syntax `br/public:avm/res/key-vault/vault:<version>`.
 
 - [Using only defaults](#example-1-using-only-defaults)
-- [Using only defaults](#example-2-using-only-defaults)
+- [With EC key type](#example-2-with-ec-key-type)
 - [Using large parameter set](#example-3-using-large-parameter-set)
-- [Using only defaults](#example-4-using-only-defaults)
+- [With RSA key type](#example-4-with-rsa-key-type)
 - [WAF-aligned](#example-5-waf-aligned)
 
 ### Example 1: _Using only defaults_
@@ -56,7 +56,6 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
     name: 'kvvmin002'
     // Non-required parameters
     enablePurgeProtection: false
-    location: '<location>'
   }
 }
 ```
@@ -80,9 +79,6 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
     // Non-required parameters
     "enablePurgeProtection": {
       "value": false
-    },
-    "location": {
-      "value": "<location>"
     }
   }
 }
@@ -102,15 +98,14 @@ using 'br/public:avm/res/key-vault/vault:<version>'
 param name = 'kvvmin002'
 // Non-required parameters
 param enablePurgeProtection = false
-param location = '<location>'
 ```
 
 </details>
 <p>
 
-### Example 2: _Using only defaults_
+### Example 2: _With EC key type_
 
-This instance deploys the module with the minimum set of required parameters.
+This instance deploys the module with the parameters needed for an EC key.
 
 
 <details>
@@ -141,7 +136,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
           lifetimeActions: [
             {
               action: {
-                type: 'Rotate'
+                type: 'rotate'
               }
               trigger: {
                 timeBeforeExpiry: 'P2M'
@@ -149,7 +144,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
             }
             {
               action: {
-                type: 'Notify'
+                type: 'notify'
               }
               trigger: {
                 timeBeforeExpiry: 'P30D'
@@ -159,7 +154,6 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
         }
       }
     ]
-    location: '<location>'
   }
 }
 ```
@@ -201,7 +195,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
             "lifetimeActions": [
               {
                 "action": {
-                  "type": "Rotate"
+                  "type": "rotate"
                 },
                 "trigger": {
                   "timeBeforeExpiry": "P2M"
@@ -209,7 +203,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
               },
               {
                 "action": {
-                  "type": "Notify"
+                  "type": "notify"
                 },
                 "trigger": {
                   "timeBeforeExpiry": "P30D"
@@ -219,9 +213,6 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
           }
         }
       ]
-    },
-    "location": {
-      "value": "<location>"
     }
   }
 }
@@ -257,7 +248,7 @@ param keys = [
       lifetimeActions: [
         {
           action: {
-            type: 'Rotate'
+            type: 'rotate'
           }
           trigger: {
             timeBeforeExpiry: 'P2M'
@@ -265,7 +256,7 @@ param keys = [
         }
         {
           action: {
-            type: 'Notify'
+            type: 'notify'
           }
           trigger: {
             timeBeforeExpiry: 'P30D'
@@ -275,7 +266,6 @@ param keys = [
     }
   }
 ]
-param location = '<location>'
 ```
 
 </details>
@@ -381,7 +371,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
           lifetimeActions: [
             {
               action: {
-                type: 'Rotate'
+                type: 'rotate'
               }
               trigger: {
                 timeBeforeExpiry: 'P2M'
@@ -389,7 +379,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
             }
             {
               action: {
-                type: 'Notify'
+                type: 'notify'
               }
               trigger: {
                 timeBeforeExpiry: 'P30D'
@@ -473,6 +463,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
             }
           ]
         }
+        resourceGroupResourceId: '<resourceGroupResourceId>'
         subnetResourceId: '<subnetResourceId>'
       }
     ]
@@ -641,7 +632,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
             "lifetimeActions": [
               {
                 "action": {
-                  "type": "Rotate"
+                  "type": "rotate"
                 },
                 "trigger": {
                   "timeBeforeExpiry": "P2M"
@@ -649,7 +640,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
               },
               {
                 "action": {
-                  "type": "Notify"
+                  "type": "notify"
                 },
                 "trigger": {
                   "timeBeforeExpiry": "P30D"
@@ -741,6 +732,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
               }
             ]
           },
+          "resourceGroupResourceId": "<resourceGroupResourceId>",
           "subnetResourceId": "<subnetResourceId>"
         }
       ]
@@ -907,7 +899,7 @@ param keys = [
       lifetimeActions: [
         {
           action: {
-            type: 'Rotate'
+            type: 'rotate'
           }
           trigger: {
             timeBeforeExpiry: 'P2M'
@@ -915,7 +907,7 @@ param keys = [
         }
         {
           action: {
-            type: 'Notify'
+            type: 'notify'
           }
           trigger: {
             timeBeforeExpiry: 'P30D'
@@ -999,6 +991,7 @@ param privateEndpoints = [
         }
       ]
     }
+    resourceGroupResourceId: '<resourceGroupResourceId>'
     subnetResourceId: '<subnetResourceId>'
   }
 ]
@@ -1060,9 +1053,9 @@ param tags = {
 </details>
 <p>
 
-### Example 4: _Using only defaults_
+### Example 4: _With RSA key type_
 
-This instance deploys the module with the minimum set of required parameters.
+This instance deploys the module with the parameters needed for an RSA key.
 
 
 <details>
@@ -1093,7 +1086,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
           lifetimeActions: [
             {
               action: {
-                type: 'Rotate'
+                type: 'rotate'
               }
               trigger: {
                 timeBeforeExpiry: 'P2M'
@@ -1101,7 +1094,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
             }
             {
               action: {
-                type: 'Notify'
+                type: 'notify'
               }
               trigger: {
                 timeBeforeExpiry: 'P30D'
@@ -1111,7 +1104,6 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
         }
       }
     ]
-    location: '<location>'
   }
 }
 ```
@@ -1153,7 +1145,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
             "lifetimeActions": [
               {
                 "action": {
-                  "type": "Rotate"
+                  "type": "rotate"
                 },
                 "trigger": {
                   "timeBeforeExpiry": "P2M"
@@ -1161,7 +1153,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
               },
               {
                 "action": {
-                  "type": "Notify"
+                  "type": "notify"
                 },
                 "trigger": {
                   "timeBeforeExpiry": "P30D"
@@ -1171,9 +1163,6 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
           }
         }
       ]
-    },
-    "location": {
-      "value": "<location>"
     }
   }
 }
@@ -1209,7 +1198,7 @@ param keys = [
       lifetimeActions: [
         {
           action: {
-            type: 'Rotate'
+            type: 'rotate'
           }
           trigger: {
             timeBeforeExpiry: 'P2M'
@@ -1217,7 +1206,7 @@ param keys = [
         }
         {
           action: {
-            type: 'Notify'
+            type: 'notify'
           }
           trigger: {
             timeBeforeExpiry: 'P30D'
@@ -1227,7 +1216,6 @@ param keys = [
     }
   }
 ]
-param location = '<location>'
 ```
 
 </details>
@@ -1275,7 +1263,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
           lifetimeActions: [
             {
               action: {
-                type: 'Rotate'
+                type: 'rotate'
               }
               trigger: {
                 timeBeforeExpiry: 'P2M'
@@ -1283,7 +1271,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
             }
             {
               action: {
-                type: 'Notify'
+                type: 'notify'
               }
               trigger: {
                 timeBeforeExpiry: 'P30D'
@@ -1293,7 +1281,6 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
         }
       }
     ]
-    location: '<location>'
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
@@ -1381,7 +1368,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
             "lifetimeActions": [
               {
                 "action": {
-                  "type": "Rotate"
+                  "type": "rotate"
                 },
                 "trigger": {
                   "timeBeforeExpiry": "P2M"
@@ -1389,7 +1376,7 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
               },
               {
                 "action": {
-                  "type": "Notify"
+                  "type": "notify"
                 },
                 "trigger": {
                   "timeBeforeExpiry": "P30D"
@@ -1399,9 +1386,6 @@ module vault 'br/public:avm/res/key-vault/vault:<version>' = {
           }
         }
       ]
-    },
-    "location": {
-      "value": "<location>"
     },
     "networkAcls": {
       "value": {
@@ -1491,7 +1475,7 @@ param keys = [
       lifetimeActions: [
         {
           action: {
-            type: 'Rotate'
+            type: 'rotate'
           }
           trigger: {
             timeBeforeExpiry: 'P2M'
@@ -1499,7 +1483,7 @@ param keys = [
         }
         {
           action: {
-            type: 'Notify'
+            type: 'notify'
           }
           trigger: {
             timeBeforeExpiry: 'P30D'
@@ -1509,7 +1493,6 @@ param keys = [
     }
   }
 ]
-param location = '<location>'
 param networkAcls = {
   bypass: 'AzureServices'
   defaultAction: 'Deny'
@@ -1563,7 +1546,7 @@ param tags = {
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
 | [`accessPolicies`](#parameter-accesspolicies) | array | All access policies to create. |
-| [`createMode`](#parameter-createmode) | string | The vault's create mode to indicate whether the vault need to be recovered or not. - recover or default. |
+| [`createMode`](#parameter-createmode) | string | The vault's create mode to indicate whether the vault need to be recovered or not. |
 | [`diagnosticSettings`](#parameter-diagnosticsettings) | array | The diagnostic settings of the service. |
 | [`enablePurgeProtection`](#parameter-enablepurgeprotection) | bool | Provide 'true' to enable Key Vault's purge protection feature. |
 | [`enableRbacAuthorization`](#parameter-enablerbacauthorization) | bool | Property that controls how data actions are authorized. When true, the key vault will use Role Based Access Control (RBAC) for authorization of data actions, and the access policies specified in vault properties will be ignored. When false, the key vault will use the access policies specified in vault properties, and any policy stored on Azure Resource Manager will be ignored. Note that management actions are always authorized with RBAC. |
@@ -1761,11 +1744,18 @@ The tenant ID that is used for authenticating requests to the key vault.
 
 ### Parameter: `createMode`
 
-The vault's create mode to indicate whether the vault need to be recovered or not. - recover or default.
+The vault's create mode to indicate whether the vault need to be recovered or not.
 
 - Required: No
 - Type: string
 - Default: `'default'`
+- Allowed:
+  ```Bicep
+  [
+    'default'
+    'recover'
+  ]
+  ```
 
 ### Parameter: `diagnosticSettings`
 
@@ -2255,7 +2245,7 @@ Key rotation policy.
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
 | [`attributes`](#parameter-keysrotationpolicyattributes) | object | The attributes of key rotation policy. |
-| [`lifetimeActions`](#parameter-keysrotationpolicylifetimeactions) | array | The lifetimeActions for key rotation action. |
+| [`lifetimeActions`](#parameter-keysrotationpolicylifetimeactions) | array | The key rotation policy lifetime actions. |
 
 ### Parameter: `keys.rotationPolicy.attributes`
 
@@ -2279,7 +2269,7 @@ The expiration time for the new key version. It should be in ISO8601 format. Eg:
 
 ### Parameter: `keys.rotationPolicy.lifetimeActions`
 
-The lifetimeActions for key rotation action.
+The key rotation policy lifetime actions.
 
 - Required: No
 - Type: array
@@ -2288,12 +2278,12 @@ The lifetimeActions for key rotation action.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`action`](#parameter-keysrotationpolicylifetimeactionsaction) | object | The action of key rotation policy lifetimeAction. |
-| [`trigger`](#parameter-keysrotationpolicylifetimeactionstrigger) | object | The trigger of key rotation policy lifetimeAction. |
+| [`action`](#parameter-keysrotationpolicylifetimeactionsaction) | object | The type of the action. |
+| [`trigger`](#parameter-keysrotationpolicylifetimeactionstrigger) | object | The time duration for rotating the key. |
 
 ### Parameter: `keys.rotationPolicy.lifetimeActions.action`
 
-The action of key rotation policy lifetimeAction.
+The type of the action.
 
 - Required: No
 - Type: object
@@ -2302,25 +2292,25 @@ The action of key rotation policy lifetimeAction.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
-| [`type`](#parameter-keysrotationpolicylifetimeactionsactiontype) | string | The type of action. |
+| [`type`](#parameter-keysrotationpolicylifetimeactionsactiontype) | string | The type of the action. |
 
 ### Parameter: `keys.rotationPolicy.lifetimeActions.action.type`
 
-The type of action.
+The type of the action.
 
 - Required: No
 - Type: string
 - Allowed:
   ```Bicep
   [
-    'Notify'
-    'Rotate'
+    'notify'
+    'rotate'
   ]
   ```
 
 ### Parameter: `keys.rotationPolicy.lifetimeActions.trigger`
 
-The trigger of key rotation policy lifetimeAction.
+The time duration for rotating the key.
 
 - Required: No
 - Type: object
@@ -2404,6 +2394,96 @@ Rules governing the accessibility of the resource from specific network location
 - Required: No
 - Type: object
 
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`bypass`](#parameter-networkaclsbypass) | string | The bypass options for traffic for the network ACLs. |
+| [`defaultAction`](#parameter-networkaclsdefaultaction) | string | The default action for the network ACLs, when no rule matches. |
+| [`ipRules`](#parameter-networkaclsiprules) | array | A list of IP rules. |
+| [`virtualNetworkRules`](#parameter-networkaclsvirtualnetworkrules) | array | A list of virtual network rules. |
+
+### Parameter: `networkAcls.bypass`
+
+The bypass options for traffic for the network ACLs.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'AzureServices'
+    'None'
+  ]
+  ```
+
+### Parameter: `networkAcls.defaultAction`
+
+The default action for the network ACLs, when no rule matches.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'Allow'
+    'Deny'
+  ]
+  ```
+
+### Parameter: `networkAcls.ipRules`
+
+A list of IP rules.
+
+- Required: No
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`value`](#parameter-networkaclsiprulesvalue) | string | An IPv4 address range in CIDR notation, such as "124.56.78.91" (simple IP address) or "124.56.78.0/24". |
+
+### Parameter: `networkAcls.ipRules.value`
+
+An IPv4 address range in CIDR notation, such as "124.56.78.91" (simple IP address) or "124.56.78.0/24".
+
+- Required: Yes
+- Type: string
+
+### Parameter: `networkAcls.virtualNetworkRules`
+
+A list of virtual network rules.
+
+- Required: No
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`id`](#parameter-networkaclsvirtualnetworkrulesid) | string | The resource ID of the virtual network subnet. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`ignoreMissingVnetServiceEndpoint`](#parameter-networkaclsvirtualnetworkrulesignoremissingvnetserviceendpoint) | bool | Whether NRP will ignore the check if parent subnet has serviceEndpoints configured. |
+
+### Parameter: `networkAcls.virtualNetworkRules.id`
+
+The resource ID of the virtual network subnet.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `networkAcls.virtualNetworkRules.ignoreMissingVnetServiceEndpoint`
+
+Whether NRP will ignore the check if parent subnet has serviceEndpoints configured.
+
+- Required: No
+- Type: bool
+
 ### Parameter: `privateEndpoints`
 
 Configuration details for private endpoints. For security reasons, it is recommended to use private endpoints whenever possible.
@@ -2433,7 +2513,7 @@ Configuration details for private endpoints. For security reasons, it is recomme
 | [`name`](#parameter-privateendpointsname) | string | The name of the Private Endpoint. |
 | [`privateDnsZoneGroup`](#parameter-privateendpointsprivatednszonegroup) | object | The private DNS Zone Group to configure for the Private Endpoint. |
 | [`privateLinkServiceConnectionName`](#parameter-privateendpointsprivatelinkserviceconnectionname) | string | The name of the private link connection to create. |
-| [`resourceGroupName`](#parameter-privateendpointsresourcegroupname) | string | Specify if you want to deploy the Private Endpoint into a different Resource Group than the main resource. |
+| [`resourceGroupResourceId`](#parameter-privateendpointsresourcegroupresourceid) | string | The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used. |
 | [`roleAssignments`](#parameter-privateendpointsroleassignments) | array | Array of role assignments to create. |
 | [`service`](#parameter-privateendpointsservice) | string | The subresource to deploy the Private Endpoint for. For example "vault" for a Key Vault Private Endpoint. |
 | [`tags`](#parameter-privateendpointstags) | object | Tags to be applied on all resources/Resource Groups in this deployment. |
@@ -2686,9 +2766,9 @@ The name of the private link connection to create.
 - Required: No
 - Type: string
 
-### Parameter: `privateEndpoints.resourceGroupName`
+### Parameter: `privateEndpoints.resourceGroupResourceId`
 
-Specify if you want to deploy the Private Endpoint into a different Resource Group than the main resource.
+The resource ID of the Resource Group the Private Endpoint will be created in. If not specified, the Resource Group of the provided Virtual Network Subnet is used.
 
 - Required: No
 - Type: string
@@ -3188,8 +3268,8 @@ This section gives you an overview of all local-referenced module files (i.e., o
 
 | Reference | Type |
 | :-- | :-- |
-| `br/public:avm/res/network/private-endpoint:0.9.0` | Remote reference |
-| `br/public:avm/utl/types/avm-common-types:0.2.1` | Remote reference |
+| `br/public:avm/res/network/private-endpoint:0.11.0` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.5.1` | Remote reference |
 
 ## Data Collection
 

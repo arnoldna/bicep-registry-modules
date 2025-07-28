@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2023-07-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -65,14 +65,33 @@ module testDeployment '../../../main.bicep' = [
           addressPrefixes: array(addressPrefix)
           azureFirewallSettings: {
             azureSkuTier: 'Standard'
-            enableTelemetry: true
             location: resourceLocation
             publicIPAddressObject: {
               name: 'hub1-waf-pip'
             }
             threatIntelMode: 'Alert'
+            zones: [
+              1
+              2
+              3
+            ]
+            diagnosticSettings: [
+              {
+                eventHubAuthorizationRuleResourceId: diagnosticDependencies.outputs.eventHubAuthorizationRuleId
+                eventHubName: diagnosticDependencies.outputs.eventHubNamespaceEventHubName
+                metricCategories: [
+                  {
+                    category: 'AllMetrics'
+                  }
+                ]
+                name: 'customSetting'
+                storageAccountResourceId: diagnosticDependencies.outputs.storageAccountResourceId
+                workspaceResourceId: diagnosticDependencies.outputs.logAnalyticsWorkspaceResourceId
+              }
+            ]
           }
           bastionHost: {
+            bastionHostName: 'bastion-hub1'
             disableCopyPaste: true
             enableFileCopy: false
             enableIpConnect: false
@@ -98,7 +117,6 @@ module testDeployment '../../../main.bicep' = [
           enableAzureFirewall: true
           enableBastion: true
           enablePeering: false
-          enableTelemetry: true
           flowTimeoutInMinutes: 30
           location: resourceLocation
           lock: {
@@ -136,6 +154,11 @@ module testDeployment '../../../main.bicep' = [
               name: 'AzureBastionSubnet'
               addressPrefix: cidrSubnet(addressPrefix, 26, 2)
             }
+            {
+              name: 'DNSResolver'
+              addressPrefix: cidrSubnet(addressPrefix, 26, 3)
+              delegation: 'Microsoft.Network/dnsResolvers'
+            }
           ]
           tags: {
             'hidden-title': 'This is visible in the resource name'
@@ -149,7 +172,6 @@ module testDeployment '../../../main.bicep' = [
           addressPrefixes: array(addressPrefix2)
           azureFirewallSettings: {
             azureSkuTier: 'Standard'
-            enableTelemetry: true
             location: resourceLocation
             publicIPAddressObject: {
               name: 'hub2-waf-pip'
@@ -172,7 +194,6 @@ module testDeployment '../../../main.bicep' = [
           enableAzureFirewall: true
           enableBastion: true
           enablePeering: false
-          enableTelemetry: false
           flowTimeoutInMinutes: 10
           location: resourceLocation
           lock: {

@@ -5,86 +5,121 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.29.47.4906",
-      "templateHash": "4241820354615246390"
+      "version": "0.35.1.17967",
+      "templateHash": "1615411879740192872"
     },
     "name": "DNS Resolver",
-    "description": "This module deploys a DNS Resolver.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys a DNS Resolver."
   },
   "definitions": {
-    "roleAssignmentType": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The name (as GUID) of the role assignment. If not provided, a GUID will be generated."
-            }
-          },
-          "roleDefinitionIdOrName": {
-            "type": "string",
-            "metadata": {
-              "description": "Required. The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: '/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11'."
-            }
-          },
-          "principalId": {
-            "type": "string",
-            "metadata": {
-              "description": "Required. The principal ID of the principal (user/group/identity) to assign the role to."
-            }
-          },
-          "principalType": {
-            "type": "string",
-            "allowedValues": [
-              "Device",
-              "ForeignGroup",
-              "Group",
-              "ServicePrincipal",
-              "User"
-            ],
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The principal type of the assigned principal ID."
-            }
-          },
-          "description": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The description of the role assignment."
-            }
-          },
-          "condition": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase \"foo_storage_container\"."
-            }
-          },
-          "conditionVersion": {
-            "type": "string",
-            "allowedValues": [
-              "2.0"
-            ],
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Version of the condition."
-            }
-          },
-          "delegatedManagedIdentityResourceId": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. The Resource Id of the delegated managed identity resource."
-            }
+    "inboundEndpointType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. Name of the inbound endpoint."
+          }
+        },
+        "subnetResourceId": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The reference to the subnet bound to the IP configuration."
+          }
+        },
+        "tags": {
+          "type": "object",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Tags for the resource."
+          }
+        },
+        "location": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Location for all resources."
+          }
+        },
+        "privateIpAddress": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Private IP address of the IP configuration."
+          }
+        },
+        "privateIpAllocationMethod": {
+          "type": "string",
+          "allowedValues": [
+            "Dynamic",
+            "Static"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Private IP address allocation method."
           }
         }
       },
-      "nullable": true
+      "metadata": {
+        "__bicep_export!": true,
+        "description": "The type for the inbound endpoint."
+      }
+    },
+    "outboundEndpointType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. Name of the outbound endpoint."
+          }
+        },
+        "subnetResourceId": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. ResourceId of the subnet to attach the outbound endpoint to."
+          }
+        },
+        "tags": {
+          "type": "object",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Tags of the resource."
+          }
+        },
+        "location": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Location for all resources."
+          }
+        }
+      },
+      "metadata": {
+        "__bicep_export!": true,
+        "description": "The type for the outbound endpoint."
+      }
+    },
+    "endpointDetailsType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "metadata": {
+            "description": "The name of the resource."
+          }
+        },
+        "resourceId": {
+          "type": "string",
+          "metadata": {
+            "description": "The resource ID of the resource."
+          }
+        }
+      },
+      "metadata": {
+        "__bicep_export!": true,
+        "description": "The type for an endpoint details."
+      }
     },
     "lockType": {
       "type": "object",
@@ -109,95 +144,87 @@
           }
         }
       },
-      "nullable": true
+      "metadata": {
+        "description": "An AVM-aligned type for a lock.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.5.1"
+        }
+      }
     },
-    "inboundEndpointType": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "metadata": {
-              "description": "Required. Name of the inbound endpoint."
-            }
-          },
-          "subnetResourceId": {
-            "type": "string",
-            "metadata": {
-              "description": "Required. The reference to the subnet bound to the IP configuration."
-            }
-          },
-          "tags": {
-            "type": "object",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Tags for the resource."
-            }
-          },
-          "location": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Location for all resources."
-            }
-          },
-          "privateIpAddress": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Private IP address of the IP configuration."
-            }
-          },
-          "privateIpAllocationMethod": {
-            "type": "string",
-            "allowedValues": [
-              "Dynamic",
-              "Static"
-            ],
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Private IP address allocation method."
-            }
+    "roleAssignmentType": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The name (as GUID) of the role assignment. If not provided, a GUID will be generated."
+          }
+        },
+        "roleDefinitionIdOrName": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The role to assign. You can provide either the display name of the role definition, the role definition GUID, or its fully qualified ID in the following format: '/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11'."
+          }
+        },
+        "principalId": {
+          "type": "string",
+          "metadata": {
+            "description": "Required. The principal ID of the principal (user/group/identity) to assign the role to."
+          }
+        },
+        "principalType": {
+          "type": "string",
+          "allowedValues": [
+            "Device",
+            "ForeignGroup",
+            "Group",
+            "ServicePrincipal",
+            "User"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The principal type of the assigned principal ID."
+          }
+        },
+        "description": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The description of the role assignment."
+          }
+        },
+        "condition": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The conditions on the role assignment. This limits the resources it can be assigned to. e.g.: @Resource[Microsoft.Storage/storageAccounts/blobServices/containers:ContainerName] StringEqualsIgnoreCase \"foo_storage_container\"."
+          }
+        },
+        "conditionVersion": {
+          "type": "string",
+          "allowedValues": [
+            "2.0"
+          ],
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. Version of the condition."
+          }
+        },
+        "delegatedManagedIdentityResourceId": {
+          "type": "string",
+          "nullable": true,
+          "metadata": {
+            "description": "Optional. The Resource Id of the delegated managed identity resource."
           }
         }
       },
-      "nullable": true
-    },
-    "outboundEndpointType": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "metadata": {
-              "description": "Required. Name of the outbound endpoint."
-            }
-          },
-          "subnetResourceId": {
-            "type": "string",
-            "metadata": {
-              "description": "Required. ResourceId of the subnet to attach the outbound endpoint to."
-            }
-          },
-          "tags": {
-            "type": "object",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Tags of the resource."
-            }
-          },
-          "location": {
-            "type": "string",
-            "nullable": true,
-            "metadata": {
-              "description": "Optional. Location for all resources."
-            }
-          }
+      "metadata": {
+        "description": "An AVM-aligned type for a role assignment.",
+        "__bicep_imported_from!": {
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.5.1"
         }
-      },
-      "nullable": true
+      }
     }
   },
   "parameters": {
@@ -217,12 +244,17 @@
     },
     "lock": {
       "$ref": "#/definitions/lockType",
+      "nullable": true,
       "metadata": {
         "description": "Optional. The lock settings of the service."
       }
     },
     "roleAssignments": {
-      "$ref": "#/definitions/roleAssignmentType",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/roleAssignmentType"
+      },
+      "nullable": true,
       "metadata": {
         "description": "Optional. Array of role assignments to create."
       }
@@ -241,13 +273,21 @@
       }
     },
     "outboundEndpoints": {
-      "$ref": "#/definitions/outboundEndpointType",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/outboundEndpointType"
+      },
+      "nullable": true,
       "metadata": {
         "description": "Optional. Outbound Endpoints for DNS Private Resolver."
       }
     },
     "inboundEndpoints": {
-      "$ref": "#/definitions/inboundEndpointType",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/inboundEndpointType"
+      },
+      "nullable": true,
       "metadata": {
         "description": "Optional. Inbound Endpoints for DNS Private Resolver."
       }
@@ -393,12 +433,11 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.29.47.4906",
-              "templateHash": "10392660876237354468"
+              "version": "0.35.1.17967",
+              "templateHash": "8457768565159397377"
             },
             "name": "DNS Resolver Inbound Endpoint",
-            "description": "This module deploys a DNS Resolver Inbound Endpoint.",
-            "owner": "Azure/module-maintainers"
+            "description": "This module deploys a DNS Resolver Inbound Endpoint."
           },
           "parameters": {
             "dnsResolverName": {
@@ -472,10 +511,7 @@
                     "privateIpAllocationMethod": "[parameters('privateIpAllocationMethod')]"
                   }
                 ]
-              },
-              "dependsOn": [
-                "dnsResolver"
-              ]
+              }
             }
           },
           "outputs": {
@@ -544,12 +580,11 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.29.47.4906",
-              "templateHash": "5025100485259764817"
+              "version": "0.35.1.17967",
+              "templateHash": "639610421576443145"
             },
             "name": "DNS Resolver Outbound Endpoint",
-            "description": "This module deploys a DNS Resolver Outbound Endpoint.",
-            "owner": "Azure/module-maintainers"
+            "description": "This module deploys a DNS Resolver Outbound Endpoint."
           },
           "parameters": {
             "dnsResolverName": {
@@ -603,10 +638,7 @@
                 "subnet": {
                   "id": "[parameters('subnetResourceId')]"
                 }
-              },
-              "dependsOn": [
-                "dnsResolver"
-              ]
+              }
             }
           },
           "outputs": {
@@ -667,6 +699,38 @@
         "description": "The location the resource was deployed into."
       },
       "value": "[reference('dnsResolver', '2022-07-01', 'full').location]"
+    },
+    "outboundEndpointsObject": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/endpointDetailsType"
+      },
+      "metadata": {
+        "description": "The outbound endpoints object."
+      },
+      "copy": {
+        "count": "[length(range(0, length(coalesce(parameters('outboundEndpoints'), createArray()))))]",
+        "input": {
+          "name": "[reference(format('dnsResolver_outboundEndpoints[{0}]', range(0, length(coalesce(parameters('outboundEndpoints'), createArray())))[copyIndex()])).outputs.name.value]",
+          "resourceId": "[reference(format('dnsResolver_outboundEndpoints[{0}]', range(0, length(coalesce(parameters('outboundEndpoints'), createArray())))[copyIndex()])).outputs.resourceId.value]"
+        }
+      }
+    },
+    "inboundEndpointsObject": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/endpointDetailsType"
+      },
+      "metadata": {
+        "description": "The inbound endpoints object."
+      },
+      "copy": {
+        "count": "[length(range(0, length(coalesce(parameters('inboundEndpoints'), createArray()))))]",
+        "input": {
+          "name": "[reference(format('dnsResolver_inboundEndpoints[{0}]', range(0, length(coalesce(parameters('inboundEndpoints'), createArray())))[copyIndex()])).outputs.name.value]",
+          "resourceId": "[reference(format('dnsResolver_inboundEndpoints[{0}]', range(0, length(coalesce(parameters('inboundEndpoints'), createArray())))[copyIndex()])).outputs.resourceId.value]"
+        }
+      }
     }
   }
 }

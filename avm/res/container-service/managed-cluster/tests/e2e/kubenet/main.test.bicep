@@ -66,7 +66,6 @@ module testDeployment '../../../main.bicep' = [
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
-      location: resourceLocation
       primaryAgentPoolProfiles: [
         {
           availabilityZones: [
@@ -127,7 +126,7 @@ module testDeployment '../../../main.bicep' = [
       ]
       roleAssignments: [
         {
-          name: '6acf186b-abbd-491b-8bd7-39fa199da81e'
+          name: guid('Owner assignment ${namePrefix}${serviceShort}')
           roleDefinitionIdOrName: 'Owner'
           principalId: nestedDependencies.outputs.managedIdentityPrincipalId
           principalType: 'ServicePrincipal'
@@ -148,7 +147,7 @@ module testDeployment '../../../main.bicep' = [
         }
       ]
       managedIdentities: {
-        userAssignedResourcesIds: [
+        userAssignedResourceIds: [
           nestedDependencies.outputs.managedIdentityResourceId
         ]
       }
@@ -162,9 +161,5 @@ module testDeployment '../../../main.bicep' = [
         aadProfileManaged: true
       }
     }
-    dependsOn: [
-      nestedDependencies
-      diagnosticDependencies
-    ]
   }
 ]

@@ -1,6 +1,5 @@
 metadata name = 'Azure SQL Server Security Alert Policies'
 metadata description = 'This module deploys an Azure SQL Server Security Alert Policy.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Required. The name of the Security Alert Policy.')
 param name string
@@ -42,11 +41,11 @@ param storageEndpoint string?
 @description('Conditional. The name of the parent SQL Server. Required if the template is used in a standalone deployment.')
 param serverName string
 
-resource server 'Microsoft.Sql/servers@2023-08-01-preview' existing = {
+resource server 'Microsoft.Sql/servers@2023-08-01' existing = {
   name: serverName
 }
 
-resource securityAlertPolicy 'Microsoft.Sql/servers/securityAlertPolicies@2023-08-01-preview' = {
+resource securityAlertPolicy 'Microsoft.Sql/servers/securityAlertPolicies@2023-08-01' = {
   name: name
   parent: server
   properties: {

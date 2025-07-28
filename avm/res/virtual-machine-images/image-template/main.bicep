@@ -1,6 +1,5 @@
 metadata name = 'Virtual Machine Image Templates'
 metadata description = 'This module deploys a Virtual Machine Image Template that can be consumed by Azure Image Builder (AIB).'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Required. The name prefix of the Image Template to be built by the Azure Image Builder service.')
 param name string
@@ -19,24 +18,21 @@ param vmSize string = 'Standard_D2s_v3'
 @description('Optional. Specifies the size of OS disk.')
 param osDiskSizeGB int = 128
 
-@description('Optional. Resource ID of an already existing subnet, e.g.: /subscriptions/<subscriptionId>/resourceGroups/<resourceGroupName>/providers/Microsoft.Network/virtualNetworks/<vnetName>/subnets/<subnetName>.</p>If no value is provided, a new temporary VNET and subnet will be created in the staging resource group and will be deleted along with the remaining temporary resources.')
-param subnetResourceId string?
-
 @description('Required. Image source definition in object format.')
-param imageSource object
+param imageSource resourceInput<'Microsoft.VirtualMachineImages/imageTemplates@2024-02-01'>.properties.source
 
 @description('Optional. Customization steps to be run when building the VM image.')
-param customizationSteps array?
+param customizationSteps resourceInput<'Microsoft.VirtualMachineImages/imageTemplates@2024-02-01'>.properties.customize?
 
 @description('Optional. Resource ID of the staging resource group in the same subscription and location as the image template that will be used to build the image.</p>If this field is empty, a resource group with a random name will be created.</p>If the resource group specified in this field doesn\'t exist, it will be created with the same name.</p>If the resource group specified exists, it must be empty and in the same region as the image template.</p>The resource group created will be deleted during template deletion if this field is empty or the resource group specified doesn\'t exist,</p>but if the resource group specified exists the resources created in the resource group will be deleted during template deletion and the resource group itself will remain.')
 param stagingResourceGroupResourceId string?
 
-import { lockType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+import { lockType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. The lock settings of the service.')
 param lock lockType?
 
 @description('Optional. Tags of the resource.')
-param tags object?
+param tags resourceInput<'Microsoft.VirtualMachineImages/imageTemplates@2024-02-01'>.tags?
 
 @description('Generated. Do not provide a value! This date is used to generate a unique image template name.')
 param baseTime string = utcNow('yyyy-MM-dd-HH-mm-ss')
@@ -44,7 +40,7 @@ param baseTime string = utcNow('yyyy-MM-dd-HH-mm-ss')
 @description('Optional. Enable/Disable usage telemetry for module.')
 param enableTelemetry bool = true
 
-import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. Array of role assignments to create.')
 param roleAssignments roleAssignmentType[]?
 
@@ -52,9 +48,9 @@ param roleAssignments roleAssignmentType[]?
 param distributions distributionType[]
 
 @description('Optional. List of User-Assigned Identities associated to the Build VM for accessing Azure resources such as Key Vaults from your customizer scripts. Be aware, the user assigned identities specified in the \'managedIdentities\' parameter must have the \'Managed Identity Operator\' role assignment on all the user assigned identities specified in this parameter for Azure Image Builder to be able to associate them to the build VM.')
-param vmUserAssignedIdentities array = []
+param vmUserAssignedIdentities string[] = []
 
-import { managedIdentityOnlyUserAssignedType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+import { managedIdentityOnlyUserAssignedType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Required. The managed identity definition for this resource.')
 param managedIdentities managedIdentityOnlyUserAssignedType
 
@@ -67,6 +63,33 @@ param validationProcess validationProcessType?
 ])
 @description('Optional. The optimize property can be enabled while creating a VM image and allows VM optimization to improve image creation time.')
 param optimizeVmBoot string?
+
+@allowed([
+  'Enabled'
+  'Disabled'
+])
+@description('Optional. Indicates whether or not to automatically run the image template build on template creation or update.')
+param autoRunState string = 'Disabled'
+
+@allowed([
+  'cleanup'
+  'abort'
+])
+@description('Optional. If there is a customizer error and this field is set to \'cleanup\', the build VM and associated network resources will be cleaned up. This is the default behavior. If there is a customizer error and this field is set to \'abort\', the build VM will be preserved.')
+param errorHandlingOnCustomizerError string = 'cleanup'
+
+@allowed([
+  'cleanup'
+  'abort'
+])
+@description('Optional. If there is a validation error and this field is set to \'cleanup\', the build VM and associated network resources will be cleaned up. If there is a validation error and this field is set to \'abort\', the build VM will be preserved. This is the default behavior.')
+param errorHandlingOnValidationError string = 'cleanup'
+
+@description('Optional. Tags that will be applied to the resource group and/or resources created by the service.')
+param managedResourceTags resourceInput<'Microsoft.VirtualMachineImages/imageTemplates@2024-02-01'>.properties.managedResourceTags?
+
+@description('Optional. Optional configuration of the virtual network to use to deploy the build VM and validation VM in. Omit if no specific virtual network needs to be used.')
+param vnetConfig vnetConfigType?
 
 var identity = {
   type: 'UserAssigned'
@@ -121,7 +144,7 @@ resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableT
   }
 }
 
-resource imageTemplate 'Microsoft.VirtualMachineImages/imageTemplates@2023-07-01' = {
+resource imageTemplate 'Microsoft.VirtualMachineImages/imageTemplates@2024-02-01' = {
   #disable-next-line use-stable-resource-identifiers // Disabling as ImageTemplates are not idempotent and hence always must have new name
   name: '${name}-${baseTime}'
   location: location
@@ -133,58 +156,58 @@ resource imageTemplate 'Microsoft.VirtualMachineImages/imageTemplates@2023-07-01
       vmSize: vmSize
       osDiskSizeGB: osDiskSizeGB
       userAssignedIdentities: vmUserAssignedIdentities
-      vnetConfig: !empty(subnetResourceId)
+      vnetConfig: !empty(vnetConfig)
         ? {
-            subnetId: subnetResourceId
+            subnetId: vnetConfig.?subnetResourceId
+            containerInstanceSubnetId: vnetConfig.?containerInstanceSubnetResourceId
+            proxyVmSize: vnetConfig.?proxyVmSize
           }
         : null
     }
     source: imageSource
-    customize: customizationSteps
+    ...(!empty(customizationSteps)
+      ? {
+          customize: customizationSteps
+        }
+      : {})
     stagingResourceGroup: stagingResourceGroupResourceId
-    distribute: [
-      for distribution in distributions: union(
-        {
-          type: distribution.type
-          artifactTags: distribution.?artifactTags ?? {
-            sourceType: imageSource.type
-            sourcePublisher: imageSource.?publisher
-            sourceOffer: imageSource.?offer
-            sourceSku: imageSource.?sku
-            sourceVersion: imageSource.?version
-            sourceImageId: imageSource.?imageId
-            sourceImageVersionID: imageSource.?imageVersionID
-            creationTime: baseTime
+    distribute: map(distributions, distribution => {
+      type: distribution.type
+      artifactTags: distribution.?artifactTags ?? {
+        sourceType: imageSource.type
+        sourcePublisher: imageSource.?publisher
+        sourceOffer: imageSource.?offer
+        sourceSku: imageSource.?sku
+        sourceVersion: imageSource.?version
+        sourceImageId: imageSource.?imageId
+        sourceImageVersionID: imageSource.?imageVersionID
+        creationTime: baseTime
+      }
+      ...(distribution.type == 'ManagedImage'
+        ? {
+            runOutputName: distribution.?runOutputName ?? '${distribution.imageName}-${baseTime}-ManagedImage'
+            location: distribution.?location ?? location
+            #disable-next-line use-resource-id-functions // Disabling rule as this is an input parameter that is used inside an array.
+            imageId: distribution.?imageResourceId ?? '${subscription().id}/resourceGroups/${resourceGroup().name}/providers/Microsoft.Compute/images/${distribution.imageName}-${baseTime}'
           }
-        },
-        (distribution.type == 'ManagedImage'
-          ? {
-              runOutputName: distribution.?runOutputName ?? '${distribution.imageName}-${baseTime}-ManagedImage'
-              location: distribution.?location ?? location
-              #disable-next-line use-resource-id-functions // Disabling rule as this is an input parameter that is used inside an array.
-              imageId: distribution.?imageResourceId ?? '${subscription().id}/resourceGroups/${resourceGroup().name}/providers/Microsoft.Compute/images/${distribution.imageName}-${baseTime}'
-            }
-          : {}),
-        (distribution.type == 'SharedImage'
-          ? {
-              runOutputName: distribution.?runOutputName ?? (!empty(distribution.?sharedImageGalleryImageDefinitionResourceId)
-                ? '${last(split((distribution.sharedImageGalleryImageDefinitionResourceId ?? '/'), '/'))}-SharedImage'
-                : 'SharedImage')
-              galleryImageId: !empty(distribution.?sharedImageGalleryImageDefinitionTargetVersion)
-                ? '${distribution.sharedImageGalleryImageDefinitionResourceId}/versions/${distribution.sharedImageGalleryImageDefinitionTargetVersion}'
-                : distribution.sharedImageGalleryImageDefinitionResourceId
-              excludeFromLatest: distribution.?excludeFromLatest ?? false
-              replicationRegions: distribution.?replicationRegions ?? [location]
-              storageAccountType: distribution.?storageAccountType ?? 'Standard_LRS'
-            }
-          : {}),
-        (distribution.type == 'VHD'
-          ? {
-              runOutputName: distribution.?runOutputName ?? '${distribution.imageName}-VHD'
-            }
-          : {})
-      )
-    ]
+        : {})
+      ...(distribution.type == 'SharedImage'
+        ? {
+            runOutputName: distribution.?runOutputName ?? '${last(split(distribution.?sharedImageGalleryImageDefinitionResourceId, '/'))}-SharedImage'
+            galleryImageId: !empty(distribution.?sharedImageGalleryImageDefinitionTargetVersion)
+              ? '${distribution.sharedImageGalleryImageDefinitionResourceId}/versions/${distribution.sharedImageGalleryImageDefinitionTargetVersion}'
+              : distribution.sharedImageGalleryImageDefinitionResourceId
+            excludeFromLatest: distribution.?excludeFromLatest ?? false
+            replicationRegions: distribution.?replicationRegions ?? [location]
+            storageAccountType: distribution.?storageAccountType ?? 'Standard_LRS'
+          }
+        : {})
+      ...(distribution.type == 'VHD'
+        ? {
+            runOutputName: distribution.?runOutputName ?? '${distribution.imageName}-VHD'
+          }
+        : {})
+    })
     #disable-next-line BCP225 //  The discriminator property "type" value cannot be determined at compilation time. - which is fine
     validate: validationProcess
     optimize: optimizeVmBoot != null
@@ -194,6 +217,14 @@ resource imageTemplate 'Microsoft.VirtualMachineImages/imageTemplates@2023-07-01
           }
         }
       : null
+    autoRun: {
+      state: autoRunState
+    }
+    errorHandling: {
+      onCustomizerError: errorHandlingOnCustomizerError
+      onValidationError: errorHandlingOnValidationError
+    }
+    managedResourceTags: managedResourceTags
   }
 }
 
@@ -251,6 +282,7 @@ output location string = imageTemplate.location
 type distributionType = sharedImageDistributionType | managedImageDistributionType | unManagedDistributionType
 
 @export()
+@description('The type for a shared image distribution.')
 type sharedImageDistributionType = {
   @description('Optional. The name to be used for the associated RunOutput. If not provided, a name will be calculated.')
   runOutputName: string?
@@ -261,7 +293,7 @@ type sharedImageDistributionType = {
   @description('Required. The type of distribution.')
   type: 'SharedImage'
 
-  @description('Conditional. Resource ID of Compute Gallery Image Definition to distribute image to, e.g.: /subscriptions/<subscriptionID>/resourceGroups/<SIG resourcegroup>/providers/Microsoft.Compute/galleries/<SIG name>/images/<image definition>.')
+  @description('Required. Resource ID of Compute Gallery Image Definition to distribute image to, e.g.: /subscriptions/<subscriptionID>/resourceGroups/<SIG resourcegroup>/providers/Microsoft.Compute/galleries/<SIG name>/images/<image definition>.')
   sharedImageGalleryImageDefinitionResourceId: string
 
   @description('Optional. Version of the Compute Gallery Image. Supports the following Version Syntax: Major.Minor.Build (i.e., \'1.1.1\' or \'10.1.2\'). If not provided, a version will be calculated.')
@@ -278,6 +310,7 @@ type sharedImageDistributionType = {
 }
 
 @export()
+@description('The type for an unmanaged distribution.')
 type unManagedDistributionType = {
   @description('Required. The type of distribution.')
   type: 'VHD'
@@ -288,11 +321,12 @@ type unManagedDistributionType = {
   @description('Optional. Tags that will be applied to the artifact once it has been created/updated by the distributor. If not provided will set tags based on the provided image source.')
   artifactTags: object?
 
-  @description('Conditional. Name of the managed or unmanaged image that will be created.')
+  @description('Required. Name of the managed or unmanaged image that will be created.')
   imageName: string
 }
 
 @export()
+@description('The type for a managed image distribution.')
 type managedImageDistributionType = {
   @description('Required. The type of distribution.')
   type: 'ManagedImage'
@@ -306,14 +340,15 @@ type managedImageDistributionType = {
   @description('Optional. Azure location for the image, should match if image already exists. Defaults to the value of the \'location\' parameter.')
   location: string?
 
-  @description('Required. The resource ID of the managed image. Defaults to a compute image with name \'imageName-baseTime\' in the current resource group.')
+  @description('Optional. The resource ID of the managed image. Defaults to a compute image with name \'imageName-baseTime\' in the current resource group.')
   imageResourceId: string?
 
-  @description('Conditional. Name of the managed or unmanaged image that will be created.')
+  @description('Required. Name of the managed or unmanaged image that will be created.')
   imageName: string
 }
 
 @export()
+@description('The type for a validation process.')
 type validationProcessType = {
   @description('Optional. If validation fails and this field is set to false, output image(s) will not be distributed. This is the default behavior. If validation fails and this field is set to true, output image(s) will still be distributed. Please use this option with caution as it may result in bad images being distributed for use. In either case (true or false), the end to end image run will be reported as having failed in case of a validation failure. [Note: This field has no effect if validation succeeds.].')
   continueDistributeOnFailure: bool?
@@ -353,4 +388,17 @@ type validationProcessType = {
 
   @description('Optional. If this field is set to true, the image specified in the \'source\' section will directly be validated. No separate build will be run to generate and then validate a customized image. Not supported when performing customizations, validations or distributions on the image.')
   sourceValidationOnly: bool?
+}
+
+@export()
+@description('The type for the virtual network configuration.')
+type vnetConfigType = {
+  @description('Optional. Resource id of a pre-existing subnet on which the build VM and validation VM will be deployed.')
+  subnetResourceId: string?
+
+  @description('Optional. Resource id of a pre-existing subnet on which Azure Container Instance will be deployed for Isolated Builds. This field may be specified only if subnetResourceId is also specified and must be on the same Virtual Network as the subnet specified in subnetResourceId.')
+  containerInstanceSubnetResourceId: string?
+
+  @description('Optional. Size of the proxy virtual machine used to pass traffic to the build VM and validation VM. This must not be specified if containerInstanceSubnetResourceId is specified because no proxy virtual machine is deployed in that case. Omit or specify empty string to use the default (Standard_A1_v2).')
+  proxyVmSize: string?
 }

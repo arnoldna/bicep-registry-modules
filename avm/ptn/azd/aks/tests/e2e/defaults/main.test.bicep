@@ -56,10 +56,13 @@ module testDeployment '../../../main.bicep' = [
       name: 'mc${uniqueString(deployment().name)}-${serviceShort}'
       containerRegistryName: '${uniqueString(deployment().name, enforcedLocation)}testcontainerregistry${serviceShort}'
       keyVaultName: 'kv${uniqueString(deployment().name)}-${serviceShort}'
-      location: enforcedLocation
       principalId: nestedDependencies.outputs.identityPrincipalId
       monitoringWorkspaceResourceId: nestedDependencies.outputs.logAnalyticsResourceId
       principalType: 'ServicePrincipal'
+      aadProfile: {
+        aadProfileEnableAzureRBAC: true
+        aadProfileManaged: true
+      }
     }
   }
 ]

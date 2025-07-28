@@ -8,12 +8,14 @@ This module deploys an Activity Log Alert.
 - [Usage examples](#Usage-examples)
 - [Parameters](#Parameters)
 - [Outputs](#Outputs)
+- [Cross-referenced modules](#Cross-referenced-modules)
 - [Data Collection](#Data-Collection)
 
 ## Resource Types
 
 | Resource Type | API Version |
 | :-- | :-- |
+| `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
 | `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
 | `Microsoft.Insights/activityLogAlerts` | [2020-10-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2020-10-01/activityLogAlerts) |
 
@@ -239,6 +241,10 @@ module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>
       }
     ]
     location: 'global'
+    lock: {
+      kind: 'CanNotDelete'
+      name: 'myCustomLockName'
+    }
     roleAssignments: [
       {
         name: 'be96d7a9-6596-40c7-9acd-db6acd5cd41b'
@@ -331,6 +337,12 @@ module activityLogAlert 'br/public:avm/res/insights/activity-log-alert:<version>
     "location": {
       "value": "global"
     },
+    "lock": {
+      "value": {
+        "kind": "CanNotDelete",
+        "name": "myCustomLockName"
+      }
+    },
     "roleAssignments": {
       "value": [
         {
@@ -419,6 +431,10 @@ param actions = [
   }
 ]
 param location = 'global'
+param lock = {
+  kind: 'CanNotDelete'
+  name: 'myCustomLockName'
+}
 param roleAssignments = [
   {
     name: 'be96d7a9-6596-40c7-9acd-db6acd5cd41b'
@@ -676,6 +692,7 @@ param tags = {
 | [`enabled`](#parameter-enabled) | bool | Indicates whether this alert is enabled. |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
 | [`location`](#parameter-location) | string | Location for all resources. |
+| [`lock`](#parameter-lock) | object | The lock settings of the service. |
 | [`roleAssignments`](#parameter-roleassignments) | array | Array of role assignments to create. |
 | [`scopes`](#parameter-scopes) | array | The list of resource IDs that this Activity Log Alert is scoped to. |
 | [`tags`](#parameter-tags) | object | Tags of the resource. |
@@ -733,6 +750,42 @@ Location for all resources.
 - Required: No
 - Type: string
 - Default: `'global'`
+
+### Parameter: `lock`
+
+The lock settings of the service.
+
+- Required: No
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`kind`](#parameter-lockkind) | string | Specify the type of lock. |
+| [`name`](#parameter-lockname) | string | Specify the name of lock. |
+
+### Parameter: `lock.kind`
+
+Specify the type of lock.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'CanNotDelete'
+    'None'
+    'ReadOnly'
+  ]
+  ```
+
+### Parameter: `lock.name`
+
+Specify the name of lock.
+
+- Required: No
+- Type: string
 
 ### Parameter: `roleAssignments`
 
@@ -865,6 +918,14 @@ Tags of the resource.
 | `name` | string | The name of the activity log alert. |
 | `resourceGroupName` | string | The resource group the activity log alert was deployed into. |
 | `resourceId` | string | The resource ID of the activity log alert. |
+
+## Cross-referenced modules
+
+This section gives you an overview of all local-referenced module files (i.e., other modules that are referenced in this module) and all remote-referenced files (i.e., Bicep modules that are referenced from a Bicep Registry or Template Specs).
+
+| Reference | Type |
+| :-- | :-- |
+| `br/public:avm/utl/types/avm-common-types:0.5.1` | Remote reference |
 
 ## Data Collection
 

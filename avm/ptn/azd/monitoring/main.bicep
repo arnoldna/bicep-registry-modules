@@ -2,7 +2,6 @@ metadata name = 'Azd Azure Monitoring'
 metadata description = '''Creates an Application Insights instance and a Log Analytics workspace.
 
 **Note:** This module is not intended for broad, generic use, as it was designed to cater for the requirements of the AZD CLI product. Feature requests and bug fix requests are welcome if they support the development of the AZD CLI but may not be incorporated if they aim to make this module more generic than what it needs to be for its primary use case.'''
-metadata owner = 'Azure/module-maintainers'
 
 @description('Required. The resource operational insights workspaces name.')
 param logAnalyticsName string
@@ -14,7 +13,7 @@ param applicationInsightsName string
 param enableTelemetry bool = true
 
 @description('Optional. The resource portal dashboards name.')
-param applicationInsightsDashboardName string = ''
+param applicationInsightsDashboardName string?
 
 @description('Optional. Location for all Resources.')
 param location string = resourceGroup().location
@@ -28,7 +27,7 @@ param location string = resourceGroup().location
   }
   '''
 })
-param tags object?
+param tags resourceInput<'Microsoft.OperationalInsights/workspaces@2025-02-01'>.tags?
 
 // ============== //
 // Resources      //
@@ -53,7 +52,7 @@ resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableT
   }
 }
 
-module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.7.0' = {
+module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.12.0' = {
   name: 'loganalytics'
   params: {
     name: logAnalyticsName
@@ -64,7 +63,7 @@ module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.7.0' = {
   }
 }
 
-module applicationInsights 'br/public:avm/ptn/azd/insights-dashboard:0.1.0' = {
+module applicationInsights 'br/public:avm/ptn/azd/insights-dashboard:0.1.2' = {
   name: 'applicationinsights'
   params: {
     logAnalyticsWorkspaceResourceId: logAnalytics.outputs.resourceId

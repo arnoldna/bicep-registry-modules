@@ -31,7 +31,7 @@ var enforcedLocation = 'northeurope'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: enforcedLocation
 }
@@ -42,7 +42,7 @@ module nestedDependencies 'dependencies.bicep' = {
   params: {
     virtualNetworkName: 'dep-${namePrefix}-vnet-${serviceShort}'
     managedIdentityName: 'dep-${namePrefix}-msi-${serviceShort}'
-    location: enforcedLocation
+    networkSecurityGroupName: 'dep-${namePrefix}-nsg-${serviceShort}'
   }
 }
 
@@ -57,13 +57,30 @@ module testDeployment '../../../main.bicep' = [
     name: '${uniqueString(deployment().name, enforcedLocation)}-test-${serviceShort}-${iteration}'
     params: {
       name: '${namePrefix}${serviceShort}001'
-      location: enforcedLocation
       administratorLogin: 'adminUserName'
       administratorLoginPassword: password
       skuName: 'Standard_D2ds_v4'
       tier: 'GeneralPurpose'
+      availabilityZone: -1
       delegatedSubnetResourceId: nestedDependencies.outputs.subnetResourceId
       privateDnsZoneResourceId: nestedDependencies.outputs.privateDNSZoneResourceId
+      firewallRules: [
+        {
+          endIpAddress: '0.0.0.0'
+          name: 'AllowAllWindowsAzureIps'
+          startIpAddress: '0.0.0.0'
+        }
+        {
+          endIpAddress: '10.10.10.10'
+          name: 'test-rule1'
+          startIpAddress: '10.10.10.1'
+        }
+        {
+          endIpAddress: '100.100.100.10'
+          name: 'test-rule2'
+          startIpAddress: '100.100.100.1'
+        }
+      ]
       storageAutoIoScaling: 'Enabled'
       storageSizeGB: 64
       storageIOPS: 400
@@ -88,8 +105,5 @@ module testDeployment '../../../main.bicep' = [
         }
       ]
     }
-    dependsOn: [
-      nestedDependencies
-    ]
   }
 ]

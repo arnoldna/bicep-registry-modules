@@ -141,11 +141,18 @@ output roleAssignmentsOutput roleAssignmentType[] = roleAssignments
 // ========= //
 //   Locks   //
 // ========= //
-param lock lockType = {
+param lockDefaultNote lockType = {
   kind: 'CanNotDelete'
   name: 'myLock'
 }
-output lockOutput lockType = lock
+output lockDefaultNoteOutput lockType = lockDefaultNote
+
+param lockCustomNote lockType = {
+  kind: 'CanNotDelete'
+  name: 'myLock'
+  notes: 'This is a lock to prevent deletion of the resource.'
+}
+output lockCustomNoteOutput lockType = lockCustomNote
 
 // ====================== //
 //   Managed Idenitites   //
@@ -189,6 +196,7 @@ param privateEndpointMultiService privateEndpointMultiServiceType[] = [
       }
     ]
     subnetResourceId: '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myRg/providers/Microsoft.Network/virtualNetworks/myVnet/subnets/defaultSubnet'
+    resourceGroupResourceId: '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myRg'
     service: 'blob'
     applicationSecurityGroupResourceIds: [
       '/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/myRg/providers/Microsoft.Network/applicationSecurityGroups/myAsg'
@@ -224,7 +232,6 @@ param privateEndpointMultiService privateEndpointMultiServiceType[] = [
       ]
     }
     privateLinkServiceConnectionName: 'myConnection'
-    resourceGroupName: 'myResourceGroup'
     tags: {
       Environment: 'Non-Prod'
       Role: 'DeploymentValidation'

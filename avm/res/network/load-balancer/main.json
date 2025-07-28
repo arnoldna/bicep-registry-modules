@@ -5,160 +5,13 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.32.4.45862",
-      "templateHash": "732245998265814934"
+      "version": "0.34.44.8038",
+      "templateHash": "4696406379387046288"
     },
     "name": "Load Balancers",
-    "description": "This module deploys a Load Balancer.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys a Load Balancer."
   },
   "definitions": {
-    "backendAddressPoolsType": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "nullable": true,
-          "metadata": {
-            "description": "Optional. The name of the backend address pool."
-          }
-        },
-        "properties": {
-          "type": "object",
-          "properties": {
-            "drainPeriodInSeconds": {
-              "type": "int",
-              "nullable": true,
-              "metadata": {
-                "description": "Optional. Amount of seconds Load Balancer waits for before sending RESET to client and backend address."
-              }
-            },
-            "loadBalancerBackendAddress": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type": "string",
-                    "nullable": true,
-                    "metadata": {
-                      "description": "Optional. The name of the backend address pool."
-                    }
-                  },
-                  "properties": {
-                    "type": "object",
-                    "properties": {
-                      "adminState": {
-                        "type": "string",
-                        "nullable": true,
-                        "metadata": {
-                          "description": "Optional. A list of administrative states which once set can override health probe so that Load Balancer will always forward new connections to backend, or deny new connections and reset existing connections.\t'Down', 'None' 'Up'."
-                        }
-                      },
-                      "ipAddress": {
-                        "type": "string",
-                        "nullable": true,
-                        "metadata": {
-                          "description": "Optional. IP Address belonging to the referenced virtual network."
-                        }
-                      },
-                      "loadBalancerFrontendIPConfiguration": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string",
-                            "nullable": true,
-                            "metadata": {
-                              "description": "Optional. Reference to the frontend ip address configuration defined in regional load balancer."
-                            }
-                          }
-                        },
-                        "nullable": true,
-                        "metadata": {
-                          "description": "Optional. Reference to the frontend ip address configuration defined in regional load balancer."
-                        }
-                      },
-                      "virtualNetwork": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string",
-                            "nullable": true,
-                            "metadata": {
-                              "description": "Optional. Reference to an existing virtual network."
-                            }
-                          }
-                        },
-                        "nullable": true,
-                        "metadata": {
-                          "description": "Optional. Reference to an existing virtual network."
-                        }
-                      },
-                      "subnet": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "string",
-                            "nullable": true,
-                            "metadata": {
-                              "description": "Optional. Reference to an existing subnet."
-                            }
-                          }
-                        },
-                        "nullable": true,
-                        "metadata": {
-                          "description": "Optional. Reference to an existing subnet."
-                        }
-                      }
-                    },
-                    "nullable": true,
-                    "metadata": {
-                      "description": "Optional. Properties of load balancer backend address pool."
-                    }
-                  }
-                }
-              },
-              "nullable": true,
-              "metadata": {
-                "description": "Optional. An array of backend addresses."
-              }
-            },
-            "location": {
-              "type": "string",
-              "nullable": true,
-              "metadata": {
-                "description": "Optional. The location of the backend address pool."
-              }
-            },
-            "syncMode": {
-              "type": "string",
-              "nullable": true,
-              "metadata": {
-                "description": "Optional. Backend address synchronous mode for the backend pool\t'Automatic', 'Manual'."
-              }
-            },
-            "tunnelInterfaces": {
-              "type": "array",
-              "nullable": true,
-              "metadata": {
-                "description": "Optional. An array of gateway load balancer tunnel interfaces."
-              }
-            },
-            "virtualNetwork": {
-              "type": "object",
-              "nullable": true,
-              "metadata": {
-                "description": "Optional. A reference to a virtual network."
-              }
-            }
-          },
-          "nullable": true,
-          "metadata": {
-            "description": "Optional. Properties of load balancer backend address pool."
-          }
-        }
-      }
-    },
     "diagnosticSettingFullType": {
       "type": "object",
       "properties": {
@@ -277,7 +130,7 @@
       "metadata": {
         "description": "An AVM-aligned type for a diagnostic setting. To be used if both logs & metrics are supported by the resource provider.",
         "__bicep_imported_from!": {
-          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.2.1"
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.5.1"
         }
       }
     },
@@ -307,7 +160,7 @@
       "metadata": {
         "description": "An AVM-aligned type for a lock.",
         "__bicep_imported_from!": {
-          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.2.1"
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.5.1"
         }
       }
     },
@@ -382,7 +235,7 @@
       "metadata": {
         "description": "An AVM-aligned type for a role assignment.",
         "__bicep_imported_from!": {
-          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.2.1"
+          "sourceTemplate": "br:mcr.microsoft.com/bicep/avm/utl/types/avm-common-types:0.5.1"
         }
       }
     }
@@ -442,6 +295,16 @@
       "nullable": true,
       "metadata": {
         "description": "Optional. Array of objects containing all probes, these are references in the load balancing rules."
+      }
+    },
+    "diagnosticSettings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/diagnosticSettingFullType"
+      },
+      "nullable": true,
+      "metadata": {
+        "description": "Optional. The diagnostic settings of the service."
       }
     },
     "lock": {
@@ -724,6 +587,137 @@
         "loadBalancer"
       ]
     },
+    "loadBalancer_backendAddressPools": {
+      "copy": {
+        "name": "loadBalancer_backendAddressPools",
+        "count": "[length(coalesce(parameters('backendAddressPools'), createArray()))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('{0}-loadBalancer-backendAddPools-{1}', uniqueString(deployment().name, parameters('location')), copyIndex())]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "loadBalancerName": {
+            "value": "[parameters('name')]"
+          },
+          "name": {
+            "value": "[coalesce(parameters('backendAddressPools'), createArray())[copyIndex()].name]"
+          },
+          "tunnelInterfaces": {
+            "value": "[tryGet(coalesce(parameters('backendAddressPools'), createArray())[copyIndex()], 'tunnelInterfaces')]"
+          },
+          "loadBalancerBackendAddresses": {
+            "value": "[tryGet(coalesce(parameters('backendAddressPools'), createArray())[copyIndex()], 'loadBalancerBackendAddresses')]"
+          },
+          "drainPeriodInSeconds": {
+            "value": "[tryGet(coalesce(parameters('backendAddressPools'), createArray())[copyIndex()], 'drainPeriodInSeconds')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.34.44.8038",
+              "templateHash": "601516314831460935"
+            },
+            "name": "Load Balancer Backend Address Pools",
+            "description": "This module deploys a Load Balancer Backend Address Pools."
+          },
+          "parameters": {
+            "loadBalancerName": {
+              "type": "string",
+              "metadata": {
+                "description": "Conditional. The name of the parent load balancer. Required if the template is used in a standalone deployment."
+              }
+            },
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "Required. The name of the backend address pool."
+              }
+            },
+            "loadBalancerBackendAddresses": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Optional. An array of backend addresses."
+              }
+            },
+            "tunnelInterfaces": {
+              "type": "array",
+              "defaultValue": [],
+              "metadata": {
+                "description": "Optional. An array of gateway load balancer tunnel interfaces."
+              }
+            },
+            "drainPeriodInSeconds": {
+              "type": "int",
+              "defaultValue": 0,
+              "metadata": {
+                "description": "Optional. Amount of seconds Load Balancer waits for before sending RESET to client and backend address. if value is 0 then this property will be set to null. Subscription must register the feature Microsoft.Network/SLBAllowConnectionDraining before using this property."
+              }
+            },
+            "syncMode": {
+              "type": "string",
+              "defaultValue": "",
+              "allowedValues": [
+                "",
+                "Automatic",
+                "Manual"
+              ],
+              "metadata": {
+                "description": "Optional. Backend address synchronous mode for the backend pool."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/loadBalancers/backendAddressPools",
+              "apiVersion": "2023-11-01",
+              "name": "[format('{0}/{1}', parameters('loadBalancerName'), parameters('name'))]",
+              "properties": {
+                "loadBalancerBackendAddresses": "[parameters('loadBalancerBackendAddresses')]",
+                "tunnelInterfaces": "[parameters('tunnelInterfaces')]",
+                "drainPeriodInSeconds": "[if(not(equals(parameters('drainPeriodInSeconds'), 0)), parameters('drainPeriodInSeconds'), null())]",
+                "syncMode": "[if(not(empty(parameters('syncMode'))), parameters('syncMode'), null())]"
+              }
+            }
+          ],
+          "outputs": {
+            "name": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the backend address pool."
+              },
+              "value": "[parameters('name')]"
+            },
+            "resourceId": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource ID of the backend address pool."
+              },
+              "value": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('loadBalancerName'), parameters('name'))]"
+            },
+            "resourceGroupName": {
+              "type": "string",
+              "metadata": {
+                "description": "The resource group the backend address pool was deployed into."
+              },
+              "value": "[resourceGroup().name]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "loadBalancer"
+      ]
+    },
     "loadBalancer_inboundNATRules": {
       "copy": {
         "name": "loadBalancer_inboundNATRules",
@@ -782,12 +776,11 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.32.4.45862",
-              "templateHash": "8897265777547743288"
+              "version": "0.34.44.8038",
+              "templateHash": "18405211154213559578"
             },
             "name": "Load Balancer Inbound NAT Rules",
-            "description": "This module deploys a Load Balancer Inbound NAT Rules.",
-            "owner": "Azure/module-maintainers"
+            "description": "This module deploys a Load Balancer Inbound NAT Rules."
           },
           "parameters": {
             "loadBalancerName": {

@@ -62,6 +62,24 @@ module testDeployment '../../../main.bicep' = [
         'hidden-title': 'This is visible in the resource name'
         Env: 'test'
       }
+      identitySettings: [
+        {
+          identity: nestedDependencies.outputs.managedIdentityResourceId
+          lifecycle: 'None'
+        }
+      ]
+      initContainersTemplate: [
+        {
+          name: 'init-container'
+          image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+          resources: {
+            cpu: json('0.25')
+            memory: '0.5Gi'
+          }
+        }
+      ]
+
+      activeRevisionsMode: 'Single'
       roleAssignments: [
         {
           name: 'e9bac1ee-aebe-4513-9337-49e87a7be05e'
@@ -95,18 +113,19 @@ module testDeployment '../../../main.bicep' = [
           nestedDependencies.outputs.managedIdentityResourceId
         ]
       }
-      secrets: {
-        secureList: [
-          {
-            name: 'containerappstoredsecret'
-            value: myCustomContainerAppSecret
-          }
-          {
-            name: 'keyvaultstoredsecret'
-            keyVaultUrl: nestedDependencies.outputs.keyVaultSecretURI
-            identity: nestedDependencies.outputs.managedIdentityResourceId
-          }
-        ]
+      secrets: [
+        {
+          name: 'containerappstoredsecret'
+          value: myCustomContainerAppSecret
+        }
+        {
+          name: 'keyvaultstoredsecret'
+          keyVaultUrl: nestedDependencies.outputs.keyVaultSecretURI
+          identity: nestedDependencies.outputs.managedIdentityResourceId
+        }
+      ]
+      service:{
+        type: 'Web'
       }
       containers: [
         {
@@ -146,9 +165,28 @@ module testDeployment '../../../main.bicep' = [
           ]
         }
       ]
+      runtime: {
+        java:{
+          enableMetrics: true
+        }
+      }
+      scaleSettings: {
+        maxReplicas: 11
+        minReplicas: 4
+        cooldownPeriod: 500
+        pollingInterval: 45
+      }
+      authConfig: {
+        httpSettings: {
+          requireHttps: true
+        }
+        globalValidation: {
+          unauthenticatedClientAction: 'Return401'
+        }
+        platform: {
+          enabled: true
+        }
+      }
     }
-    dependsOn: [
-      nestedDependencies
-    ]
   }
 ]

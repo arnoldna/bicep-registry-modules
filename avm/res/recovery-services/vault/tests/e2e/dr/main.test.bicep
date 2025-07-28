@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -41,7 +41,6 @@ module testDeployment '../../../main.bicep' = [
     scope: resourceGroup
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
     params: {
-      location: resourceLocation
       name: rsvName
       replicationFabrics: [
         {
@@ -49,17 +48,17 @@ module testDeployment '../../../main.bicep' = [
           replicationContainers: [
             {
               name: 'ne-container1'
-              replicationContainerMappings: [
+              mappings: [
                 {
                   policyName: 'Default_values'
                   targetContainerName: 'pluto'
-                  targetProtectionContainerId: '${resourceGroup.id}/providers/Microsoft.RecoveryServices/vaults/${rsvName}/replicationFabrics/NorthEurope/replicationProtectionContainers/ne-container2'
+                  targetProtectionContainerResourceId: '${resourceGroup.id}/providers/Microsoft.RecoveryServices/vaults/${rsvName}/replicationFabrics/NorthEurope/replicationProtectionContainers/ne-container2'
                 }
               ]
             }
             {
               name: 'ne-container2'
-              replicationContainerMappings: [
+              mappings: [
                 {
                   policyName: 'Default_values'
                   targetContainerFabricName: 'WE-2'
@@ -75,7 +74,7 @@ module testDeployment '../../../main.bicep' = [
           replicationContainers: [
             {
               name: 'we-container1'
-              replicationContainerMappings: [
+              mappings: [
                 {
                   policyName: 'Default_values'
                   targetContainerFabricName: 'NorthEurope'
@@ -98,11 +97,6 @@ module testDeployment '../../../main.bicep' = [
           recoveryPointHistory: 2880
         }
       ]
-      tags: {
-        'hidden-title': 'This is visible in the resource name'
-        Environment: 'Non-Prod'
-        Role: 'DeploymentValidation'
-      }
     }
   }
 ]

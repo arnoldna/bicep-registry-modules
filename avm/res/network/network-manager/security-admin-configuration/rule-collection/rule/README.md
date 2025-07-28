@@ -13,7 +13,7 @@ A security admin configuration contains a set of rule collections. Each rule col
 
 | Resource Type | API Version |
 | :-- | :-- |
-| `Microsoft.Network/networkManagers/securityAdminConfigurations/ruleCollections/rules` | [2023-11-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-11-01/networkManagers/securityAdminConfigurations/ruleCollections/rules) |
+| `Microsoft.Network/networkManagers/securityAdminConfigurations/ruleCollections/rules` | [2024-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-05-01/networkManagers/securityAdminConfigurations/ruleCollections/rules) |
 
 ## Parameters
 
@@ -107,8 +107,6 @@ Network protocol this rule applies to.
     'Udp'
   ]
   ```
-- MinValue: 1
-- MaxValue: 4096
 
 ### Parameter: `networkManagerName`
 
@@ -116,8 +114,6 @@ The name of the parent network manager. Required if the template is used in a st
 
 - Required: Yes
 - Type: string
-- MinValue: 1
-- MaxValue: 4096
 
 ### Parameter: `ruleCollectionName`
 
@@ -125,8 +121,6 @@ The name of the parent rule collection. Required if the template is used in a st
 
 - Required: Yes
 - Type: string
-- MinValue: 1
-- MaxValue: 4096
 
 ### Parameter: `securityAdminConfigurationName`
 
@@ -134,8 +128,6 @@ The name of the parent security admin configuration. Required if the template is
 
 - Required: Yes
 - Type: string
-- MinValue: 1
-- MaxValue: 4096
 
 ### Parameter: `description`
 
@@ -143,8 +135,7 @@ A description of the rule.
 
 - Required: No
 - Type: string
-- MinValue: 1
-- MaxValue: 4096
+- Default: `''`
 
 ### Parameter: `destinationPortRanges`
 
@@ -152,8 +143,6 @@ List of destination port ranges. This specifies on which ports traffic will be a
 
 - Required: No
 - Type: array
-- MinValue: 1
-- MaxValue: 4096
 
 ### Parameter: `destinations`
 
@@ -161,8 +150,6 @@ The destnations filter can be an IP Address or a service tag. Each filter contai
 
 - Required: No
 - Type: array
-- MinValue: 1
-- MaxValue: 4096
 
 **Required parameters**
 
@@ -177,8 +164,6 @@ Address prefix.
 
 - Required: Yes
 - Type: string
-- MinValue: 1
-- MaxValue: 4096
 
 ### Parameter: `destinations.addressPrefixType`
 
@@ -193,8 +178,6 @@ Address prefix type.
     'ServiceTag'
   ]
   ```
-- MinValue: 1
-- MaxValue: 4096
 
 ### Parameter: `sourcePortRanges`
 
@@ -202,8 +185,6 @@ List of destination port ranges. This specifies on which ports traffic will be a
 
 - Required: No
 - Type: array
-- MinValue: 1
-- MaxValue: 4096
 
 ### Parameter: `sources`
 
@@ -211,8 +192,6 @@ The source filter can be an IP Address or a service tag. Each filter contains th
 
 - Required: No
 - Type: array
-- MinValue: 1
-- MaxValue: 4096
 
 **Required parameters**
 
@@ -227,8 +206,6 @@ Address prefix.
 
 - Required: Yes
 - Type: string
-- MinValue: 1
-- MaxValue: 4096
 
 ### Parameter: `sources.addressPrefixType`
 
@@ -243,8 +220,6 @@ Address prefix type.
     'ServiceTag'
   ]
   ```
-- MinValue: 1
-- MaxValue: 4096
 
 ## Outputs
 

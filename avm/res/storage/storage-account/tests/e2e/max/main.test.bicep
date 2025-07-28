@@ -26,7 +26,7 @@ param namePrefix string = '#_namePrefix_#'
 
 // General resources
 // =================
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2025-04-01' = {
   name: resourceGroupName
   location: resourceLocation
 }
@@ -74,6 +74,7 @@ module testDeployment '../../../main.bicep' = [
       lock: {
         kind: 'CanNotDelete'
         name: 'myCustomLockName'
+        notes: 'This is a custom lock note.'
       }
       enableHierarchicalNamespace: true
       enableSftp: true
@@ -166,7 +167,7 @@ module testDeployment '../../../main.bicep' = [
         resourceAccessRules: [
           {
             tenantId: subscription().tenantId
-            resourceId: '/subscriptions/${subscription().subscriptionId}/resourceGroups/*/providers/Microsoft.ContainerRegistry/registries/*'
+            resourceId: '${subscription().id}/resourcegroups/*/providers/Microsoft.CognitiveServices/accounts/*'
           }
         ]
         bypass: 'AzureServices'
@@ -257,6 +258,29 @@ module testDeployment '../../../main.bicep' = [
         containerDeleteRetentionPolicyDays: 10
         deleteRetentionPolicyEnabled: true
         deleteRetentionPolicyDays: 9
+        corsRules: [
+          {
+            allowedHeaders: [
+              'x-ms-meta-data'
+              'x-ms-meta-target-path'
+              'x-ms-meta-source-path'
+            ]
+            exposedHeaders: [
+              'x-ms-meta-data'
+              'x-ms-meta-target-path'
+              'x-ms-meta-source-path'
+            ]
+            allowedOrigins: [
+              'http://*.contoso.com'
+              'http://www.fabrikam.com'
+            ]
+            allowedMethods: [
+              'GET'
+              'PUT'
+            ]
+            maxAgeInSeconds: 200
+          }
+        ]
       }
       fileServices: {
         diagnosticSettings: [
@@ -304,6 +328,29 @@ module testDeployment '../../../main.bicep' = [
           {
             name: 'avdprofiles2'
             shareQuota: 102400
+          }
+        ]
+        corsRules: [
+          {
+            allowedHeaders: [
+              'x-ms-meta-data'
+              'x-ms-meta-target-path'
+              'x-ms-meta-source-path'
+            ]
+            exposedHeaders: [
+              'x-ms-meta-data'
+              'x-ms-meta-target-path'
+              'x-ms-meta-source-path'
+            ]
+            allowedOrigins: [
+              'http://*.contoso.com'
+              'http://www.fabrikam.com'
+            ]
+            allowedMethods: [
+              'GET'
+              'PUT'
+            ]
+            maxAgeInSeconds: 200
           }
         ]
       }
@@ -370,6 +417,29 @@ module testDeployment '../../../main.bicep' = [
             ]
           }
         ]
+        corsRules: [
+          {
+            allowedHeaders: [
+              'x-ms-meta-data'
+              'x-ms-meta-target-path'
+              'x-ms-meta-source-path'
+            ]
+            exposedHeaders: [
+              'x-ms-meta-data'
+              'x-ms-meta-target-path'
+              'x-ms-meta-source-path'
+            ]
+            allowedOrigins: [
+              'http://*.contoso.com'
+              'http://www.fabrikam.com'
+            ]
+            allowedMethods: [
+              'GET'
+              'PUT'
+            ]
+            maxAgeInSeconds: 200
+          }
+        ]
       }
       queueServices: {
         diagnosticSettings: [
@@ -417,6 +487,29 @@ module testDeployment '../../../main.bicep' = [
           {
             name: 'queue2'
             metadata: {}
+          }
+        ]
+        corsRules: [
+          {
+            allowedHeaders: [
+              'x-ms-meta-data'
+              'x-ms-meta-target-path'
+              'x-ms-meta-source-path'
+            ]
+            exposedHeaders: [
+              'x-ms-meta-data'
+              'x-ms-meta-target-path'
+              'x-ms-meta-source-path'
+            ]
+            allowedOrigins: [
+              'http://*.contoso.com'
+              'http://www.fabrikam.com'
+            ]
+            allowedMethods: [
+              'GET'
+              'PUT'
+            ]
+            maxAgeInSeconds: 200
           }
         ]
       }
@@ -503,9 +596,5 @@ module testDeployment '../../../main.bicep' = [
         Role: 'DeploymentValidation'
       }
     }
-    dependsOn: [
-      nestedDependencies
-      diagnosticDependencies
-    ]
   }
 ]

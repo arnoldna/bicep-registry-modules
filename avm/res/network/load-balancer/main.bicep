@@ -1,6 +1,5 @@
 metadata name = 'Load Balancers'
 metadata description = 'This module deploys a Load Balancer.'
-metadata owner = 'Azure/module-maintainers'
 
 // ================ //
 // Parameters       //
@@ -52,11 +51,15 @@ param loadBalancingRules array?
 @description('Optional. Array of objects containing all probes, these are references in the load balancing rules.')
 param probes array?
 
-import { lockType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+import { diagnosticSettingFullType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
+@description('Optional. The diagnostic settings of the service.')
+param diagnosticSettings diagnosticSettingFullType[]?
+
+import { lockType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. The lock settings of the service.')
 param lock lockType?
 
-import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. Array of role assignments to create.')
 param roleAssignments roleAssignmentType[]?
 
@@ -310,6 +313,19 @@ resource loadBalancer 'Microsoft.Network/loadBalancers@2024-03-01' = {
   }
 }
 
+module loadBalancer_backendAddressPools 'backend-address-pool/main.bicep' = [
+  for (backendAddressPool, index) in backendAddressPools ?? []: {
+    name: '${uniqueString(deployment().name, location)}-loadBalancer-backendAddPools-${index}'
+    params: {
+      loadBalancerName: loadBalancer.name
+      name: backendAddressPool.name
+      tunnelInterfaces: backendAddressPool.?tunnelInterfaces
+      loadBalancerBackendAddresses: backendAddressPool.?loadBalancerBackendAddresses
+      drainPeriodInSeconds: backendAddressPool.?drainPeriodInSeconds
+    }
+  }
+]
+
 module loadBalancer_inboundNATRules 'inbound-nat-rule/main.bicep' = [
   for (inboundNATRule, index) in inboundNatRules: {
     name: '${uniqueString(deployment().name, location)}-LoadBalancer-inboundNatRules-${index}'
@@ -404,65 +420,3 @@ output backendpools array = loadBalancer.properties.backendAddressPools
 
 @description('The location the resource was deployed into.')
 output location string = loadBalancer.location
-
-// output backendLoadBalancerPoolsVar array = backendLoadBalancerPoolsVar
-output backendAddressPools array = [
-  for item in backendAddressPools!: {
-    name: item
-  }
-]
-
-// ================ //
-// Definitions      //
-// ================ //
-
-type backendAddressPoolsType = {
-  @description('Optional. The name of the backend address pool.')
-  name: string?
-
-  @description('Optional. Properties of load balancer backend address pool.')
-  properties: {
-    @description('Optional. Amount of seconds Load Balancer waits for before sending RESET to client and backend address.')
-    drainPeriodInSeconds: int?
-
-    @description('Optional. An array of backend addresses.')
-    loadBalancerBackendAddresses: array?
-
-    @description('Optional. The location of the backend address pool.')
-    location: string?
-
-    @description('''Optional. Backend address synchronous mode for the backend pool	when balancing across Azure Subscriptions. 'Automatic', 'Manual'.''')
-    syncMode: string?
-
-    @description('Optional. An array of gateway load balancer tunnel interfaces.')
-    tunnelInterfaces: array?
-
-    @description('Optional. A reference to a virtual network.')
-    virtualNetworkResourceId: string?
-  }?
-}
-
-type loadBalancerBackendAddressesType = {
-  @description('Optional. The name of the backend address pool.')
-  name: string?
-
-  @description('Optional. Properties of load balancer backend address pool.')
-  properties: {
-    @description('''Optional. A list of administrative states which once set can override health probe so that Load Balancer will always forward new connections to backend, or deny new connections and reset existing connections.	'Down', 'None' 'Up'.''')
-    adminState: string?
-
-    @description('Optional. IP Address belonging to the referenced virtual network.')
-    ipAddress: string?
-
-    @description('Optional. Reference to the frontend ip address configuration defined in regional load balancer.')
-    loadBalancerFrontendIPConfigurationId: string?
-
-    @description('Optional. Reference to an existing virtual network.')
-    virtualNetworkResourceId: string?
-
-    @description('Optional. Reference to an existing subnet.')
-    subnet: {
-      id: string
-    }?
-  }?
-}

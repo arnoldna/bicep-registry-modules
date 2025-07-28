@@ -1,6 +1,5 @@
 metadata name = 'Log Analytics Workspace Storage Insight Configs'
 metadata description = 'This module deploys a Log Analytics Workspace Storage Insight Config.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Conditional. The name of the parent Log Analytics workspace. Required if the template is used in a standalone deployment.')
 param logAnalyticsWorkspaceName string
@@ -18,17 +17,17 @@ param containers string[]?
 param tables string[]?
 
 @description('Optional. Tags to configure in the resource.')
-param tags object?
+param tags resourceInput<'Microsoft.OperationalInsights/workspaces/storageInsightConfigs@2025-02-01'>.tags?
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2024-01-01' existing = {
   name: last(split(storageAccountResourceId, '/'))!
 }
 
-resource workspace 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
+resource workspace 'Microsoft.OperationalInsights/workspaces@2025-02-01' existing = {
   name: logAnalyticsWorkspaceName
 }
 
-resource storageinsightconfig 'Microsoft.OperationalInsights/workspaces/storageInsightConfigs@2020-08-01' = {
+resource storageinsightconfig 'Microsoft.OperationalInsights/workspaces/storageInsightConfigs@2025-02-01' = {
   name: name
   parent: workspace
   tags: tags

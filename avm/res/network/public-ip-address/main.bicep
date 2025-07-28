@@ -1,6 +1,5 @@
 metadata name = 'Public IP Addresses'
 metadata description = 'This module deploys a Public IP Address.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Required. The name of the Public IP Address.')
 param name string
@@ -21,7 +20,7 @@ param publicIPAllocationMethod string = 'Static'
   2
   3
 ])
-param zones int[] = [
+param availabilityZones int[] = [
   1
   2
   3
@@ -145,7 +144,7 @@ resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableT
   }
 }
 
-resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2023-09-01' = {
+resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2024-05-01' = {
   name: name
   location: location
   tags: tags
@@ -153,7 +152,7 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2023-09-01' = {
     name: skuName
     tier: skuTier
   }
-  zones: map(zones, zone => string(zone))
+  zones: map(availabilityZones, zone => string(zone))
   properties: {
     ddosSettings: ddosSettings
     dnsSettings: dnsSettings
@@ -249,8 +248,8 @@ type dnsSettingsType = {
   @description('Required. The domain name label. The concatenation of the domain name label and the regionalized DNS zone make up the fully qualified domain name associated with the public IP address. If a domain name label is specified, an A DNS record is created for the public IP in the Microsoft Azure DNS system.')
   domainNameLabel: string
 
-  @description('Required. The domain name label scope. If a domain name label and a domain name label scope are specified, an A DNS record is created for the public IP in the Microsoft Azure DNS system with a hashed value includes in FQDN.')
-  domainNameLabelScope: ('' | 'NoReuse' | 'ResourceGroupReuse' | 'SubscriptionReuse' | 'TenantReuse')
+  @description('Optional. The domain name label scope. If a domain name label and a domain name label scope are specified, an A DNS record is created for the public IP in the Microsoft Azure DNS system with a hashed value includes in FQDN.')
+  domainNameLabelScope: ('NoReuse' | 'ResourceGroupReuse' | 'SubscriptionReuse' | 'TenantReuse')?
 
   @description('Optional. The Fully Qualified Domain Name of the A DNS record associated with the public IP. This is the concatenation of the domainNameLabel and the regionalized DNS zone.')
   fqdn: string?

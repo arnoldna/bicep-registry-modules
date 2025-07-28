@@ -1,6 +1,5 @@
 metadata name = 'Azure SQL Server Database Short Term Backup Retention Policies'
 metadata description = 'This module deploys an Azure SQL Server Database Short-Term Backup Retention Policy.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Required. The name of the parent SQL Server.')
 param serverName string
@@ -14,15 +13,15 @@ param diffBackupIntervalInHours int = 24
 @description('Optional. Poin-in-time retention in days.')
 param retentionDays int = 7
 
-resource server 'Microsoft.Sql/servers@2023-08-01-preview' existing = {
+resource server 'Microsoft.Sql/servers@2023-08-01' existing = {
   name: serverName
 
-  resource database 'databases@2023-08-01-preview' existing = {
+  resource database 'databases@2023-08-01' existing = {
     name: databaseName
   }
 }
 
-resource backupShortTermRetentionPolicy 'Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies@2023-08-01-preview' = {
+resource backupShortTermRetentionPolicy 'Microsoft.Sql/servers/databases/backupShortTermRetentionPolicies@2023-08-01' = {
   name: 'default'
   parent: server::database
   properties: {

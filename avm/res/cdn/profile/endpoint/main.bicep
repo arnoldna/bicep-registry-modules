@@ -1,6 +1,5 @@
 metadata name = 'CDN Profiles Endpoints'
 metadata description = 'This module deploys a CDN Profile Endpoint.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Conditional. The name of the parent CDN profile. Required if the template is used in a standalone deployment.')
 param profileName string
@@ -17,11 +16,11 @@ param properties object
 @description('Optional. Endpoint tags.')
 param tags object?
 
-resource profile 'Microsoft.Cdn/profiles@2021-06-01' existing = {
+resource profile 'Microsoft.Cdn/profiles@2025-04-15' existing = {
   name: profileName
 }
 
-resource endpoint 'microsoft.cdn/profiles/endpoints@2021-06-01' = {
+resource endpoint 'microsoft.cdn/profiles/endpoints@2025-04-15' = {
   parent: profile
   name: name
   location: location

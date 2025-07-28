@@ -1,8 +1,7 @@
 metadata name = 'Azd Azure Machine Learning Dependencies'
-metadata description = '''Creates all the dependencies required for a Machine Learning Service.
+metadata description = '''DEPRECATED - Creates all the dependencies required for a Machine Learning Service.
 
 **Note:** This module is not intended for broad, generic use, as it was designed to cater for the requirements of the AZD CLI product. Feature requests and bug fix requests are welcome if they support the development of the AZD CLI but may not be incorporated if they aim to make this module more generic than what it needs to be for its primary use case.'''
-metadata owner = 'Azure/module-maintainers'
 
 @description('Optional. The resource portal dashboards name.')
 param applicationInsightsDashboardName string = ''
@@ -35,7 +34,7 @@ param containerRegistryName string = ''
 param searchServiceName string = ''
 
 @description('Optional. Indicates whether public access is enabled for all blobs or containers in the storage account. For security reasons, it is recommended to set it to false.')
-param allowBlobPublicAccess bool = true
+param allowBlobPublicAccess bool = false
 
 @description('Optional. Allows you to specify the type of endpoint in the storage account. Set this to AzureDNSZone to create a large number of accounts in a single subscription, which creates accounts in an Azure DNS Zone and the endpoint URL will have an alphanumeric DNS Zone identifier.')
 @allowed([
@@ -56,11 +55,11 @@ param publicNetworkAccess string = 'Enabled'
 @description('Optional. Networks ACLs, this value contains IPs to whitelist and/or Subnet information. If in use, bypass needs to be supplied. For security reasons, it is recommended to set the DefaultAction Deny.')
 param networkAcls object = {
   bypass: 'AzureServices'
-  defaultAction: 'Allow'
+  defaultAction: 'Deny'
 }
 
 @description('Optional. Blob service and containers to deploy.')
-param blobServices object =  {
+param blobServices object = {
   containers: [
     {
       name: 'default'
@@ -269,6 +268,9 @@ param searchServiceSku string = 'standard'
 @description('Conditional. The managed identity definition for this resource. Required if `assignRbacRole` is `true` and `managedIdentityName` is `null`.')
 param managedIdentities managedIdentitiesType?
 
+@description('Optional. Indicates whether the storage account permits requests to be authorized with the account access key via Shared Key. If false, then all requests, including shared access signatures, must be authorized with Azure Active Directory (Azure AD).')
+param allowSharedKeyAccess bool = false
+
 // ============== //
 // Resources      //
 // ============== //
@@ -292,7 +294,7 @@ resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableT
   }
 }
 
-module keyVault 'br/public:avm/res/key-vault/vault:0.7.1' = {
+module keyVault 'br/public:avm/res/key-vault/vault:0.12.1' = {
   name: '${uniqueString(deployment().name, location)}-keyvault'
   params: {
     name: keyVaultName
@@ -307,7 +309,7 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.7.1' = {
   }
 }
 
-module storageAccount 'br/public:avm/res/storage/storage-account:0.9.1' = {
+module storageAccount 'br/public:avm/res/storage/storage-account:0.19.0' = {
   name: '${uniqueString(deployment().name, location)}-storage'
   params: {
     name: storageAccountName
@@ -322,10 +324,11 @@ module storageAccount 'br/public:avm/res/storage/storage-account:0.9.1' = {
     queueServices: queueServices
     tableServices: tableServices
     enableTelemetry: enableTelemetry
+    allowSharedKeyAccess: allowSharedKeyAccess
   }
 }
 
-module cognitiveServices 'br/public:avm/res/cognitive-services/account:0.7.0' = {
+module cognitiveServices 'br/public:avm/res/cognitive-services/account:0.10.2' = {
   name: '${uniqueString(deployment().name, location)}-cognitive'
   params: {
     name: cognitiveServicesName
@@ -342,7 +345,7 @@ module cognitiveServices 'br/public:avm/res/cognitive-services/account:0.7.0' = 
   }
 }
 
-module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.6.0' = if (!empty(logAnalyticsName)) {
+module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.11.2' = if (!empty(logAnalyticsName)) {
   name: '${uniqueString(deployment().name, location)}-loganalytics'
   params: {
     name: logAnalyticsName
@@ -354,7 +357,7 @@ module logAnalytics 'br/public:avm/res/operational-insights/workspace:0.6.0' = i
   }
 }
 
-module applicationInsights 'br/public:avm/ptn/azd/insights-dashboard:0.1.0' = if (!empty(applicationInsightsName) && !empty(logAnalyticsName)) {
+module applicationInsights 'br/public:avm/ptn/azd/insights-dashboard:0.1.2' = if (!empty(applicationInsightsName) && !empty(logAnalyticsName)) {
   name: '${uniqueString(deployment().name, location)}-insights'
   params: {
     location: location
@@ -366,7 +369,7 @@ module applicationInsights 'br/public:avm/ptn/azd/insights-dashboard:0.1.0' = if
   }
 }
 
-module containerRegistry 'br/public:avm/res/container-registry/registry:0.4.0' = if (!empty(containerRegistryName)) {
+module containerRegistry 'br/public:avm/res/container-registry/registry:0.9.1' = if (!empty(containerRegistryName)) {
   name: '${uniqueString(deployment().name, location)}-registry'
   params: {
     name: containerRegistryName
@@ -378,7 +381,7 @@ module containerRegistry 'br/public:avm/res/container-registry/registry:0.4.0' =
   }
 }
 
-module searchService 'br/public:avm/res/search/search-service:0.6.0' = if (!empty(searchServiceName)) {
+module searchService 'br/public:avm/res/search/search-service:0.10.0' = if (!empty(searchServiceName)) {
   name: '${uniqueString(deployment().name, location)}-searchservice'
   params: {
     name: searchServiceName
@@ -431,10 +434,14 @@ output containerRegistryName string = !empty(containerRegistryName) ? containerR
 output containerRegistryEndpoint string = !empty(containerRegistryName) ? containerRegistry.outputs.loginServer : ''
 
 @description('The resource ID of the application insights.')
-output applicationInsightsResourceId string = !empty(applicationInsightsName) ? applicationInsights.outputs.applicationInsightsResourceId : ''
+output applicationInsightsResourceId string = !empty(applicationInsightsName)
+  ? applicationInsights.outputs.applicationInsightsResourceId
+  : ''
 
 @description('The name of the application insights.')
-output applicationInsightsName string = !empty(applicationInsightsName) ? applicationInsights.outputs.applicationInsightsName : ''
+output applicationInsightsName string = !empty(applicationInsightsName)
+  ? applicationInsights.outputs.applicationInsightsName
+  : ''
 
 @description('The resource ID of the loganalytics workspace.')
 output logAnalyticsWorkspaceResourceId string = !empty(logAnalyticsName) ? logAnalytics.outputs.resourceId : ''
@@ -458,16 +465,24 @@ output searchServiceResourceId string = !empty(searchServiceName) ? searchServic
 output searchServiceName string = !empty(searchServiceName) ? searchService.outputs.name : ''
 
 @description('The endpoint of the search service.')
-output searchServiceEndpoint string = !empty(searchServiceName) ? 'https://${searchService.outputs.name}.search.windows.net/' : ''
+output searchServiceEndpoint string = !empty(searchServiceName)
+  ? 'https://${searchService.outputs.name}.search.windows.net/'
+  : ''
 
 @description('The connection string of the application insights.')
-output applicationInsightsConnectionString string = !empty(applicationInsightsName) ? applicationInsights.outputs.applicationInsightsConnectionString : ''
+output applicationInsightsConnectionString string = !empty(applicationInsightsName)
+  ? applicationInsights.outputs.applicationInsightsConnectionString
+  : ''
 
 @description('The instrumentation key of the application insights.')
-output applicationInsightsInstrumentationKey string = !empty(applicationInsightsName) ? applicationInsights.outputs.applicationInsightsInstrumentationKey : ''
+output applicationInsightsInstrumentationKey string = !empty(applicationInsightsName)
+  ? applicationInsights.outputs.applicationInsightsInstrumentationKey
+  : ''
 
 @description('The system assigned mi principal Id key of the search service.')
-output systemAssignedMiPrincipalId string = !empty(searchServiceName) ? searchService.outputs.systemAssignedMIPrincipalId : ''
+output systemAssignedMiPrincipalId string? = !empty(searchServiceName)
+  ? searchService.outputs.?systemAssignedMIPrincipalId
+  : ''
 
 // ================ //
 // Definitions      //
@@ -479,4 +494,4 @@ type managedIdentitiesType = {
 
   @description('Optional. The resource ID(s) to assign to the resource. Required if a user assigned identity is used for encryption.')
   userAssignedResourceIds: string[]?
-}?
+}

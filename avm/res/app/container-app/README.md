@@ -8,15 +8,18 @@ This module deploys a Container App.
 - [Usage examples](#Usage-examples)
 - [Parameters](#Parameters)
 - [Outputs](#Outputs)
+- [Cross-referenced modules](#Cross-referenced-modules)
 - [Data Collection](#Data-Collection)
 
 ## Resource Types
 
 | Resource Type | API Version |
 | :-- | :-- |
-| `Microsoft.App/containerApps` | [2024-03-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.App/2024-03-01/containerApps) |
+| `Microsoft.App/containerApps` | [2025-01-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.App/2025-01-01/containerApps) |
+| `Microsoft.App/containerApps/authConfigs` | [2025-01-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.App/2025-01-01/containerApps/authConfigs) |
 | `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
 | `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
+| `Microsoft.Insights/diagnosticSettings` | [2021-05-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings) |
 
 ## Usage examples
 
@@ -58,8 +61,6 @@ module containerApp 'br/public:avm/res/app/container-app:<version>' = {
     ]
     environmentResourceId: '<environmentResourceId>'
     name: 'acamin001'
-    // Non-required parameters
-    location: '<location>'
   }
 }
 ```
@@ -94,10 +95,6 @@ module containerApp 'br/public:avm/res/app/container-app:<version>' = {
     },
     "name": {
       "value": "acamin001"
-    },
-    // Non-required parameters
-    "location": {
-      "value": "<location>"
     }
   }
 }
@@ -126,8 +123,6 @@ param containers = [
 ]
 param environmentResourceId = '<environmentResourceId>'
 param name = 'acamin001'
-// Non-required parameters
-param location = '<location>'
 ```
 
 </details>
@@ -161,7 +156,6 @@ module containerApp 'br/public:avm/res/app/container-app:<version>' = {
     name: 'acapriv001'
     // Non-required parameters
     disableIngress: true
-    location: '<location>'
   }
 }
 ```
@@ -200,9 +194,6 @@ module containerApp 'br/public:avm/res/app/container-app:<version>' = {
     // Non-required parameters
     "disableIngress": {
       "value": true
-    },
-    "location": {
-      "value": "<location>"
     }
   }
 }
@@ -233,7 +224,6 @@ param environmentResourceId = '<environmentResourceId>'
 param name = 'acapriv001'
 // Non-required parameters
 param disableIngress = true
-param location = '<location>'
 ```
 
 </details>
@@ -293,6 +283,34 @@ module containerApp 'br/public:avm/res/app/container-app:<version>' = {
     environmentResourceId: '<environmentResourceId>'
     name: 'acamax001'
     // Non-required parameters
+    activeRevisionsMode: 'Single'
+    authConfig: {
+      globalValidation: {
+        unauthenticatedClientAction: 'Return401'
+      }
+      httpSettings: {
+        requireHttps: true
+      }
+      platform: {
+        enabled: true
+      }
+    }
+    identitySettings: [
+      {
+        identity: '<identity>'
+        lifecycle: 'None'
+      }
+    ]
+    initContainersTemplate: [
+      {
+        image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+        name: 'init-container'
+        resources: {
+          cpu: '<cpu>'
+          memory: '0.5Gi'
+        }
+      }
+    ]
     location: '<location>'
     lock: {
       kind: 'CanNotDelete'
@@ -322,18 +340,30 @@ module containerApp 'br/public:avm/res/app/container-app:<version>' = {
         roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
       }
     ]
-    secrets: {
-      secureList: [
-        {
-          name: 'containerappstoredsecret'
-          value: '<value>'
-        }
-        {
-          identity: '<identity>'
-          keyVaultUrl: '<keyVaultUrl>'
-          name: 'keyvaultstoredsecret'
-        }
-      ]
+    runtime: {
+      java: {
+        enableMetrics: true
+      }
+    }
+    scaleSettings: {
+      cooldownPeriod: 500
+      maxReplicas: 11
+      minReplicas: 4
+      pollingInterval: 45
+    }
+    secrets: [
+      {
+        name: 'containerappstoredsecret'
+        value: '<value>'
+      }
+      {
+        identity: '<identity>'
+        keyVaultUrl: '<keyVaultUrl>'
+        name: 'keyvaultstoredsecret'
+      }
+    ]
+    service: {
+      type: 'Web'
     }
     tags: {
       Env: 'test'
@@ -402,6 +432,42 @@ module containerApp 'br/public:avm/res/app/container-app:<version>' = {
       "value": "acamax001"
     },
     // Non-required parameters
+    "activeRevisionsMode": {
+      "value": "Single"
+    },
+    "authConfig": {
+      "value": {
+        "globalValidation": {
+          "unauthenticatedClientAction": "Return401"
+        },
+        "httpSettings": {
+          "requireHttps": true
+        },
+        "platform": {
+          "enabled": true
+        }
+      }
+    },
+    "identitySettings": {
+      "value": [
+        {
+          "identity": "<identity>",
+          "lifecycle": "None"
+        }
+      ]
+    },
+    "initContainersTemplate": {
+      "value": [
+        {
+          "image": "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest",
+          "name": "init-container",
+          "resources": {
+            "cpu": "<cpu>",
+            "memory": "0.5Gi"
+          }
+        }
+      ]
+    },
     "location": {
       "value": "<location>"
     },
@@ -439,19 +505,37 @@ module containerApp 'br/public:avm/res/app/container-app:<version>' = {
         }
       ]
     },
-    "secrets": {
+    "runtime": {
       "value": {
-        "secureList": [
-          {
-            "name": "containerappstoredsecret",
-            "value": "<value>"
-          },
-          {
-            "identity": "<identity>",
-            "keyVaultUrl": "<keyVaultUrl>",
-            "name": "keyvaultstoredsecret"
-          }
-        ]
+        "java": {
+          "enableMetrics": true
+        }
+      }
+    },
+    "scaleSettings": {
+      "value": {
+        "cooldownPeriod": 500,
+        "maxReplicas": 11,
+        "minReplicas": 4,
+        "pollingInterval": 45
+      }
+    },
+    "secrets": {
+      "value": [
+        {
+          "name": "containerappstoredsecret",
+          "value": "<value>"
+        },
+        {
+          "identity": "<identity>",
+          "keyVaultUrl": "<keyVaultUrl>",
+          "name": "keyvaultstoredsecret"
+        }
+      ]
+    },
+    "service": {
+      "value": {
+        "type": "Web"
       }
     },
     "tags": {
@@ -515,6 +599,34 @@ param containers = [
 param environmentResourceId = '<environmentResourceId>'
 param name = 'acamax001'
 // Non-required parameters
+param activeRevisionsMode = 'Single'
+param authConfig = {
+  globalValidation: {
+    unauthenticatedClientAction: 'Return401'
+  }
+  httpSettings: {
+    requireHttps: true
+  }
+  platform: {
+    enabled: true
+  }
+}
+param identitySettings = [
+  {
+    identity: '<identity>'
+    lifecycle: 'None'
+  }
+]
+param initContainersTemplate = [
+  {
+    image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+    name: 'init-container'
+    resources: {
+      cpu: '<cpu>'
+      memory: '0.5Gi'
+    }
+  }
+]
 param location = '<location>'
 param lock = {
   kind: 'CanNotDelete'
@@ -544,18 +656,30 @@ param roleAssignments = [
     roleDefinitionIdOrName: '<roleDefinitionIdOrName>'
   }
 ]
-param secrets = {
-  secureList: [
-    {
-      name: 'containerappstoredsecret'
-      value: '<value>'
-    }
-    {
-      identity: '<identity>'
-      keyVaultUrl: '<keyVaultUrl>'
-      name: 'keyvaultstoredsecret'
-    }
-  ]
+param runtime = {
+  java: {
+    enableMetrics: true
+  }
+}
+param scaleSettings = {
+  cooldownPeriod: 500
+  maxReplicas: 11
+  minReplicas: 4
+  pollingInterval: 45
+}
+param secrets = [
+  {
+    name: 'containerappstoredsecret'
+    value: '<value>'
+  }
+  {
+    identity: '<identity>'
+    keyVaultUrl: '<keyVaultUrl>'
+    name: 'keyvaultstoredsecret'
+  }
+]
+param service = {
+  type: 'Web'
 }
 param tags = {
   Env: 'test'
@@ -604,7 +728,6 @@ module containerApp 'br/public:avm/res/app/container-app:<version>' = {
     ingressExternal: false
     ingressTargetPort: 80
     ingressTransport: 'tcp'
-    location: '<location>'
   }
 }
 ```
@@ -661,9 +784,6 @@ module containerApp 'br/public:avm/res/app/container-app:<version>' = {
     },
     "ingressTransport": {
       "value": "tcp"
-    },
-    "location": {
-      "value": "<location>"
     }
   }
 }
@@ -704,7 +824,6 @@ param ingressAllowInsecure = false
 param ingressExternal = false
 param ingressTargetPort = 80
 param ingressTransport = 'tcp'
-param location = '<location>'
 ```
 
 </details>
@@ -754,13 +873,22 @@ module containerApp 'br/public:avm/res/app/container-app:<version>' = {
     environmentResourceId: '<environmentResourceId>'
     name: 'acawaf001'
     // Non-required parameters
+    diagnosticSettings: [
+      {
+        eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+        eventHubName: '<eventHubName>'
+        logCategoriesAndGroups: []
+        metricCategories: [
+          {
+            category: 'AllMetrics'
+          }
+        ]
+        storageAccountResourceId: '<storageAccountResourceId>'
+        workspaceResourceId: '<workspaceResourceId>'
+      }
+    ]
     ingressAllowInsecure: false
     ingressExternal: false
-    location: '<location>'
-    lock: {
-      kind: 'CanNotDelete'
-      name: 'myCustomLockName'
-    }
     managedIdentities: {
       userAssignedResourceIds: [
         '<managedIdentityResourceId>'
@@ -823,20 +951,27 @@ module containerApp 'br/public:avm/res/app/container-app:<version>' = {
       "value": "acawaf001"
     },
     // Non-required parameters
+    "diagnosticSettings": {
+      "value": [
+        {
+          "eventHubAuthorizationRuleResourceId": "<eventHubAuthorizationRuleResourceId>",
+          "eventHubName": "<eventHubName>",
+          "logCategoriesAndGroups": [],
+          "metricCategories": [
+            {
+              "category": "AllMetrics"
+            }
+          ],
+          "storageAccountResourceId": "<storageAccountResourceId>",
+          "workspaceResourceId": "<workspaceResourceId>"
+        }
+      ]
+    },
     "ingressAllowInsecure": {
       "value": false
     },
     "ingressExternal": {
       "value": false
-    },
-    "location": {
-      "value": "<location>"
-    },
-    "lock": {
-      "value": {
-        "kind": "CanNotDelete",
-        "name": "myCustomLockName"
-      }
     },
     "managedIdentities": {
       "value": {
@@ -896,13 +1031,22 @@ param containers = [
 param environmentResourceId = '<environmentResourceId>'
 param name = 'acawaf001'
 // Non-required parameters
+param diagnosticSettings = [
+  {
+    eventHubAuthorizationRuleResourceId: '<eventHubAuthorizationRuleResourceId>'
+    eventHubName: '<eventHubName>'
+    logCategoriesAndGroups: []
+    metricCategories: [
+      {
+        category: 'AllMetrics'
+      }
+    ]
+    storageAccountResourceId: '<storageAccountResourceId>'
+    workspaceResourceId: '<workspaceResourceId>'
+  }
+]
 param ingressAllowInsecure = false
 param ingressExternal = false
-param location = '<location>'
-param lock = {
-  kind: 'CanNotDelete'
-  name: 'myCustomLockName'
-}
 param managedIdentities = {
   userAssignedResourceIds: [
     '<managedIdentityResourceId>'
@@ -933,13 +1077,16 @@ param tags = {
 | :-- | :-- | :-- |
 | [`activeRevisionsMode`](#parameter-activerevisionsmode) | string | Controls how active revisions are handled for the Container app. |
 | [`additionalPortMappings`](#parameter-additionalportmappings) | array | Settings to expose additional ports on container app. |
+| [`authConfig`](#parameter-authconfig) | object | The name of the Container App Auth configs. |
 | [`clientCertificateMode`](#parameter-clientcertificatemode) | string | Client certificate mode for mTLS. |
 | [`corsPolicy`](#parameter-corspolicy) | object | Object userd to configure CORS policy. |
 | [`customDomains`](#parameter-customdomains) | array | Custom domain bindings for Container App hostnames. |
 | [`dapr`](#parameter-dapr) | object | Dapr configuration for the Container App. |
+| [`diagnosticSettings`](#parameter-diagnosticsettings) | array | The diagnostic settings of the service. |
 | [`disableIngress`](#parameter-disableingress) | bool | Bool to disable all ingress traffic for the container app. |
 | [`enableTelemetry`](#parameter-enabletelemetry) | bool | Enable/Disable usage telemetry for module. |
 | [`exposedPort`](#parameter-exposedport) | int | Exposed Port in containers for TCP traffic from ingress. |
+| [`identitySettings`](#parameter-identitysettings) | array | Settings for Managed Identities that are assigned to the Container App. If a Managed Identity is not specified here, default settings will be used. |
 | [`includeAddOns`](#parameter-includeaddons) | bool | Toggle to include the service configuration. |
 | [`ingressAllowInsecure`](#parameter-ingressallowinsecure) | bool | Bool indicating if HTTP connections to is allowed. If set to false HTTP connections are automatically redirected to HTTPS connections. |
 | [`ingressExternal`](#parameter-ingressexternal) | bool | Bool indicating if the App exposes an external HTTP endpoint. |
@@ -954,10 +1101,9 @@ param tags = {
 | [`registries`](#parameter-registries) | array | Collection of private container registry credentials for containers used by the Container app. |
 | [`revisionSuffix`](#parameter-revisionsuffix) | string | User friendly suffix that is appended to the revision name. |
 | [`roleAssignments`](#parameter-roleassignments) | array | Array of role assignments to create. |
-| [`scaleMaxReplicas`](#parameter-scalemaxreplicas) | int | Maximum number of container replicas. Defaults to 10 if not set. |
-| [`scaleMinReplicas`](#parameter-scaleminreplicas) | int | Minimum number of container replicas. Defaults to 3 if not set. |
-| [`scaleRules`](#parameter-scalerules) | array | Scaling rules. |
-| [`secrets`](#parameter-secrets) | secureObject | The secrets of the Container App. |
+| [`runtime`](#parameter-runtime) | object | Runtime configuration for the Container App. |
+| [`scaleSettings`](#parameter-scalesettings) | object | The scaling settings of the service. |
+| [`secrets`](#parameter-secrets) | array | The secrets of the Container App. |
 | [`service`](#parameter-service) | object | Dev ContainerApp service type. |
 | [`serviceBinds`](#parameter-servicebinds) | array | List of container app services bound to the app. |
 | [`stickySessionsAffinity`](#parameter-stickysessionsaffinity) | string | Bool indicating if the Container App should enable session affinity. |
@@ -1086,7 +1232,7 @@ List of probes for the container.
 | [`initialDelaySeconds`](#parameter-containersprobesinitialdelayseconds) | int | Number of seconds after the container has started before liveness probes are initiated. |
 | [`periodSeconds`](#parameter-containersprobesperiodseconds) | int | How often (in seconds) to perform the probe. Default to 10 seconds. |
 | [`successThreshold`](#parameter-containersprobessuccessthreshold) | int | Minimum consecutive successes for the probe to be considered successful after having failed. Defaults to 1. Must be 1 for liveness and startup. |
-| [`tcpSocket`](#parameter-containersprobestcpsocket) | object | TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported. |
+| [`tcpSocket`](#parameter-containersprobestcpsocket) | object | The TCP socket specifies an action involving a TCP port. TCP hooks not yet supported. |
 | [`terminationGracePeriodSeconds`](#parameter-containersprobesterminationgraceperiodseconds) | int | Optional duration in seconds the pod needs to terminate gracefully upon probe failure. The grace period is the duration in seconds after the processes running in the pod are sent a termination signal and the time when the processes are forcibly halted with a kill signal. Set this value longer than the expected cleanup time for your process. If this value is nil, the pod's terminationGracePeriodSeconds will be used. Otherwise, this value overrides the value provided by the pod spec. Value must be non-negative integer. The value zero indicates stop immediately via the kill signal (no opportunity to shut down). This is an alpha field and requires enabling ProbeTerminationGracePeriod feature gate. Maximum value is 3600 seconds (1 hour). |
 | [`timeoutSeconds`](#parameter-containersprobestimeoutseconds) | int | Number of seconds after which the probe times out. Defaults to 1 second. |
 | [`type`](#parameter-containersprobestype) | string | The type of probe. |
@@ -1106,8 +1252,6 @@ HTTPGet specifies the http request to perform.
 
 - Required: No
 - Type: object
-- MinValue: 1
-- MaxValue: 10
 
 **Required parameters**
 
@@ -1130,8 +1274,6 @@ Path to access on the HTTP server.
 
 - Required: Yes
 - Type: string
-- MinValue: 1
-- MaxValue: 10
 
 ### Parameter: `containers.probes.httpGet.port`
 
@@ -1139,8 +1281,6 @@ Name or number of the port to access on the container.
 
 - Required: Yes
 - Type: int
-- MinValue: 1
-- MaxValue: 10
 
 ### Parameter: `containers.probes.httpGet.host`
 
@@ -1148,8 +1288,6 @@ Host name to connect to. Defaults to the pod IP.
 
 - Required: No
 - Type: string
-- MinValue: 1
-- MaxValue: 10
 
 ### Parameter: `containers.probes.httpGet.httpHeaders`
 
@@ -1157,8 +1295,6 @@ HTTP headers to set in the request.
 
 - Required: No
 - Type: array
-- MinValue: 1
-- MaxValue: 10
 
 **Required parameters**
 
@@ -1173,8 +1309,6 @@ Name of the header.
 
 - Required: Yes
 - Type: string
-- MinValue: 1
-- MaxValue: 10
 
 ### Parameter: `containers.probes.httpGet.httpHeaders.value`
 
@@ -1182,8 +1316,6 @@ Value of the header.
 
 - Required: Yes
 - Type: string
-- MinValue: 1
-- MaxValue: 10
 
 ### Parameter: `containers.probes.httpGet.scheme`
 
@@ -1198,8 +1330,6 @@ Scheme to use for connecting to the host. Defaults to HTTP.
     'HTTPS'
   ]
   ```
-- MinValue: 1
-- MaxValue: 10
 
 ### Parameter: `containers.probes.initialDelaySeconds`
 
@@ -1230,12 +1360,10 @@ Minimum consecutive successes for the probe to be considered successful after ha
 
 ### Parameter: `containers.probes.tcpSocket`
 
-TCPSocket specifies an action involving a TCP port. TCP hooks not yet supported.
+The TCP socket specifies an action involving a TCP port. TCP hooks not yet supported.
 
 - Required: No
 - Type: object
-- MinValue: 1
-- MaxValue: 10
 
 **Required parameters**
 
@@ -1264,8 +1392,6 @@ Host name to connect to, defaults to the pod IP.
 
 - Required: No
 - Type: string
-- MinValue: 1
-- MaxValue: 65535
 
 ### Parameter: `containers.probes.terminationGracePeriodSeconds`
 
@@ -1273,8 +1399,6 @@ Optional duration in seconds the pod needs to terminate gracefully upon probe fa
 
 - Required: No
 - Type: int
-- MinValue: 1
-- MaxValue: 10
 
 ### Parameter: `containers.probes.timeoutSeconds`
 
@@ -1299,8 +1423,6 @@ The type of probe.
     'Startup'
   ]
   ```
-- MinValue: 1
-- MaxValue: 240
 
 ### Parameter: `containers.volumeMounts`
 
@@ -1413,6 +1535,66 @@ Specifies the exposed port for the target port. If not specified, it defaults to
 - Required: No
 - Type: int
 
+### Parameter: `authConfig`
+
+The name of the Container App Auth configs.
+
+- Required: No
+- Type: object
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`encryptionSettings`](#parameter-authconfigencryptionsettings) | object | The configuration settings of the secrets references of encryption key and signing key for ContainerApp Service Authentication/Authorization. |
+| [`globalValidation`](#parameter-authconfigglobalvalidation) | object | The configuration settings that determines the validation flow of users using Service Authentication and/or Authorization. |
+| [`httpSettings`](#parameter-authconfighttpsettings) | object | The configuration settings of the HTTP requests for authentication and authorization requests made against ContainerApp Service Authentication/Authorization. |
+| [`identityProviders`](#parameter-authconfigidentityproviders) | object | The configuration settings of each of the identity providers used to configure ContainerApp Service Authentication/Authorization. |
+| [`login`](#parameter-authconfiglogin) | object | The configuration settings of the login flow of users using ContainerApp Service Authentication/Authorization. |
+| [`platform`](#parameter-authconfigplatform) | object | The configuration settings of the platform of ContainerApp Service Authentication/Authorization. |
+
+### Parameter: `authConfig.encryptionSettings`
+
+The configuration settings of the secrets references of encryption key and signing key for ContainerApp Service Authentication/Authorization.
+
+- Required: No
+- Type: object
+
+### Parameter: `authConfig.globalValidation`
+
+The configuration settings that determines the validation flow of users using Service Authentication and/or Authorization.
+
+- Required: No
+- Type: object
+
+### Parameter: `authConfig.httpSettings`
+
+The configuration settings of the HTTP requests for authentication and authorization requests made against ContainerApp Service Authentication/Authorization.
+
+- Required: No
+- Type: object
+
+### Parameter: `authConfig.identityProviders`
+
+The configuration settings of each of the identity providers used to configure ContainerApp Service Authentication/Authorization.
+
+- Required: No
+- Type: object
+
+### Parameter: `authConfig.login`
+
+The configuration settings of the login flow of users using ContainerApp Service Authentication/Authorization.
+
+- Required: No
+- Type: object
+
+### Parameter: `authConfig.platform`
+
+The configuration settings of the platform of ContainerApp Service Authentication/Authorization.
+
+- Required: No
+- Type: object
+
 ### Parameter: `clientCertificateMode`
 
 Client certificate mode for mTLS.
@@ -1495,7 +1677,6 @@ Custom domain bindings for Container App hostnames.
 
 - Required: No
 - Type: array
-- Default: `[]`
 
 ### Parameter: `dapr`
 
@@ -1503,7 +1684,115 @@ Dapr configuration for the Container App.
 
 - Required: No
 - Type: object
-- Default: `{}`
+
+### Parameter: `diagnosticSettings`
+
+The diagnostic settings of the service.
+
+- Required: No
+- Type: array
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`eventHubAuthorizationRuleResourceId`](#parameter-diagnosticsettingseventhubauthorizationruleresourceid) | string | Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to. |
+| [`eventHubName`](#parameter-diagnosticsettingseventhubname) | string | Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
+| [`logAnalyticsDestinationType`](#parameter-diagnosticsettingsloganalyticsdestinationtype) | string | A string indicating whether the export to Log Analytics should use the default destination type, i.e. AzureDiagnostics, or use a destination type. |
+| [`marketplacePartnerResourceId`](#parameter-diagnosticsettingsmarketplacepartnerresourceid) | string | The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs. |
+| [`metricCategories`](#parameter-diagnosticsettingsmetriccategories) | array | The name of metrics that will be streamed. "allMetrics" includes all possible metrics for the resource. Set to `[]` to disable metric collection. |
+| [`name`](#parameter-diagnosticsettingsname) | string | The name of diagnostic setting. |
+| [`storageAccountResourceId`](#parameter-diagnosticsettingsstorageaccountresourceid) | string | Resource ID of the diagnostic storage account. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
+| [`workspaceResourceId`](#parameter-diagnosticsettingsworkspaceresourceid) | string | Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub. |
+
+### Parameter: `diagnosticSettings.eventHubAuthorizationRuleResourceId`
+
+Resource ID of the diagnostic event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to.
+
+- Required: No
+- Type: string
+
+### Parameter: `diagnosticSettings.eventHubName`
+
+Name of the diagnostic event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub.
+
+- Required: No
+- Type: string
+
+### Parameter: `diagnosticSettings.logAnalyticsDestinationType`
+
+A string indicating whether the export to Log Analytics should use the default destination type, i.e. AzureDiagnostics, or use a destination type.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'AzureDiagnostics'
+    'Dedicated'
+  ]
+  ```
+
+### Parameter: `diagnosticSettings.marketplacePartnerResourceId`
+
+The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs.
+
+- Required: No
+- Type: string
+
+### Parameter: `diagnosticSettings.metricCategories`
+
+The name of metrics that will be streamed. "allMetrics" includes all possible metrics for the resource. Set to `[]` to disable metric collection.
+
+- Required: No
+- Type: array
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`category`](#parameter-diagnosticsettingsmetriccategoriescategory) | string | Name of a Diagnostic Metric category for a resource type this setting is applied to. Set to `AllMetrics` to collect all metrics. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`enabled`](#parameter-diagnosticsettingsmetriccategoriesenabled) | bool | Enable or disable the category explicitly. Default is `true`. |
+
+### Parameter: `diagnosticSettings.metricCategories.category`
+
+Name of a Diagnostic Metric category for a resource type this setting is applied to. Set to `AllMetrics` to collect all metrics.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `diagnosticSettings.metricCategories.enabled`
+
+Enable or disable the category explicitly. Default is `true`.
+
+- Required: No
+- Type: bool
+
+### Parameter: `diagnosticSettings.name`
+
+The name of diagnostic setting.
+
+- Required: No
+- Type: string
+
+### Parameter: `diagnosticSettings.storageAccountResourceId`
+
+Resource ID of the diagnostic storage account. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub.
+
+- Required: No
+- Type: string
+
+### Parameter: `diagnosticSettings.workspaceResourceId`
+
+Resource ID of the diagnostic log analytics workspace. For security reasons, it is recommended to set diagnostic settings to send data to either storage account, log analytics workspace or event hub.
+
+- Required: No
+- Type: string
 
 ### Parameter: `disableIngress`
 
@@ -1528,6 +1817,13 @@ Exposed Port in containers for TCP traffic from ingress.
 - Required: No
 - Type: int
 - Default: `0`
+
+### Parameter: `identitySettings`
+
+Settings for Managed Identities that are assigned to the Container App. If a Managed Identity is not specified here, default settings will be used.
+
+- Required: No
+- Type: array
 
 ### Parameter: `includeAddOns`
 
@@ -1584,7 +1880,6 @@ List of specialized containers that run before app containers.
 
 - Required: No
 - Type: array
-- Default: `[]`
 
 ### Parameter: `ipSecurityRestrictions`
 
@@ -1592,7 +1887,6 @@ Rules to restrict incoming IP address.
 
 - Required: No
 - Type: array
-- Default: `[]`
 
 ### Parameter: `location`
 
@@ -1650,7 +1944,7 @@ The managed identity definition for this resource.
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
 | [`systemAssigned`](#parameter-managedidentitiessystemassigned) | bool | Enables system assigned managed identity on the resource. |
-| [`userAssignedResourceIds`](#parameter-managedidentitiesuserassignedresourceids) | array | The resource ID(s) to assign to the resource. |
+| [`userAssignedResourceIds`](#parameter-managedidentitiesuserassignedresourceids) | array | The resource ID(s) to assign to the resource. Required if a user assigned identity is used for encryption. |
 
 ### Parameter: `managedIdentities.systemAssigned`
 
@@ -1661,7 +1955,7 @@ Enables system assigned managed identity on the resource.
 
 ### Parameter: `managedIdentities.userAssignedResourceIds`
 
-The resource ID(s) to assign to the resource.
+The resource ID(s) to assign to the resource. Required if a user assigned identity is used for encryption.
 
 - Required: No
 - Type: array
@@ -1680,7 +1974,6 @@ Collection of private container registry credentials for containers used by the 
 
 - Required: No
 - Type: array
-- Default: `[]`
 
 ### Parameter: `revisionSuffix`
 
@@ -1794,37 +2087,175 @@ The principal type of the assigned principal ID.
   ]
   ```
 
-### Parameter: `scaleMaxReplicas`
+### Parameter: `runtime`
 
-Maximum number of container replicas. Defaults to 10 if not set.
+Runtime configuration for the Container App.
+
+- Required: No
+- Type: object
+
+### Parameter: `scaleSettings`
+
+The scaling settings of the service.
+
+- Required: No
+- Type: object
+- Default:
+  ```Bicep
+  {
+      maxReplicas: 10
+      minReplicas: 3
+  }
+  ```
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`maxReplicas`](#parameter-scalesettingsmaxreplicas) | int | The maximum number of replicas. |
+| [`minReplicas`](#parameter-scalesettingsminreplicas) | int | The minimum number of replicas. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`cooldownPeriod`](#parameter-scalesettingscooldownperiod) | int | The cooldown period in seconds. |
+| [`pollingInterval`](#parameter-scalesettingspollinginterval) | int | The polling interval in seconds. |
+| [`rules`](#parameter-scalesettingsrules) | array | The scaling rules. |
+
+### Parameter: `scaleSettings.maxReplicas`
+
+The maximum number of replicas.
+
+- Required: Yes
+- Type: int
+
+### Parameter: `scaleSettings.minReplicas`
+
+The minimum number of replicas.
+
+- Required: Yes
+- Type: int
+
+### Parameter: `scaleSettings.cooldownPeriod`
+
+The cooldown period in seconds.
 
 - Required: No
 - Type: int
-- Default: `10`
 
-### Parameter: `scaleMinReplicas`
+### Parameter: `scaleSettings.pollingInterval`
 
-Minimum number of container replicas. Defaults to 3 if not set.
+The polling interval in seconds.
 
 - Required: No
 - Type: int
-- Default: `3`
 
-### Parameter: `scaleRules`
+### Parameter: `scaleSettings.rules`
 
-Scaling rules.
+The scaling rules.
 
 - Required: No
 - Type: array
-- Default: `[]`
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`name`](#parameter-scalesettingsrulesname) | string | The name of the scaling rule. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`azureQueue`](#parameter-scalesettingsrulesazurequeue) | object | The Azure Queue based scaling rule. |
+| [`custom`](#parameter-scalesettingsrulescustom) | object | The custom scaling rule. |
+| [`http`](#parameter-scalesettingsruleshttp) | object | The HTTP requests based scaling rule. |
+| [`tcp`](#parameter-scalesettingsrulestcp) | object | The TCP based scaling rule. |
+
+### Parameter: `scaleSettings.rules.name`
+
+The name of the scaling rule.
+
+- Required: Yes
+- Type: string
+
+### Parameter: `scaleSettings.rules.azureQueue`
+
+The Azure Queue based scaling rule.
+
+- Required: No
+- Type: object
+
+### Parameter: `scaleSettings.rules.custom`
+
+The custom scaling rule.
+
+- Required: No
+- Type: object
+
+### Parameter: `scaleSettings.rules.http`
+
+The HTTP requests based scaling rule.
+
+- Required: No
+- Type: object
+
+### Parameter: `scaleSettings.rules.tcp`
+
+The TCP based scaling rule.
+
+- Required: No
+- Type: object
 
 ### Parameter: `secrets`
 
 The secrets of the Container App.
 
 - Required: No
-- Type: secureObject
-- Default: `{}`
+- Type: array
+
+**Conditional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`keyVaultUrl`](#parameter-secretskeyvaulturl) | string | The URL of the Azure Key Vault secret referenced by the Container App. Required if `value` is null. |
+| [`value`](#parameter-secretsvalue) | securestring | The container app secret value, if not fetched from the Key Vault. Required if `keyVaultUrl` is not null. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`identity`](#parameter-secretsidentity) | string | Resource ID of a managed identity to authenticate with Azure Key Vault, or System to use a system-assigned identity. |
+| [`name`](#parameter-secretsname) | string | The name of the container app secret. |
+
+### Parameter: `secrets.keyVaultUrl`
+
+The URL of the Azure Key Vault secret referenced by the Container App. Required if `value` is null.
+
+- Required: No
+- Type: string
+
+### Parameter: `secrets.value`
+
+The container app secret value, if not fetched from the Key Vault. Required if `keyVaultUrl` is not null.
+
+- Required: No
+- Type: securestring
+
+### Parameter: `secrets.identity`
+
+Resource ID of a managed identity to authenticate with Azure Key Vault, or System to use a system-assigned identity.
+
+- Required: No
+- Type: string
+
+### Parameter: `secrets.name`
+
+The name of the container app secret.
+
+- Required: No
+- Type: string
 
 ### Parameter: `service`
 
@@ -1832,7 +2263,6 @@ Dev ContainerApp service type.
 
 - Required: No
 - Type: object
-- Default: `{}`
 
 ### Parameter: `serviceBinds`
 
@@ -1922,7 +2352,6 @@ List of volume definitions for the Container App.
 
 - Required: No
 - Type: array
-- Default: `[]`
 
 ### Parameter: `workloadProfileName`
 
@@ -1942,6 +2371,15 @@ Workload profile name to pin for container app execution.
 | `resourceGroupName` | string | The name of the resource group the Container App was deployed into. |
 | `resourceId` | string | The resource ID of the Container App. |
 | `systemAssignedMIPrincipalId` | string | The principal ID of the system assigned identity. |
+
+## Cross-referenced modules
+
+This section gives you an overview of all local-referenced module files (i.e., other modules that are referenced in this module) and all remote-referenced files (i.e., Bicep modules that are referenced from a Bicep Registry or Template Specs).
+
+| Reference | Type |
+| :-- | :-- |
+| `br/public:avm/utl/types/avm-common-types:0.4.1` | Remote reference |
+| `br/public:avm/utl/types/avm-common-types:0.6.0` | Remote reference |
 
 ## Data Collection
 

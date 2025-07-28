@@ -7,13 +7,14 @@ This module deploys an Azure Compute Gallery Image Definition.
 - [Resource Types](#Resource-Types)
 - [Parameters](#Parameters)
 - [Outputs](#Outputs)
+- [Cross-referenced modules](#Cross-referenced-modules)
 
 ## Resource Types
 
 | Resource Type | API Version |
 | :-- | :-- |
 | `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
-| `Microsoft.Compute/galleries/images` | [2023-07-03](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Compute/2023-07-03/galleries/images) |
+| `Microsoft.Compute/galleries/images` | [2024-03-03](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Compute/2024-03-03/galleries/images) |
 
 ## Parameters
 
@@ -36,9 +37,11 @@ This module deploys an Azure Compute Gallery Image Definition.
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
+| [`allowUpdateImage`](#parameter-allowupdateimage) | bool | Must be set to true if the gallery image features are being updated. |
 | [`architecture`](#parameter-architecture) | string | The architecture of the image. Applicable to OS disks only. |
 | [`description`](#parameter-description) | string | The description of this gallery image definition resource. This property is updatable. |
 | [`disallowed`](#parameter-disallowed) | object | Describes the disallowed disk types. |
+| [`diskControllerType`](#parameter-diskcontrollertype) | string | The disk controllers that an OS disk supports. |
 | [`endOfLifeDate`](#parameter-endoflifedate) | string | The end of life date of the gallery image definition. This property can be used for decommissioning purposes. This property is updatable. |
 | [`eula`](#parameter-eula) | string | The Eula agreement for the gallery image definition. |
 | [`hyperVGeneration`](#parameter-hypervgeneration) | string | The hypervisor generation of the Virtual Machine. If this value is not specified, then it is determined by the securityType parameter. If the securityType parameter is specified, then the value of hyperVGeneration will be V2, else V1. |
@@ -50,7 +53,7 @@ This module deploys an Azure Compute Gallery Image Definition.
 | [`purchasePlan`](#parameter-purchaseplan) | object | Describes the gallery image definition purchase plan. This is used by marketplace images. |
 | [`releaseNoteUri`](#parameter-releasenoteuri) | string | The release note uri. Has to be a valid URL. |
 | [`roleAssignments`](#parameter-roleassignments) | array | Array of role assignments to create. |
-| [`securityType`](#parameter-securitytype) | string | The security type of the image. Requires a hyperVGeneration V2. |
+| [`securityType`](#parameter-securitytype) | string | The security type of the image. Requires a hyperVGeneration V2. Note, if storing images for e.g., DevBoxes, 'TrustedLaunch' is required. |
 | [`tags`](#parameter-tags) | object | Tags for all the image. |
 | [`vCPUs`](#parameter-vcpus) | object | Describes the resource range (1-128 CPU cores). |
 
@@ -132,6 +135,13 @@ The name of the parent Azure Shared Image Gallery. Required if the template is u
 - Required: Yes
 - Type: string
 
+### Parameter: `allowUpdateImage`
+
+Must be set to true if the gallery image features are being updated.
+
+- Required: No
+- Type: bool
+
 ### Parameter: `architecture`
 
 The architecture of the image. Applicable to OS disks only.
@@ -179,6 +189,21 @@ A list of disk types.
   ]
   ```
 
+### Parameter: `diskControllerType`
+
+The disk controllers that an OS disk supports.
+
+- Required: No
+- Type: string
+- Allowed:
+  ```Bicep
+  [
+    'NVMe, SCSI'
+    'SCSI'
+    'SCSI, NVMe'
+  ]
+  ```
+
 ### Parameter: `endOfLifeDate`
 
 The end of life date of the gallery image definition. This property can be used for decommissioning purposes. This property is updatable.
@@ -213,7 +238,6 @@ Specify if the image supports accelerated networking.
 
 - Required: No
 - Type: bool
-- Default: `True`
 
 ### Parameter: `isHibernateSupported`
 
@@ -422,7 +446,7 @@ The principal type of the assigned principal ID.
 
 ### Parameter: `securityType`
 
-The security type of the image. Requires a hyperVGeneration V2.
+The security type of the image. Requires a hyperVGeneration V2. Note, if storing images for e.g., DevBoxes, 'TrustedLaunch' is required.
 
 - Required: No
 - Type: string
@@ -496,3 +520,11 @@ The minimum number of the resource.
 | `name` | string | The name of the image. |
 | `resourceGroupName` | string | The resource group the image was deployed into. |
 | `resourceId` | string | The resource ID of the image. |
+
+## Cross-referenced modules
+
+This section gives you an overview of all local-referenced module files (i.e., other modules that are referenced in this module) and all remote-referenced files (i.e., Bicep modules that are referenced from a Bicep Registry or Template Specs).
+
+| Reference | Type |
+| :-- | :-- |
+| `br/public:avm/utl/types/avm-common-types:0.5.1` | Remote reference |

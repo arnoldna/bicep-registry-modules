@@ -1,6 +1,5 @@
 metadata name = 'Key Vaults'
 metadata description = 'This module deploys a Key Vault.'
-metadata owner = 'Azure/module-maintainers'
 
 // ================ //
 // Parameters       //
@@ -39,7 +38,11 @@ param softDeleteRetentionInDays int = 90
 @description('Optional. Property that controls how data actions are authorized. When true, the key vault will use Role Based Access Control (RBAC) for authorization of data actions, and the access policies specified in vault properties will be ignored. When false, the key vault will use the access policies specified in vault properties, and any policy stored on Azure Resource Manager will be ignored. Note that management actions are always authorized with RBAC.')
 param enableRbacAuthorization bool = true
 
-@description('Optional. The vault\'s create mode to indicate whether the vault need to be recovered or not. - recover or default.')
+@description('Optional. The vault\'s create mode to indicate whether the vault need to be recovered or not.')
+@allowed([
+  'default'
+  'recover'
+])
 param createMode string = 'default'
 
 @description('Optional. Provide \'true\' to enable Key Vault\'s purge protection feature.')
@@ -53,7 +56,7 @@ param enablePurgeProtection bool = true
 param sku string = 'premium'
 
 @description('Optional. Rules governing the accessibility of the resource from specific network locations.')
-param networkAcls object?
+param networkAcls networkAclsType?
 
 @description('Optional. Whether or not public network access is allowed for this resource. For security reasons it should be disabled. If not specified, it will be disabled by default if private endpoints are set and networkAcls are not set.')
 @allowed([
@@ -63,22 +66,22 @@ param networkAcls object?
 ])
 param publicNetworkAccess string = ''
 
-import { lockType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+import { lockType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. The lock settings of the service.')
 param lock lockType?
 
-import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+import { roleAssignmentType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. Array of role assignments to create.')
 param roleAssignments roleAssignmentType[]?
 
-import { privateEndpointSingleServiceType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+import { privateEndpointSingleServiceType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. Configuration details for private endpoints. For security reasons, it is recommended to use private endpoints whenever possible.')
 param privateEndpoints privateEndpointSingleServiceType[]?
 
 @description('Optional. Resource tags.')
-param tags object?
+param tags resourceInput<'Microsoft.KeyVault/vaults@2024-11-01'>.tags?
 
-import { diagnosticSettingFullType } from 'br/public:avm/utl/types/avm-common-types:0.2.1'
+import { diagnosticSettingFullType } from 'br/public:avm/utl/types/avm-common-types:0.5.1'
 @description('Optional. The diagnostic settings of the service.')
 param diagnosticSettings diagnosticSettingFullType[]?
 
@@ -88,6 +91,8 @@ param enableTelemetry bool = true
 // =========== //
 // Variables   //
 // =========== //
+
+var enableReferencedModulesTelemetry bool = false
 
 var builtInRoleNames = {
   Contributor: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
@@ -186,7 +191,7 @@ resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableT
   }
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
+resource keyVault 'Microsoft.KeyVault/vaults@2024-11-01' = {
   name: name
   location: location
   tags: tags
@@ -305,10 +310,13 @@ module keyVault_keys 'key/main.bicep' = [
   }
 ]
 
-module keyVault_privateEndpoints 'br/public:avm/res/network/private-endpoint:0.9.0' = [
+module keyVault_privateEndpoints 'br/public:avm/res/network/private-endpoint:0.11.0' = [
   for (privateEndpoint, index) in (privateEndpoints ?? []): {
     name: '${uniqueString(deployment().name, location)}-keyVault-PrivateEndpoint-${index}'
-    scope: resourceGroup(privateEndpoint.?resourceGroupName ?? '')
+    scope: resourceGroup(
+      split(privateEndpoint.?resourceGroupResourceId ?? resourceGroup().id, '/')[2],
+      split(privateEndpoint.?resourceGroupResourceId ?? resourceGroup().id, '/')[4]
+    )
     params: {
       name: privateEndpoint.?name ?? 'pep-${last(split(keyVault.id, '/'))}-${privateEndpoint.?service ?? 'vault'}-${index}'
       privateLinkServiceConnections: privateEndpoint.?isManualConnection != true
@@ -339,7 +347,7 @@ module keyVault_privateEndpoints 'br/public:avm/res/network/private-endpoint:0.9
           ]
         : null
       subnetResourceId: privateEndpoint.subnetResourceId
-      enableTelemetry: privateEndpoint.?enableTelemetry ?? enableTelemetry
+      enableTelemetry: enableReferencedModulesTelemetry
       location: privateEndpoint.?location ?? reference(
         split(privateEndpoint.subnetResourceId, '/subnets/')[0],
         '2020-06-01',
@@ -396,8 +404,8 @@ output privateEndpoints privateEndpointOutputType[] = [
   for (item, index) in (privateEndpoints ?? []): {
     name: keyVault_privateEndpoints[index].outputs.name
     resourceId: keyVault_privateEndpoints[index].outputs.resourceId
-    groupId: keyVault_privateEndpoints[index].outputs.groupId
-    customDnsConfigs: keyVault_privateEndpoints[index].outputs.customDnsConfig
+    groupId: keyVault_privateEndpoints[index].outputs.?groupId!
+    customDnsConfigs: keyVault_privateEndpoints[index].outputs.customDnsConfigs
     networkInterfaceResourceIds: keyVault_privateEndpoints[index].outputs.networkInterfaceResourceIds
   }
 ]
@@ -424,6 +432,32 @@ output keys credentialOutputType[] = [
 // ================ //
 // Definitions      //
 // ================ //
+
+@export()
+@description('The type for rules governing the accessibility of the key vault from specific network locations.')
+type networkAclsType = {
+  @description('Optional. The bypass options for traffic for the network ACLs.')
+  bypass: ('AzureServices' | 'None')?
+
+  @description('Optional. The default action for the network ACLs, when no rule matches.')
+  defaultAction: ('Allow' | 'Deny')?
+
+  @description('Optional. A list of IP rules.')
+  ipRules: {
+    @description('Required. An IPv4 address range in CIDR notation, such as "124.56.78.91" (simple IP address) or "124.56.78.0/24".')
+    value: string
+  }[]?
+
+  @description('Optional. A list of virtual network rules.')
+  virtualNetworkRules: {
+    @description('Required. The resource ID of the virtual network subnet.')
+    id: string
+
+    @description('Optional. Whether NRP will ignore the check if parent subnet has serviceEndpoints configured.')
+    ignoreMissingVnetServiceEndpoint: bool?
+  }[]?
+}
+
 @export()
 type privateEndpointOutputType = {
   @description('The name of the private endpoint.')
@@ -449,6 +483,7 @@ type privateEndpointOutputType = {
 }
 
 @export()
+@description('The type for a credential output.')
 type credentialOutputType = {
   @description('The item\'s resourceId.')
   resourceId: string
@@ -461,6 +496,7 @@ type credentialOutputType = {
 }
 
 @export()
+@description('The type for an access policy.')
 type accessPolicyType = {
   @description('Optional. The tenant ID that is used for authenticating requests to the key vault.')
   tenantId: string?
@@ -541,6 +577,7 @@ type accessPolicyType = {
 }
 
 @export()
+@description('The type for a secret output.')
 type secretType = {
   @description('Required. The name of the secret.')
   name: string
@@ -570,7 +607,10 @@ type secretType = {
   roleAssignments: roleAssignmentType[]?
 }
 
+import { rotationPolicyType } from 'key/main.bicep'
+
 @export()
+@description('The type for a key.')
 type keyType = {
   @description('Required. The name of the key.')
   name: string
@@ -615,30 +655,4 @@ type keyType = {
 
   @description('Optional. Array of role assignments to create.')
   roleAssignments: roleAssignmentType[]?
-}
-
-type rotationPolicyType = {
-  @description('Optional. The attributes of key rotation policy.')
-  attributes: {
-    @description('Optional. The expiration time for the new key version. It should be in ISO8601 format. Eg: "P90D", "P1Y".')
-    expiryTime: string?
-  }?
-
-  @description('Optional. The lifetimeActions for key rotation action.')
-  lifetimeActions: {
-    @description('Optional. The action of key rotation policy lifetimeAction.')
-    action: {
-      @description('Optional. The type of action.')
-      type: ('Notify' | 'Rotate')?
-    }?
-
-    @description('Optional. The trigger of key rotation policy lifetimeAction.')
-    trigger: {
-      @description('Optional. The time duration after key creation to rotate the key. It only applies to rotate. It will be in ISO 8601 duration format. Eg: "P90D", "P1Y".')
-      timeAfterCreate: string?
-
-      @description('Optional. The time duration before key expiring to rotate or notify. It will be in ISO 8601 duration format. Eg: "P90D", "P1Y".')
-      timeBeforeExpiry: string?
-    }?
-  }[]?
 }

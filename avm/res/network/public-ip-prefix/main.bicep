@@ -1,6 +1,5 @@
 metadata name = 'Public IP Prefixes'
 metadata description = 'This module deploys a Public IP Prefix.'
-metadata owner = 'Azure/module-maintainers'
 
 @description('Required. The name of the Public IP Prefix.')
 @minLength(1)
@@ -51,7 +50,7 @@ param ipTags ipTagType[]?
   2
   3
 ])
-param zones int[] = [
+param availabilityZones int[] = [
   1
   2
   3
@@ -116,7 +115,7 @@ resource publicIpPrefix 'Microsoft.Network/publicIPPrefixes@2024-01-01' = {
     name: 'Standard'
     tier: tier
   }
-  zones: map(zones, zone => string(zone))
+  zones: map(availabilityZones, zone => string(zone))
   properties: {
     customIPPrefix: !empty(customIPPrefix) ? customIPPrefix : null
     publicIPAddressVersion: publicIPAddressVersion

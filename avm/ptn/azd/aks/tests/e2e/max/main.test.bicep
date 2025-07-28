@@ -25,7 +25,7 @@ param aksClusterRoleAssignmentName string = newGuid()
 
 // Enforced location als not all regions have quota available
 #disable-next-line no-hardcoded-location
-var enforcedLocation = 'northeurope'
+var enforcedLocation = 'uksouth'
 
 // ============ //
 // Dependencies //
@@ -84,6 +84,8 @@ module testDeployment '../../../main.bicep' = [
         }
       ]
       agentPoolSize: 'Standard'
+      aadProfile: null
+      disableLocalAccounts: false
       systemPoolConfig: [
         {
           name: 'npsystem'

@@ -12,17 +12,23 @@ Mandatory. Path to the Bicep/ARM module that is being tested
 .PARAMETER ModuleTestFilePath
 Optional. Path to the template file/folder that is to be tested with the template file. Defaults to the module's default '.test' folder. Will be used if the DeploymentTest/ValidationTest switches are set.
 
+.PARAMETER PesterTag
+Optional. A string array that can be specified to run only Pester tests with the specified tag
+
 .PARAMETER PesterTest
 Optional. A switch parameter that triggers a Pester test for the module
 
 .PARAMETER ValidateOrDeployParameters
-Optional. An object consisting of the components that are required when using the Validate test or DeploymentTest switch parameter.  Mandatory if the DeploymentTest/ValidationTest switches are set.
+Optional. An object consisting of the components that are required when using the Validate test or DeploymentTest switch parameter. Mandatory if the DeploymentTest/ValidationTest switches are set.
 
 .PARAMETER DeploymentTest
 Optional. A switch parameter that triggers the deployment of the module
 
 .PARAMETER ValidationTest
 Optional. A switch parameter that triggers the validation of the module only without deployment
+
+.PARAMETER SkipE2eIgnoreLogic
+Optional. A switch parameter that enables you to skip the e2eIgnore logic in the test cases. If set to $true, the deployment tasks will be executed, even if a test-case is excluded by an .e2eignore file.
 
 .PARAMETER SkipParameterFileTokens
 Optional. A switch parameter that enables you to skip the search for local custom parameter file tokens.
@@ -34,7 +40,6 @@ Optional. Additional parameters you can provide with the deployment. E.g. @{ res
 Optional. A hashtable parameter that contains custom tokens to be replaced in the paramter files for deployment
 
 .EXAMPLE
-
 $TestModuleLocallyInput = @{
     TemplateFilePath           = 'C:\network\route-table\main.bicep'
     ModuleTestFilePath         = 'C:\network\route-table\.test\common\main.test.bicep'
@@ -59,7 +64,16 @@ Test-ModuleLocally @TestModuleLocallyInput -Verbose
 Run a Test-Az*Deployment using a test file with the provided tokens
 
 .EXAMPLE
+$TestModuleLocallyInput = @{
+    TemplateFilePath           = 'C:\network\route-table\main.bicep'
+    PesterTest                 = $true
+    PesterTag                  = 'UDT'
+}
+Test-ModuleLocally @TestModuleLocallyInput -Verbose
 
+Run the Pester tests with Tag 'UDT' for the given template file
+
+.EXAMPLE
 $TestModuleLocallyInput = @{
     TemplateFilePath           = 'C:\network\route-table\main.bicep'
     PesterTest                 = $true
@@ -69,7 +83,6 @@ Test-ModuleLocally @TestModuleLocallyInput -Verbose
 Run all Pester tests for the given template file
 
 .EXAMPLE
-
 $TestModuleLocallyInput = @{
     TemplateFilePath           = 'C:\network\route-table\main.bicep'
     PesterTest                 = $true
@@ -105,6 +118,7 @@ $TestModuleLocallyInput = @{
     AdditionalTokens           = @{
         tenantId = '00000000-0000-0000-0000-000000000000'
     }
+    SkipE2eIgnoreLogic       = $true
 }
 Test-ModuleLocally @TestModuleLocallyInput -Verbose
 Get What-If deployment result using a test file with the provided tokens
@@ -136,6 +150,10 @@ function Test-ModuleLocally {
         [hashtable] $AdditionalTokens = @{},
 
         [Parameter(Mandatory = $false)]
+        [Alias('PesterTags')]
+        [string[]] $PesterTag,
+
+        [Parameter(Mandatory = $false)]
         [switch] $PesterTest,
 
         [Parameter(Mandatory = $false)]
@@ -146,6 +164,9 @@ function Test-ModuleLocally {
 
         [Parameter(Mandatory = $false)]
         [switch] $ValidationTest,
+
+        [Parameter(Mandatory = $false)]
+        [switch] $SkipE2eIgnoreLogic,
 
         [Parameter(Mandatory = $false)]
         [switch] $WhatIfTest
@@ -186,7 +207,7 @@ function Test-ModuleLocally {
                     }
                 }
 
-                Invoke-Pester -Configuration @{
+                $configuration = @{
                     Run    = @{
                         Container = New-PesterContainer -Path $testFiles -Data @{
                             repoRootPath      = $repoRootPath
@@ -197,6 +218,14 @@ function Test-ModuleLocally {
                         Verbosity = 'Detailed'
                     }
                 }
+
+                if (-not [String]::IsNullOrEmpty($PesterTag)) {
+                    $configuration['Filter'] = @{
+                        Tag = $PesterTag
+                    }
+                }
+
+                Invoke-Pester -Configuration $configuration
             } catch {
                 $PSItem.Exception.Message
             }
@@ -263,8 +292,13 @@ function Test-ModuleLocally {
                 if ($ValidationTest) {
                     # Loop through test files
                     foreach ($moduleTestFile in $moduleTestFiles) {
-                        Write-Verbose ('Validating module [{0}] with test file [{1}]' -f $ModuleName, (Split-Path $moduleTestFile -Leaf)) -Verbose
-                        Test-TemplateDeployment @functionInput -TemplateFilePath $moduleTestFile
+                        $ignoreFilePath = Join-Path (Split-Path $moduleTestFile) '.e2eignore'
+                        if ((Test-Path $ignoreFilePath) -and -not $SkipE2eIgnoreLogic) {
+                            Write-Verbose "The module folder [$moduleTestFile] contains an [.e2eignore] file and is skipped." -Verbose
+                        } else {
+                            Write-Verbose ('Validating module [{0}] with test file [{1}]' -f $ModuleName, (Split-Path $moduleTestFile -Leaf)) -Verbose
+                            Test-TemplateDeployment @functionInput -TemplateFilePath $moduleTestFile
+                        }
                     }
                 }
 
@@ -273,8 +307,13 @@ function Test-ModuleLocally {
                 if ($WhatIfTest) {
                     # Loop through test files
                     foreach ($moduleTestFile in $moduleTestFiles) {
-                        Write-Verbose ('Get Deployment What-If result for module [{0}] with test file [{1}]' -f $ModuleName, (Split-Path $moduleTestFile -Leaf)) -Verbose
-                        Get-TemplateDeploymentWhatIf @functionInput -TemplateFilePath $moduleTestFile
+                        $ignoreFilePath = Join-Path (Split-Path $moduleTestFile) '.e2eignore'
+                        if ((Test-Path $ignoreFilePath) -and -not $SkipE2eIgnoreLogic) {
+                            Write-Verbose "The module folder [$moduleTestFile] contains an [.e2eignore] file and is skipped." -Verbose
+                        } else {
+                            Write-Verbose ('Get Deployment What-If result for module [{0}] with test file [{1}]' -f $ModuleName, (Split-Path $moduleTestFile -Leaf)) -Verbose
+                            Get-TemplateDeploymentWhatIf @functionInput -TemplateFilePath $moduleTestFile
+                        }
                     }
                 }
 
@@ -284,9 +323,14 @@ function Test-ModuleLocally {
                     $functionInput['retryLimit'] = 1 # Overwrite default of 3
                     # Loop through test files
                     foreach ($moduleTestFile in $moduleTestFiles) {
-                        Write-Verbose ('Deploy Module [{0}] with test file [{1}]' -f $ModuleName, (Split-Path $moduleTestFile -Leaf)) -Verbose
-                        if ($PSCmdlet.ShouldProcess(('Module [{0}] with test file [{1}]' -f $ModuleName, (Split-Path $moduleTestFile -Leaf)), 'Deploy')) {
-                            New-TemplateDeployment @functionInput -TemplateFilePath $moduleTestFile
+                        $ignoreFilePath = Join-Path (Split-Path $moduleTestFile) '.e2eignore'
+                        if ((Test-Path $ignoreFilePath) -and -not $SkipE2eIgnoreLogic) {
+                            Write-Verbose "The module folder [$moduleTestFile] contains an [.e2eignore] file and is skipped." -Verbose
+                        } else {
+                            Write-Verbose ('Deploy Module [{0}] with test file [{1}]' -f $ModuleName, (Split-Path $moduleTestFile -Leaf)) -Verbose
+                            if ($PSCmdlet.ShouldProcess(('Module [{0}] with test file [{1}]' -f $ModuleName, (Split-Path $moduleTestFile -Leaf)), 'Deploy')) {
+                                New-TemplateDeployment @functionInput -TemplateFilePath $moduleTestFile
+                            }
                         }
                     }
                 }
@@ -296,7 +340,7 @@ function Test-ModuleLocally {
             } finally {
                 # Restore test files
                 # ------------------
-                if (($ValidationTest -or $DeploymentTest) -and $ValidateOrDeployParameters) {
+                if (($ValidationTest -or $DeploymentTest -or $WhatIfTest) -and $ValidateOrDeployParameters) {
                     # Replace Values with Tokens For Repo Updates
                     Write-Verbose 'Restoring Tokens'
                     $null = Convert-TokensInFileList @tokenConfiguration -SwapValueWithName $true

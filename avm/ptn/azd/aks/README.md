@@ -25,16 +25,16 @@ Creates an Azure Kubernetes Service (AKS) cluster with a system agent pool as we
 | `Microsoft.ContainerRegistry/registries/replications` | [2023-06-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerRegistry/2023-06-01-preview/registries/replications) |
 | `Microsoft.ContainerRegistry/registries/scopeMaps` | [2023-06-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerRegistry/2023-06-01-preview/registries/scopeMaps) |
 | `Microsoft.ContainerRegistry/registries/webhooks` | [2023-06-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerRegistry/2023-06-01-preview/registries/webhooks) |
-| `Microsoft.ContainerService/managedClusters` | [2024-03-02-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerService/2024-03-02-preview/managedClusters) |
-| `Microsoft.ContainerService/managedClusters/agentPools` | [2023-07-02-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerService/2023-07-02-preview/managedClusters/agentPools) |
+| `Microsoft.ContainerService/managedClusters` | [2024-09-02-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerService/2024-09-02-preview/managedClusters) |
+| `Microsoft.ContainerService/managedClusters/agentPools` | [2024-09-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerService/2024-09-01/managedClusters/agentPools) |
 | `Microsoft.ContainerService/managedClusters/maintenanceConfigurations` | [2023-10-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.ContainerService/2023-10-01/managedClusters/maintenanceConfigurations) |
 | `Microsoft.Insights/diagnosticSettings` | [2021-05-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings) |
 | `Microsoft.KeyVault/vaults` | [2022-07-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2022-07-01/vaults) |
-| `Microsoft.KeyVault/vaults/accessPolicies` | [2022-07-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2022-07-01/vaults/accessPolicies) |
+| `Microsoft.KeyVault/vaults/accessPolicies` | [2023-07-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2023-07-01/vaults/accessPolicies) |
 | `Microsoft.KeyVault/vaults/keys` | [2022-07-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2022-07-01/vaults/keys) |
 | `Microsoft.KeyVault/vaults/secrets` | [2022-07-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KeyVault/2022-07-01/vaults/secrets) |
 | `Microsoft.KubernetesConfiguration/extensions` | [2022-03-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KubernetesConfiguration/2022-03-01/extensions) |
-| `Microsoft.KubernetesConfiguration/fluxConfigurations` | [2022-03-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KubernetesConfiguration/2022-03-01/fluxConfigurations) |
+| `Microsoft.KubernetesConfiguration/fluxConfigurations` | [2023-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.KubernetesConfiguration/2023-05-01/fluxConfigurations) |
 | `Microsoft.Network/privateEndpoints` | [2023-11-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-11-01/privateEndpoints) |
 | `Microsoft.Network/privateEndpoints/privateDnsZoneGroups` | [2023-11-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-11-01/privateEndpoints/privateDnsZoneGroups) |
 
@@ -69,7 +69,10 @@ module aks 'br/public:avm/ptn/azd/aks:<version>' = {
     name: '<name>'
     principalId: '<principalId>'
     // Non-required parameters
-    location: '<location>'
+    aadProfile: {
+      aadProfileEnableAzureRBAC: true
+      aadProfileManaged: true
+    }
     principalType: 'ServicePrincipal'
   }
 }
@@ -104,8 +107,11 @@ module aks 'br/public:avm/ptn/azd/aks:<version>' = {
       "value": "<principalId>"
     },
     // Non-required parameters
-    "location": {
-      "value": "<location>"
+    "aadProfile": {
+      "value": {
+        "aadProfileEnableAzureRBAC": true,
+        "aadProfileManaged": true
+      }
     },
     "principalType": {
       "value": "ServicePrincipal"
@@ -131,7 +137,10 @@ param monitoringWorkspaceResourceId = '<monitoringWorkspaceResourceId>'
 param name = '<name>'
 param principalId = '<principalId>'
 // Non-required parameters
-param location = '<location>'
+param aadProfile = {
+  aadProfileEnableAzureRBAC: true
+  aadProfileManaged: true
+}
 param principalType = 'ServicePrincipal'
 ```
 
@@ -158,6 +167,7 @@ module aks 'br/public:avm/ptn/azd/aks:<version>' = {
     name: '<name>'
     principalId: '<principalId>'
     // Non-required parameters
+    aadProfile: '<aadProfile>'
     acrSku: 'Basic'
     agentPoolConfig: [
       {
@@ -173,6 +183,7 @@ module aks 'br/public:avm/ptn/azd/aks:<version>' = {
     agentPoolSize: 'Standard'
     aksClusterRoleAssignmentName: '<aksClusterRoleAssignmentName>'
     containerRegistryRoleName: '<containerRegistryRoleName>'
+    disableLocalAccounts: false
     dnsPrefix: 'dep-dns-paamax'
     location: '<location>'
     principalType: 'ServicePrincipal'
@@ -227,6 +238,9 @@ module aks 'br/public:avm/ptn/azd/aks:<version>' = {
       "value": "<principalId>"
     },
     // Non-required parameters
+    "aadProfile": {
+      "value": "<aadProfile>"
+    },
     "acrSku": {
       "value": "Basic"
     },
@@ -251,6 +265,9 @@ module aks 'br/public:avm/ptn/azd/aks:<version>' = {
     },
     "containerRegistryRoleName": {
       "value": "<containerRegistryRoleName>"
+    },
+    "disableLocalAccounts": {
+      "value": false
     },
     "dnsPrefix": {
       "value": "dep-dns-paamax"
@@ -306,6 +323,7 @@ param monitoringWorkspaceResourceId = '<monitoringWorkspaceResourceId>'
 param name = '<name>'
 param principalId = '<principalId>'
 // Non-required parameters
+param aadProfile = '<aadProfile>'
 param acrSku = 'Basic'
 param agentPoolConfig = [
   {
@@ -321,6 +339,7 @@ param agentPoolConfig = [
 param agentPoolSize = 'Standard'
 param aksClusterRoleAssignmentName = '<aksClusterRoleAssignmentName>'
 param containerRegistryRoleName = '<containerRegistryRoleName>'
+param disableLocalAccounts = false
 param dnsPrefix = 'dep-dns-paamax'
 param location = '<location>'
 param principalType = 'ServicePrincipal'
@@ -369,6 +388,7 @@ param webApplicationRoutingEnabled = true
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
+| [`aadProfile`](#parameter-aadprofile) | object | Enable Azure Active Directory integration. |
 | [`acrSku`](#parameter-acrsku) | string | Tier of your Azure container registry. |
 | [`agentPoolConfig`](#parameter-agentpoolconfig) | array | Custom configuration of user node pool. |
 | [`agentPoolSize`](#parameter-agentpoolsize) | string | The User Pool Preset sizing. |
@@ -378,6 +398,7 @@ param webApplicationRoutingEnabled = true
 | [`disableLocalAccounts`](#parameter-disablelocalaccounts) | bool | If set to true, getting static credentials will be disabled for this cluster. This must only be used on Managed Clusters that are AAD enabled. |
 | [`dnsPrefix`](#parameter-dnsprefix) | string | Specifies the DNS prefix specified when creating the managed cluster. |
 | [`dnsServiceIP`](#parameter-dnsserviceip) | string | Specifies the IP address assigned to the Kubernetes DNS service. It must be within the Kubernetes service address range specified in serviceCidr. |
+| [`enableAzureRbac`](#parameter-enableazurerbac) | bool | Enable RBAC using AAD. |
 | [`enableKeyvaultSecretsProvider`](#parameter-enablekeyvaultsecretsprovider) | bool | Specifies whether the KeyvaultSecretsProvider add-on is enabled or not. |
 | [`enablePurgeProtection`](#parameter-enablepurgeprotection) | bool | Provide 'true' to enable Key Vault's purge protection feature. |
 | [`enableRbacAuthorization`](#parameter-enablerbacauthorization) | bool | Property that controls how data actions are authorized. When true, the key vault will use Role Based Access Control (RBAC) for authorization of data actions, and the access policies specified in vault properties will be ignored. When false, the key vault will use the access policies specified in vault properties, and any policy stored on Azure Resource Manager will be ignored. Note that management actions are always authorized with RBAC. |
@@ -446,6 +467,79 @@ Specifies the resource ID of connected application gateway. Required if `ingress
 - Required: No
 - Type: string
 
+### Parameter: `aadProfile`
+
+Enable Azure Active Directory integration.
+
+- Required: No
+- Type: object
+
+**Required parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`aadProfileEnableAzureRBAC`](#parameter-aadprofileaadprofileenableazurerbac) | bool | Specifies whether to enable Azure RBAC for Kubernetes authorization. |
+| [`aadProfileManaged`](#parameter-aadprofileaadprofilemanaged) | bool | Specifies whether to enable managed AAD integration. |
+
+**Optional parameters**
+
+| Parameter | Type | Description |
+| :-- | :-- | :-- |
+| [`aadProfileAdminGroupObjectIDs`](#parameter-aadprofileaadprofileadmingroupobjectids) | array | Specifies the AAD group object IDs that will have admin role of the cluster. |
+| [`aadProfileClientAppID`](#parameter-aadprofileaadprofileclientappid) | string | The client AAD application ID. |
+| [`aadProfileServerAppID`](#parameter-aadprofileaadprofileserverappid) | string | The server AAD application ID. |
+| [`aadProfileServerAppSecret`](#parameter-aadprofileaadprofileserverappsecret) | string | The server AAD application secret. |
+| [`aadProfileTenantId`](#parameter-aadprofileaadprofiletenantid) | string | Specifies the tenant ID of the Azure Active Directory used by the AKS cluster for authentication. |
+
+### Parameter: `aadProfile.aadProfileEnableAzureRBAC`
+
+Specifies whether to enable Azure RBAC for Kubernetes authorization.
+
+- Required: Yes
+- Type: bool
+
+### Parameter: `aadProfile.aadProfileManaged`
+
+Specifies whether to enable managed AAD integration.
+
+- Required: Yes
+- Type: bool
+
+### Parameter: `aadProfile.aadProfileAdminGroupObjectIDs`
+
+Specifies the AAD group object IDs that will have admin role of the cluster.
+
+- Required: No
+- Type: array
+
+### Parameter: `aadProfile.aadProfileClientAppID`
+
+The client AAD application ID.
+
+- Required: No
+- Type: string
+
+### Parameter: `aadProfile.aadProfileServerAppID`
+
+The server AAD application ID.
+
+- Required: No
+- Type: string
+
+### Parameter: `aadProfile.aadProfileServerAppSecret`
+
+The server AAD application secret.
+
+- Required: No
+- Type: string
+
+### Parameter: `aadProfile.aadProfileTenantId`
+
+Specifies the tenant ID of the Azure Active Directory used by the AKS cluster for authentication.
+
+- Required: No
+- Type: string
+
 ### Parameter: `acrSku`
 
 Tier of your Azure container registry.
@@ -486,7 +580,9 @@ Custom configuration of user node pool.
 | [`enableEncryptionAtHost`](#parameter-agentpoolconfigenableencryptionathost) | bool | Whether to enable encryption at host for the agent pool. |
 | [`enableFIPS`](#parameter-agentpoolconfigenablefips) | bool | Whether to enable FIPS for the agent pool. |
 | [`enableNodePublicIP`](#parameter-agentpoolconfigenablenodepublicip) | bool | Whether to enable node public IP for the agent pool. |
+| [`enableSecureBoot`](#parameter-agentpoolconfigenablesecureboot) | bool | Secure Boot is a feature of Trusted Launch which ensures that only signed operating systems and drivers can boot. For more details, see aka.ms/aks/trustedlaunch. |
 | [`enableUltraSSD`](#parameter-agentpoolconfigenableultrassd) | bool | Whether to enable Ultra SSD for the agent pool. |
+| [`enableVTPM`](#parameter-agentpoolconfigenablevtpm) | bool | vTPM is a Trusted Launch feature for configuring a dedicated secure vault for keys and measurements held locally on the node. For more details, see aka.ms/aks/trustedlaunch. |
 | [`gpuInstanceProfile`](#parameter-agentpoolconfiggpuinstanceprofile) | string | The GPU instance profile of the agent pool. |
 | [`kubeletDiskType`](#parameter-agentpoolconfigkubeletdisktype) | string | The kubelet disk type of the agent pool. |
 | [`maxCount`](#parameter-agentpoolconfigmaxcount) | int | The maximum number of agents (VMs) to host docker containers. Allowed values must be in the range of 1 to 100 (inclusive). |
@@ -501,7 +597,7 @@ Custom configuration of user node pool.
 | [`orchestratorVersion`](#parameter-agentpoolconfigorchestratorversion) | string | The Kubernetes version of the agent pool. |
 | [`osDiskSizeGB`](#parameter-agentpoolconfigosdisksizegb) | int | The OS disk size in GB of the agent pool. |
 | [`osDiskType`](#parameter-agentpoolconfigosdisktype) | string | The OS disk type of the agent pool. |
-| [`osSku`](#parameter-agentpoolconfigossku) | string | The OS SKU of the agent pool. |
+| [`osSKU`](#parameter-agentpoolconfigossku) | string | The OS SKU of the agent pool. |
 | [`osType`](#parameter-agentpoolconfigostype) | string | The OS type of the agent pool. |
 | [`podSubnetResourceId`](#parameter-agentpoolconfigpodsubnetresourceid) | string | The pod subnet ID of the agent pool. |
 | [`proximityPlacementGroupResourceId`](#parameter-agentpoolconfigproximityplacementgroupresourceid) | string | The proximity placement group resource ID of the agent pool. |
@@ -572,9 +668,23 @@ Whether to enable node public IP for the agent pool.
 - Required: No
 - Type: bool
 
+### Parameter: `agentPoolConfig.enableSecureBoot`
+
+Secure Boot is a feature of Trusted Launch which ensures that only signed operating systems and drivers can boot. For more details, see aka.ms/aks/trustedlaunch.
+
+- Required: No
+- Type: bool
+
 ### Parameter: `agentPoolConfig.enableUltraSSD`
 
 Whether to enable Ultra SSD for the agent pool.
+
+- Required: No
+- Type: bool
+
+### Parameter: `agentPoolConfig.enableVTPM`
+
+vTPM is a Trusted Launch feature for configuring a dedicated secure vault for keys and measurements held locally on the node. For more details, see aka.ms/aks/trustedlaunch.
 
 - Required: No
 - Type: bool
@@ -694,7 +804,7 @@ The OS disk type of the agent pool.
 - Required: No
 - Type: string
 
-### Parameter: `agentPoolConfig.osSku`
+### Parameter: `agentPoolConfig.osSKU`
 
 The OS SKU of the agent pool.
 
@@ -900,6 +1010,14 @@ Specifies the IP address assigned to the Kubernetes DNS service. It must be with
 - Required: No
 - Type: string
 
+### Parameter: `enableAzureRbac`
+
+Enable RBAC using AAD.
+
+- Required: No
+- Type: bool
+- Default: `False`
+
 ### Parameter: `enableKeyvaultSecretsProvider`
 
 Specifies whether the KeyvaultSecretsProvider add-on is enabled or not.
@@ -954,7 +1072,7 @@ Kubernetes Version.
 
 - Required: No
 - Type: string
-- Default: `'1.29'`
+- Default: `'1.31'`
 
 ### Parameter: `loadBalancerSku`
 
@@ -1042,7 +1160,7 @@ The name of the resource group for the managed resources of the AKS cluster.
 
 - Required: No
 - Type: string
-- Default: `''`
+- Default: `[format('rg-mc-{0}', parameters('name'))]`
 
 ### Parameter: `podCidr`
 
@@ -1179,7 +1297,9 @@ Custom configuration of system node pool.
 | [`enableEncryptionAtHost`](#parameter-systempoolconfigenableencryptionathost) | bool | Whether to enable encryption at host for the agent pool. |
 | [`enableFIPS`](#parameter-systempoolconfigenablefips) | bool | Whether to enable FIPS for the agent pool. |
 | [`enableNodePublicIP`](#parameter-systempoolconfigenablenodepublicip) | bool | Whether to enable node public IP for the agent pool. |
+| [`enableSecureBoot`](#parameter-systempoolconfigenablesecureboot) | bool | Secure Boot is a feature of Trusted Launch which ensures that only signed operating systems and drivers can boot. For more details, see aka.ms/aks/trustedlaunch. |
 | [`enableUltraSSD`](#parameter-systempoolconfigenableultrassd) | bool | Whether to enable Ultra SSD for the agent pool. |
+| [`enableVTPM`](#parameter-systempoolconfigenablevtpm) | bool | vTPM is a Trusted Launch feature for configuring a dedicated secure vault for keys and measurements held locally on the node. For more details, see aka.ms/aks/trustedlaunch. |
 | [`gpuInstanceProfile`](#parameter-systempoolconfiggpuinstanceprofile) | string | The GPU instance profile of the agent pool. |
 | [`kubeletDiskType`](#parameter-systempoolconfigkubeletdisktype) | string | The kubelet disk type of the agent pool. |
 | [`maxCount`](#parameter-systempoolconfigmaxcount) | int | The maximum number of agents (VMs) to host docker containers. Allowed values must be in the range of 1 to 100 (inclusive). |
@@ -1194,7 +1314,7 @@ Custom configuration of system node pool.
 | [`orchestratorVersion`](#parameter-systempoolconfigorchestratorversion) | string | The Kubernetes version of the agent pool. |
 | [`osDiskSizeGB`](#parameter-systempoolconfigosdisksizegb) | int | The OS disk size in GB of the agent pool. |
 | [`osDiskType`](#parameter-systempoolconfigosdisktype) | string | The OS disk type of the agent pool. |
-| [`osSku`](#parameter-systempoolconfigossku) | string | The OS SKU of the agent pool. |
+| [`osSKU`](#parameter-systempoolconfigossku) | string | The OS SKU of the agent pool. |
 | [`osType`](#parameter-systempoolconfigostype) | string | The OS type of the agent pool. |
 | [`podSubnetResourceId`](#parameter-systempoolconfigpodsubnetresourceid) | string | The pod subnet ID of the agent pool. |
 | [`proximityPlacementGroupResourceId`](#parameter-systempoolconfigproximityplacementgroupresourceid) | string | The proximity placement group resource ID of the agent pool. |
@@ -1265,9 +1385,23 @@ Whether to enable node public IP for the agent pool.
 - Required: No
 - Type: bool
 
+### Parameter: `systemPoolConfig.enableSecureBoot`
+
+Secure Boot is a feature of Trusted Launch which ensures that only signed operating systems and drivers can boot. For more details, see aka.ms/aks/trustedlaunch.
+
+- Required: No
+- Type: bool
+
 ### Parameter: `systemPoolConfig.enableUltraSSD`
 
 Whether to enable Ultra SSD for the agent pool.
+
+- Required: No
+- Type: bool
+
+### Parameter: `systemPoolConfig.enableVTPM`
+
+vTPM is a Trusted Launch feature for configuring a dedicated secure vault for keys and measurements held locally on the node. For more details, see aka.ms/aks/trustedlaunch.
 
 - Required: No
 - Type: bool
@@ -1387,7 +1521,7 @@ The OS disk type of the agent pool.
 - Required: No
 - Type: string
 
-### Parameter: `systemPoolConfig.osSku`
+### Parameter: `systemPoolConfig.osSKU`
 
 The OS SKU of the agent pool.
 
@@ -1572,9 +1706,9 @@ This section gives you an overview of all local-referenced module files (i.e., o
 
 | Reference | Type |
 | :-- | :-- |
-| `br/public:avm/res/container-registry/registry:0.5.1` | Remote reference |
-| `br/public:avm/res/container-service/managed-cluster:0.4.1` | Remote reference |
-| `br/public:avm/res/key-vault/vault:0.9.0` | Remote reference |
+| `br/public:avm/res/container-registry/registry:0.9.1` | Remote reference |
+| `br/public:avm/res/container-service/managed-cluster:0.9.0` | Remote reference |
+| `br/public:avm/res/key-vault/vault:0.12.1` | Remote reference |
 
 ## Data Collection
 

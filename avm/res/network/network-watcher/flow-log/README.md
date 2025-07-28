@@ -13,7 +13,7 @@ This module controls the Network Security Group Flow Logs and analytics settings
 
 | Resource Type | API Version |
 | :-- | :-- |
-| `Microsoft.Network/networkWatchers/flowLogs` | [2023-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-04-01/networkWatchers/flowLogs) |
+| `Microsoft.Network/networkWatchers/flowLogs` | [2024-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-05-01/networkWatchers/flowLogs) |
 
 ## Parameters
 
@@ -115,8 +115,6 @@ Tags of the resource.
 
 - Required: No
 - Type: object
-- MinValue: 0
-- MaxValue: 365
 
 ### Parameter: `trafficAnalyticsInterval`
 
@@ -132,8 +130,6 @@ The interval in minutes which would decide how frequently TA service should do f
     60
   ]
   ```
-- MinValue: 0
-- MaxValue: 365
 
 ### Parameter: `workspaceResourceId`
 
@@ -142,8 +138,6 @@ Specify the Log Analytics Workspace Resource ID.
 - Required: No
 - Type: string
 - Default: `''`
-- MinValue: 0
-- MaxValue: 365
 
 ## Outputs
 

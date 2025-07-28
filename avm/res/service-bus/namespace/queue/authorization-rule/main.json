@@ -4,12 +4,11 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.30.23.60470",
-      "templateHash": "13793175890494658919"
+      "version": "0.36.1.42791",
+      "templateHash": "15590788022834413497"
     },
     "name": "Service Bus Namespace Queue Authorization Rules",
-    "description": "This module deploys a Service Bus Namespace Queue Authorization Rule.",
-    "owner": "Azure/module-maintainers"
+    "description": "This module deploys a Service Bus Namespace Queue Authorization Rule."
   },
   "parameters": {
     "name": {

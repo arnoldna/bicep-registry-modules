@@ -18,7 +18,7 @@ This module deploys a Public IP Address.
 | `Microsoft.Authorization/locks` | [2020-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2020-05-01/locks) |
 | `Microsoft.Authorization/roleAssignments` | [2022-04-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Authorization/2022-04-01/roleAssignments) |
 | `Microsoft.Insights/diagnosticSettings` | [2021-05-01-preview](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Insights/2021-05-01-preview/diagnosticSettings) |
-| `Microsoft.Network/publicIPAddresses` | [2023-09-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2023-09-01/publicIPAddresses) |
+| `Microsoft.Network/publicIPAddresses` | [2024-05-01](https://learn.microsoft.com/en-us/azure/templates/Microsoft.Network/2024-05-01/publicIPAddresses) |
 
 ## Usage examples
 
@@ -29,8 +29,8 @@ The following section provides usage examples for the module, which were used to
 >**Note**: To reference the module, please use the following syntax `br/public:avm/res/network/public-ip-address:<version>`.
 
 - [Using only defaults](#example-1-using-only-defaults)
-- [Max](#example-2-max)
-- [Waf-Aligned](#example-3-waf-aligned)
+- [Using large parameter set](#example-2-using-large-parameter-set)
+- [WAF-aligned](#example-3-waf-aligned)
 
 ### Example 1: _Using only defaults_
 
@@ -96,7 +96,10 @@ param location = '<location>'
 </details>
 <p>
 
-### Example 2: _Max_
+### Example 2: _Using large parameter set_
+
+This instance deploys the module with most of its features enabled.
+
 
 <details>
 
@@ -109,6 +112,11 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
     // Required parameters
     name: 'npiamax001'
     // Non-required parameters
+    availabilityZones: [
+      1
+      2
+      3
+    ]
     ddosSettings: '<ddosSettings>'
     diagnosticSettings: [
       {
@@ -160,11 +168,6 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
       'hidden-title': 'This is visible in the resource name'
       Role: 'DeploymentValidation'
     }
-    zones: [
-      1
-      2
-      3
-    ]
   }
 }
 ```
@@ -186,6 +189,13 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
       "value": "npiamax001"
     },
     // Non-required parameters
+    "availabilityZones": {
+      "value": [
+        1,
+        2,
+        3
+      ]
+    },
     "ddosSettings": {
       "value": "<ddosSettings>"
     },
@@ -262,13 +272,6 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
         "hidden-title": "This is visible in the resource name",
         "Role": "DeploymentValidation"
       }
-    },
-    "zones": {
-      "value": [
-        1,
-        2,
-        3
-      ]
     }
   }
 }
@@ -287,6 +290,11 @@ using 'br/public:avm/res/network/public-ip-address:<version>'
 // Required parameters
 param name = 'npiamax001'
 // Non-required parameters
+param availabilityZones = [
+  1
+  2
+  3
+]
 param ddosSettings = '<ddosSettings>'
 param diagnosticSettings = [
   {
@@ -338,17 +346,15 @@ param tags = {
   'hidden-title': 'This is visible in the resource name'
   Role: 'DeploymentValidation'
 }
-param zones = [
-  1
-  2
-  3
-]
 ```
 
 </details>
 <p>
 
-### Example 3: _Waf-Aligned_
+### Example 3: _WAF-aligned_
+
+This instance deploys the module in alignment with the best-practices of the Azure Well-Architected Framework.
+
 
 <details>
 
@@ -361,6 +367,11 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
     // Required parameters
     name: 'npiawaf001'
     // Non-required parameters
+    availabilityZones: [
+      1
+      2
+      3
+    ]
     ddosSettings: '<ddosSettings>'
     diagnosticSettings: [
       {
@@ -404,11 +415,6 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
       'hidden-title': 'This is visible in the resource name'
       Role: 'DeploymentValidation'
     }
-    zones: [
-      1
-      2
-      3
-    ]
   }
 }
 ```
@@ -430,6 +436,13 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
       "value": "npiawaf001"
     },
     // Non-required parameters
+    "availabilityZones": {
+      "value": [
+        1,
+        2,
+        3
+      ]
+    },
     "ddosSettings": {
       "value": "<ddosSettings>"
     },
@@ -496,13 +509,6 @@ module publicIpAddress 'br/public:avm/res/network/public-ip-address:<version>' =
         "hidden-title": "This is visible in the resource name",
         "Role": "DeploymentValidation"
       }
-    },
-    "zones": {
-      "value": [
-        1,
-        2,
-        3
-      ]
     }
   }
 }
@@ -521,6 +527,11 @@ using 'br/public:avm/res/network/public-ip-address:<version>'
 // Required parameters
 param name = 'npiawaf001'
 // Non-required parameters
+param availabilityZones = [
+  1
+  2
+  3
+]
 param ddosSettings = '<ddosSettings>'
 param diagnosticSettings = [
   {
@@ -564,11 +575,6 @@ param tags = {
   'hidden-title': 'This is visible in the resource name'
   Role: 'DeploymentValidation'
 }
-param zones = [
-  1
-  2
-  3
-]
 ```
 
 </details>
@@ -586,6 +592,7 @@ param zones = [
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
+| [`availabilityZones`](#parameter-availabilityzones) | array | A list of availability zones denoting the IP allocated for the resource needs to come from. |
 | [`ddosSettings`](#parameter-ddossettings) | object | The DDoS protection plan configuration associated with the public IP address. |
 | [`diagnosticSettings`](#parameter-diagnosticsettings) | array | The diagnostic settings of the service. |
 | [`dnsSettings`](#parameter-dnssettings) | object | The DNS settings of the public IP address. |
@@ -601,7 +608,6 @@ param zones = [
 | [`skuName`](#parameter-skuname) | string | Name of a public IP address SKU. |
 | [`skuTier`](#parameter-skutier) | string | Tier of a public IP address SKU. |
 | [`tags`](#parameter-tags) | object | Tags of the resource. |
-| [`zones`](#parameter-zones) | array | A list of availability zones denoting the IP allocated for the resource needs to come from. |
 
 ### Parameter: `name`
 
@@ -609,6 +615,29 @@ The name of the Public IP Address.
 
 - Required: Yes
 - Type: string
+
+### Parameter: `availabilityZones`
+
+A list of availability zones denoting the IP allocated for the resource needs to come from.
+
+- Required: No
+- Type: array
+- Default:
+  ```Bicep
+  [
+    1
+    2
+    3
+  ]
+  ```
+- Allowed:
+  ```Bicep
+  [
+    1
+    2
+    3
+  ]
+  ```
 
 ### Parameter: `ddosSettings`
 
@@ -820,12 +849,12 @@ The DNS settings of the public IP address.
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
 | [`domainNameLabel`](#parameter-dnssettingsdomainnamelabel) | string | The domain name label. The concatenation of the domain name label and the regionalized DNS zone make up the fully qualified domain name associated with the public IP address. If a domain name label is specified, an A DNS record is created for the public IP in the Microsoft Azure DNS system. |
-| [`domainNameLabelScope`](#parameter-dnssettingsdomainnamelabelscope) | string | The domain name label scope. If a domain name label and a domain name label scope are specified, an A DNS record is created for the public IP in the Microsoft Azure DNS system with a hashed value includes in FQDN. |
 
 **Optional parameters**
 
 | Parameter | Type | Description |
 | :-- | :-- | :-- |
+| [`domainNameLabelScope`](#parameter-dnssettingsdomainnamelabelscope) | string | The domain name label scope. If a domain name label and a domain name label scope are specified, an A DNS record is created for the public IP in the Microsoft Azure DNS system with a hashed value includes in FQDN. |
 | [`fqdn`](#parameter-dnssettingsfqdn) | string | The Fully Qualified Domain Name of the A DNS record associated with the public IP. This is the concatenation of the domainNameLabel and the regionalized DNS zone. |
 | [`reverseFqdn`](#parameter-dnssettingsreversefqdn) | string | The reverse FQDN. A user-visible, fully qualified domain name that resolves to this public IP address. If the reverseFqdn is specified, then a PTR DNS record is created pointing from the IP address in the in-addr.arpa domain to the reverse FQDN. |
 
@@ -840,12 +869,11 @@ The domain name label. The concatenation of the domain name label and the region
 
 The domain name label scope. If a domain name label and a domain name label scope are specified, an A DNS record is created for the public IP in the Microsoft Azure DNS system with a hashed value includes in FQDN.
 
-- Required: Yes
+- Required: No
 - Type: string
 - Allowed:
   ```Bicep
   [
-    ''
     'NoReuse'
     'ResourceGroupReuse'
     'SubscriptionReuse'
@@ -1136,29 +1164,6 @@ Tags of the resource.
 
 - Required: No
 - Type: object
-
-### Parameter: `zones`
-
-A list of availability zones denoting the IP allocated for the resource needs to come from.
-
-- Required: No
-- Type: array
-- Default:
-  ```Bicep
-  [
-    1
-    2
-    3
-  ]
-  ```
-- Allowed:
-  ```Bicep
-  [
-    1
-    2
-    3
-  ]
-  ```
 
 ## Outputs
 

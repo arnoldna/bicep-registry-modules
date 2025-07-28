@@ -70,7 +70,7 @@ module testDeployment '../../../main.bicep' = [
       istioServiceMeshEnabled: true
       istioServiceMeshInternalIngressGatewayEnabled: true
       istioServiceMeshRevisions: [
-        'asm-1-22'
+        'asm-1-24'
       ]
       istioServiceMeshCertificateAuthority: {
         certChainObjectName: nestedDependencies.outputs.certChainSecretName
@@ -90,6 +90,6 @@ module secretPermissions 'main.rbac.bicep' = {
   name: '${uniqueString(deployment().name, resourceLocation)}-rbac'
   params: {
     keyVaultResourceId: nestedDependencies.outputs.keyVaultResourceId
-    principalId: testDeployment[0].outputs.keyvaultIdentityObjectId
+    principalId: testDeployment[0].outputs.keyvaultIdentityObjectId!
   }
 }
